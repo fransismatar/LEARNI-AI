@@ -22,6 +22,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://learni-ai.vercel.app",
+      "https://learni-m8anma99u-fransismatars-projects.vercel.app",
     ],
     credentials: true,
   })
