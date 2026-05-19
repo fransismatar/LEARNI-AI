@@ -13,21 +13,18 @@ import connectDB from "./config/db";
 
 dotenv.config();
 
+
 const app = express();
 
 connectDB();
 
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://learni-ai.vercel.app",
-      "https://learni-m8anma99u-fransismatars-projects.vercel.app",
-    ],
+    origin: true,
     credentials: true,
   })
 );
-
 
 app.use(express.json());
 app.use("/api/auth", authRoutes);
