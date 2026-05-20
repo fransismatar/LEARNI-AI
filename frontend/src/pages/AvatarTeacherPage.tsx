@@ -1,9 +1,13 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import api from "../services/api";
 
 const AvatarTeacherPage = () => {
   const [conversationUrl, setConversationUrl] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [searchParams] = useSearchParams();
+  const teacherId = searchParams.get("teacher") || "Learni-X";
 
   const startAvatarSession = async () => {
     try {
@@ -13,7 +17,7 @@ const AvatarTeacherPage = () => {
 
       const res = await api.post(
         "/avatar/session",
-        {},
+        { teacherId },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -37,12 +41,12 @@ const AvatarTeacherPage = () => {
           AI Video Teacher
         </p>
 
-        <h1 className="mt-3 text-5xl font-black">
-          Practice English face to face
+        <h1 className="mt-3 text-4xl font-black sm:text-5xl">
+          Practice with {teacherId}
         </h1>
 
         <p className="mt-4 max-w-2xl text-slate-300">
-          Start a real video conversation with your AI avatar teacher.
+          Start a real video conversation with your selected AI teacher.
         </p>
       </div>
 
@@ -51,13 +55,13 @@ const AvatarTeacherPage = () => {
           <div className="text-7xl">🤖</div>
 
           <h2 className="mt-6 text-3xl font-bold">
-            Ready to meet your AI teacher?
+            Ready to meet {teacherId}?
           </h2>
 
           <button
             onClick={startAvatarSession}
             disabled={loading}
-            className="mt-8 rounded-2xl bg-cyan-400 px-8 py-4 font-bold text-slate-950 transition hover:bg-cyan-300 disabled:opacity-40"
+            className="mt-8 cursor-pointer rounded-2xl bg-cyan-400 px-8 py-4 font-bold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {loading ? "Starting avatar..." : "Start Avatar Lesson"}
           </button>

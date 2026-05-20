@@ -34,7 +34,7 @@ const DashboardPage = () => {
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <Link
-            to="/avatar-teacher"
+            to={`/avatar-teacher?teacher=${selectedTeacher}`}
             className="rounded-2xl bg-cyan-400 px-6 py-4 text-center font-bold text-slate-950 shadow-xl shadow-cyan-400/20 transition hover:bg-cyan-300"
           >
             Start Lesson
