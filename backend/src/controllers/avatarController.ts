@@ -5,32 +5,28 @@ const teachers: Record<
   {
     replicaId: string;
     personaId: string;
-    fallbackPrompt: string;
   }
 > = {
   Maya: {
     replicaId: "r1e52660d3bf",
     personaId: "pcfc521175c1",
-    fallbackPrompt:
-      "You are Maya, a calm and supportive AI language teacher. Explain slowly and build student confidence.",
   },
 
   Adam: {
     replicaId: "r5f0577fc829",
     personaId: "pec4fcbacbee",
-    fallbackPrompt:
-      "You are Adam, a professional speaking coach. Focus on pronunciation, fluency, interviews, and strong corrections.",
   },
 
   Stephanie: {
     replicaId: "rcc28da86847",
     personaId: "p692268dd14e",
-    fallbackPrompt:
-      "You are Stephanie, a warm and friendly AI teacher. Make lessons feel natural, clear, and encouraging.",
   },
 };
 
-const languageInstruction = (nativeLanguage: string, targetLanguage: string) => {
+const languageInstruction = (
+  nativeLanguage: string,
+  targetLanguage: string
+) => {
   return `
 Language rules:
 - The student's native language is ${nativeLanguage}.
@@ -69,10 +65,8 @@ export const createAvatarSession = async (req: Request, res: Response) => {
       body: JSON.stringify({
         replica_id: selectedTeacher.replicaId,
         persona_id: selectedTeacher.personaId,
-        conversation_name: `Learni AI - ${teacherId || "Learni-X"}`,
+        conversation_name: `Learni AI - ${teacherId || "Maya"}`,
         conversational_context: `
-${selectedTeacher.fallbackPrompt}
-
 Student profile:
 - Name: ${user?.name || "Student"}
 - Native language: ${nativeLanguage}

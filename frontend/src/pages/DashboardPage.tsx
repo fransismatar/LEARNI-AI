@@ -6,24 +6,21 @@ const teachers = [
   {
     name: "Maya",
     role: "Calm conversation coach",
-    image: "/teachers/maya.png",
   },
   {
     name: "Adam",
-    role: "Professional speaking coach",
-    image: "/teachers/adam.png",
+    role: "Professional speaking coach", 
   },
   {
     name: "Stephanie",
     role: "Warm daily conversation teacher",
-    image: "/teachers/stephanie.png",
   },
 ];
 
 const DashboardPage = () => {
   const { user } = useAuth();
   const profile = user?.learningProfile || {};
-  const [selectedTeacher, setSelectedTeacher] = useState("Learni-X");
+  const [selectedTeacher, setSelectedTeacher] = useState("Maya");
 
   return (
     <section className="mx-auto max-w-5xl space-y-6">
