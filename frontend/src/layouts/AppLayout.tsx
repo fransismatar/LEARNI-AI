@@ -4,15 +4,15 @@ import { useAuth } from "../context/AuthContext";
 const AppLayout = () => {
   const { user, logout } = useAuth();
 
-  const navItems = [
-    { label: "Dashboard", path: "/dashboard" },
-    { label: "AI Teacher", path: "/teacher" },
-    { label: "Realtime Voice", path: "/realtime-teacher" },
-    { label: "Lessons", path: "/lessons" },
-    { label: "Progress", path: "/progress" },
-    { label: "Settings", path: "/settings" },
-    { label: "Avatar Teacher", path: "/avatar-teacher" },
-  ];
+const navItems = [
+  { label: "Dashboard", path: "/dashboard" },
+  { label: "AI Chat", path: "/teacher" },
+  { label: "Speaking Practice", path: "/realtime-teacher" },
+  { label: "Video Teacher", path: "/avatar-teacher" },
+  { label: "Lessons", path: "/lessons" },
+  { label: "Progress", path: "/progress" },
+  { label: "Settings", path: "/settings" },
+];
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
