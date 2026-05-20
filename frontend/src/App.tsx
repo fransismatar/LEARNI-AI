@@ -15,6 +15,8 @@ import ProgressPage from "./pages/ProgressPage";
 import SettingsPage from "./pages/SettingsPage";
 import LessonDetailsPage from "./pages/LessonDetailsPage";
 import AvatarTeacherPage from "./pages/AvatarTeacherPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -27,6 +29,8 @@ function App() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
           <Route path="onboarding" element={<OnboardingPage />} />
+          <Route path="forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="reset-password/:token" element={<ResetPasswordPage />} />
         </Route>
 
         <Route

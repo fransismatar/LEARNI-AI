@@ -27,14 +27,25 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-  learningProfile: {
-  type: mongoose.Schema.Types.Mixed,
-  default: {},
-},
-aiLearningPlan: {
-  type: mongoose.Schema.Types.Mixed,
-  default: null,
-},
+    learningProfile: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
+
+    aiLearningPlan: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+
+    resetPasswordToken: {
+      type: String,
+      default: null,
+    },
+
+    resetPasswordExpires: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import RegisterBg from "../assets/Register-bg.png";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -35,60 +36,115 @@ const LoginPage = () => {
   };
 
   return (
-    <section className="mx-auto grid min-h-[75vh] max-w-6xl items-center gap-10 lg:grid-cols-2">
-      <div>
-        <p className="text-sm font-semibold text-cyan-300">Welcome back</p>
-        <h1 className="mt-4 text-5xl font-black">Login to Learni AI</h1>
-        <p className="mt-5 max-w-md text-slate-300">
-          Continue your learning plan and practice with your AI teacher.
-        </p>
-      </div>
-
-      <form
-        onSubmit={handleLogin}
-        className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl"
-      >
-        <h2 className="text-2xl font-bold">Login</h2>
-
-        {error && (
-          <div className="mt-5 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-            {error}
+    <main
+      className="min-h-screen overflow-x-hidden bg-[length:220%] bg-[position:70%_center] bg-no-repeat px-4 py-8 sm:bg-[length:160%] lg:bg-[length:110%]"
+      style={{
+        backgroundImage: `linear-gradient(90deg, rgba(2,6,23,0.97) 0%, rgba(2,6,23,0.88) 45%, rgba(2,6,23,0.55) 100%), url(${RegisterBg})`,
+      }}
+    >
+      <section className="mx-auto grid min-h-[90vh] max-w-6xl items-center gap-10 lg:grid-cols-2">
+        <div>
+          <div className="inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-300 backdrop-blur-xl">
+            Welcome back
           </div>
-        )}
 
-        <div className="mt-6 space-y-4">
-          <input
-            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-4 text-white outline-none focus:border-cyan-400"
-            placeholder="Email address"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <h1 className="mt-5 text-4xl font-black leading-tight text-white sm:text-6xl">
+            Continue learning with your{" "}
+            <span className="bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
+              AI Teacher
+            </span>
+          </h1>
 
-          <input
-            className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-4 text-white outline-none focus:border-cyan-400"
-            placeholder="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-
-          <button
-            disabled={loading}
-            className="w-full rounded-2xl bg-cyan-400 px-6 py-4 font-bold text-slate-950 transition hover:bg-cyan-300 disabled:opacity-60"
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
+          <p className="mt-6 max-w-md text-lg leading-8 text-slate-300">
+            Continue your learning plan and practice real conversations with Learni AI.
+          </p>
         </div>
 
-        <p className="mt-6 text-center text-sm text-slate-400">
-          New here?{" "}
-          <Link to="/register" className="font-semibold text-cyan-300">
-            Create account
-          </Link>
-        </p>
-      </form>
-    </section>
+        <form
+          onSubmit={handleLogin}
+          className="rounded-[32px] border border-white/10 bg-slate-950/70 p-6 shadow-2xl backdrop-blur-2xl sm:p-8"
+        >
+          <h2 className="text-3xl font-black text-white">
+            Login
+          </h2>
+
+          <p className="mt-2 text-slate-400">
+            Access your personal learning journey.
+          </p>
+
+          {error && (
+            <div className="mt-5 rounded-2xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {error}
+            </div>
+          )}
+
+          <div className="mt-6 space-y-4">
+            <input
+              className="w-full rounded-2xl border border-white/10 bg-slate-900/90 px-4 py-4 text-white outline-none transition focus:border-cyan-400"
+              placeholder="Email address"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <input
+              className="w-full rounded-2xl border border-white/10 bg-slate-900/90 px-4 py-4 text-white outline-none transition focus:border-cyan-400"
+              placeholder="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <div className="flex justify-end">
+              <Link
+                to="/forgot-password"
+                className="text-sm font-medium text-cyan-300 transition hover:text-cyan-200"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            <button
+              disabled={loading}
+              className="w-full rounded-2xl bg-cyan-400 px-6 py-4 font-bold text-slate-950 shadow-xl shadow-cyan-400/20 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+
+            <div className="relative py-2">
+              <div className="absolute left-0 top-1/2 h-px w-full bg-white/10" />
+
+              <span className="relative mx-auto block w-fit bg-slate-950 px-4 text-sm text-slate-400">
+                OR
+              </span>
+            </div>
+
+            <button
+              type="button"
+              className="flex w-full items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-4 font-semibold text-white transition hover:bg-white/[0.07]"
+            >
+              <img
+                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                alt="Google"
+                className="h-5 w-5"
+              />
+
+              Continue with Google
+            </button>
+          </div>
+
+          <p className="mt-7 text-center text-sm text-slate-400">
+            New here?{" "}
+            <Link
+              to="/register"
+              className="font-semibold text-cyan-300"
+            >
+              Create account
+            </Link>
+          </p>
+        </form>
+      </section>
+    </main>
   );
 };
 

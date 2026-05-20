@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import User from "../models/User";
-import { sendWelcomeEmail } from "../services/emailService";
+import {
+  sendWelcomeEmail,
+  sendResetPasswordEmail,
+} from "../services/emailService";
 
 const generateToken = (userId: string) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET as string, {
@@ -24,7 +28,8 @@ export const registerUser = async (req: Request, res: Response) => {
 
     if (!passwordRegex.test(password)) {
       return res.status(400).json({
-        message: "Password must be at least 8 characters and contain 1 capital letter",
+        message:
+          "Password must be at least 8 characters and contain 1 capital letter",
       });
     }
 
@@ -106,6 +111,90 @@ export const loginUser = async (req: Request, res: Response) => {
         name: user.name,
         email: user.email,
       },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(200).json({
+        message: "If this email exists, a reset link was sent",
+      });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = new Date(Date.now() + 1000 * 60 * 60);
+
+    await user.save();
+
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+
+    try {
+      await sendResetPasswordEmail(user.email, resetLink);
+    } catch (emailError) {
+      console.log("Reset password email failed:", emailError);
+
+      return res.status(500).json({
+        message: "Could not send reset email",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Reset link sent",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid or expired token",
+      });
+    }
+
+    const passwordRegex = /^(?=.*[A-Z]).{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        message:
+          "Password must be at least 8 characters and contain 1 capital letter",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    user.password = hashedPassword;
+    user.resetPasswordToken = null;
+    user.resetPasswordExpires = null;
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "Password reset successful",
     });
   } catch (error) {
     return res.status(500).json({
