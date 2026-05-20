@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
+import { sendWelcomeEmail } from "../services/emailService";
 
 const generateToken = (userId: string) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET as string, {
@@ -18,13 +19,15 @@ export const registerUser = async (req: Request, res: Response) => {
         message: "Please fill all fields",
       });
     }
-     const passwordRegex = /^(?=.*[A-Z]).{8,}$/;
 
-     if (!passwordRegex.test(password)) {
-    return res.status(400).json({
-    message: "Password must be at least 8 characters and contain 1 capital letter",
-    });
-}
+    const passwordRegex = /^(?=.*[A-Z]).{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        message: "Password must be at least 8 characters and contain 1 capital letter",
+      });
+    }
+
     const userExists = await User.findOne({ email });
 
     if (userExists) {
@@ -36,12 +39,18 @@ export const registerUser = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-  name,
-  email,
-  password: hashedPassword,
-  onboardingCompleted: Boolean(onboardingAnswers),
-  learningProfile: onboardingAnswers || {},
-});
+      name,
+      email,
+      password: hashedPassword,
+      onboardingCompleted: Boolean(onboardingAnswers),
+      learningProfile: onboardingAnswers || {},
+    });
+
+    try {
+      await sendWelcomeEmail(user.email, user.name);
+    } catch (emailError) {
+      console.log("Welcome email failed:", emailError);
+    }
 
     const token = generateToken(user._id.toString());
 
