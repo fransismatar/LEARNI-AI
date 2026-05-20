@@ -4,15 +4,17 @@ import { useAuth } from "../context/AuthContext";
 const AppLayout = () => {
   const { user, logout } = useAuth();
 
-const navItems = [
-  { label: "Dashboard", path: "/dashboard" },
-  { label: "AI Chat", path: "/teacher" },
-  { label: "Speaking Practice", path: "/realtime-teacher" },
-  { label: "Video Teacher", path: "/avatar-teacher" },
-  { label: "Lessons", path: "/lessons" },
-  { label: "Progress", path: "/progress" },
-  { label: "Settings", path: "/settings" },
-];
+  const avatarLetter = user?.name?.charAt(0)?.toUpperCase() || "U";
+
+  const navItems = [
+    { label: "Dashboard", path: "/dashboard" },
+    { label: "AI Chat", path: "/teacher" },
+    { label: "Speaking Practice", path: "/realtime-teacher" },
+    { label: "Video Teacher", path: "/avatar-teacher" },
+    { label: "Lessons", path: "/lessons" },
+    { label: "Progress", path: "/progress" },
+    { label: "Settings", path: "/settings" },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -20,9 +22,25 @@ const navItems = [
         <h1 className="text-2xl font-black text-cyan-400">Learni AI</h1>
 
         <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
-          <p className="text-sm text-slate-400">Student</p>
-          <p className="mt-1 font-bold">{user?.name}</p>
-          <p className="mt-1 text-sm text-slate-400">{user?.email}</p>
+          <div className="flex items-center gap-4">
+            <div className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl border border-cyan-400/30 bg-cyan-400/10 text-xl font-black text-cyan-300">
+              {user?.profileImage ? (
+                <img
+                  src={user.profileImage}
+                  alt={user?.name || "User"}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                avatarLetter
+              )}
+            </div>
+
+            <div className="min-w-0">
+              <p className="text-xs text-slate-400">Student</p>
+              <p className="truncate font-bold">{user?.name}</p>
+              <p className="truncate text-xs text-slate-400">{user?.email}</p>
+            </div>
+          </div>
         </div>
 
         <nav className="mt-8 space-y-2">
@@ -33,7 +51,7 @@ const navItems = [
               className={({ isActive }) =>
                 `block rounded-2xl px-5 py-4 font-semibold transition ${
                   isActive
-                    ? "bg-cyan-400 text-slate-950"
+                    ? "bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-400/20"
                     : "text-slate-300 hover:bg-white/[0.06] hover:text-white"
                 }`
               }
@@ -55,31 +73,61 @@ const navItems = [
         <div className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/80 px-6 py-4 backdrop-blur-xl lg:hidden">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-black text-cyan-400">Learni AI</h1>
-            <p className="text-sm text-slate-300">{user?.name}</p>
+
+            <div className="flex items-center gap-3">
+              <p className="max-w-[120px] truncate text-sm text-slate-300">
+                {user?.name}
+              </p>
+
+              <div className="grid h-10 w-10 place-items-center overflow-hidden rounded-xl border border-cyan-400/30 bg-cyan-400/10 text-sm font-black text-cyan-300">
+                {user?.profileImage ? (
+                  <img
+                    src={user.profileImage}
+                    alt={user?.name || "User"}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  avatarLetter
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
         <div className="mx-auto max-w-7xl px-6 py-8 pb-24 lg:pb-8">
-  <Outlet />
-</div>
+          <Outlet />
+        </div>
       </main>
+
       <nav className="fixed bottom-0 left-0 right-0 z-50 grid grid-cols-4 border-t border-white/10 bg-slate-950 p-2 lg:hidden">
-  <NavLink to="/dashboard" className="rounded-xl px-2 py-3 text-center text-xs text-slate-300">
-    Home
-  </NavLink>
+        <NavLink
+          to="/dashboard"
+          className="rounded-xl px-2 py-3 text-center text-xs text-slate-300"
+        >
+          Home
+        </NavLink>
 
-  <NavLink to="/teacher" className="rounded-xl px-2 py-3 text-center text-xs text-slate-300">
-    Chat
-  </NavLink>
+        <NavLink
+          to="/teacher"
+          className="rounded-xl px-2 py-3 text-center text-xs text-slate-300"
+        >
+          Chat
+        </NavLink>
 
-  <NavLink to="/lessons" className="rounded-xl px-2 py-3 text-center text-xs text-slate-300">
-    Lessons
-  </NavLink>
+        <NavLink
+          to="/lessons"
+          className="rounded-xl px-2 py-3 text-center text-xs text-slate-300"
+        >
+          Lessons
+        </NavLink>
 
-  <NavLink to="/avatar-teacher" className="rounded-xl px-2 py-3 text-center text-xs text-cyan-300">
-    Avatar
-  </NavLink>
-</nav>
+        <NavLink
+          to="/avatar-teacher"
+          className="rounded-xl px-2 py-3 text-center text-xs text-cyan-300"
+        >
+          Avatar
+        </NavLink>
+      </nav>
     </div>
   );
 };

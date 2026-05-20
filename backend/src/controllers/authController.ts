@@ -14,14 +14,22 @@ const generateToken = (userId: string) => {
   });
 };
 
+const formatUser = (user: any) => ({
+  id: user._id,
+  name: user.name,
+  email: user.email,
+  profileImage: user.profileImage,
+  onboardingCompleted: user.onboardingCompleted,
+  learningProfile: user.learningProfile,
+  aiLearningPlan: user.aiLearningPlan,
+});
+
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { name, email, password, onboardingAnswers } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({
-        message: "Please fill all fields",
-      });
+      return res.status(400).json({ message: "Please fill all fields" });
     }
 
     const passwordRegex = /^(?=.*[A-Z]).{8,}$/;
@@ -36,9 +44,7 @@ export const registerUser = async (req: Request, res: Response) => {
     const userExists = await User.findOne({ email });
 
     if (userExists) {
-      return res.status(400).json({
-        message: "User already exists",
-      });
+      return res.status(400).json({ message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -62,16 +68,10 @@ export const registerUser = async (req: Request, res: Response) => {
     return res.status(201).json({
       message: "User registered successfully",
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
+      user: formatUser(user),
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-    });
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -80,25 +80,19 @@ export const loginUser = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({
-        message: "Please fill all fields",
-      });
+      return res.status(400).json({ message: "Please fill all fields" });
     }
 
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({
-        message: "Invalid email or password",
-      });
+      return res.status(400).json({ message: "Invalid email or password" });
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
-      return res.status(400).json({
-        message: "Invalid email or password",
-      });
+      return res.status(400).json({ message: "Invalid email or password" });
     }
 
     const token = generateToken(user._id.toString());
@@ -106,16 +100,10 @@ export const loginUser = async (req: Request, res: Response) => {
     return res.status(200).json({
       message: "Login successful",
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
+      user: formatUser(user),
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-    });
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -144,19 +132,12 @@ export const forgotPassword = async (req: Request, res: Response) => {
       await sendResetPasswordEmail(user.email, resetLink);
     } catch (emailError) {
       console.log("Reset password email failed:", emailError);
-
-      return res.status(500).json({
-        message: "Could not send reset email",
-      });
+      return res.status(500).json({ message: "Could not send reset email" });
     }
 
-    return res.status(200).json({
-      message: "Reset link sent",
-    });
+    return res.status(200).json({ message: "Reset link sent" });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-    });
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -171,9 +152,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(400).json({
-        message: "Invalid or expired token",
-      });
+      return res.status(400).json({ message: "Invalid or expired token" });
     }
 
     const passwordRegex = /^(?=.*[A-Z]).{8,}$/;
@@ -185,21 +164,15 @@ export const resetPassword = async (req: Request, res: Response) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    user.password = hashedPassword;
+    user.password = await bcrypt.hash(password, 10);
     user.resetPasswordToken = null;
     user.resetPasswordExpires = null;
 
     await user.save();
 
-    return res.status(200).json({
-      message: "Password reset successful",
-    });
+    return res.status(200).json({ message: "Password reset successful" });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-    });
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
