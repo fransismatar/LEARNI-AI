@@ -18,7 +18,7 @@ const DashboardPage = () => {
   const teacher = teachers.find((item) => item.name === selectedTeacher) || teachers[0];
 
   return (
-    <section className="mx-auto max-w-5xl space-y-6">
+    <section className="mx-auto max-w-6xl space-y-6">
       <div className="rounded-[36px] border border-cyan-400/20 bg-gradient-to-br from-cyan-400/10 via-slate-900 to-blue-500/10 p-6 shadow-2xl sm:p-8">
         <p className="text-sm font-bold text-cyan-300">
           Welcome back, {user?.name || "Student"}
@@ -53,55 +53,57 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-6 shadow-2xl sm:p-8">
-        <p className="text-sm font-bold text-cyan-300">Your teacher</p>
+      <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+        <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-6 shadow-2xl sm:p-8">
+          <p className="text-sm font-bold text-cyan-300">Your teacher</p>
 
-        <div className="mt-5 flex flex-col gap-5 rounded-3xl border border-cyan-400/20 bg-slate-950/60 p-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-           <div className="h-16 w-16 overflow-hidden rounded-3xl border border-cyan-400/20">
-  <img
-    src={teacher.image}
-    alt={teacher.name}
-    className="h-full w-full object-cover"
-  />
-</div>
-
-            <div>
-              <h2 className="text-2xl font-black">{teacher.name}</h2>
-              <p className="mt-1 text-sm text-slate-400">{teacher.role}</p>
-              <p className="mt-2 w-fit rounded-full bg-cyan-400/10 px-3 py-1 text-xs font-bold text-cyan-300">
-                {teacher.accent}
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setIsTeacherModalOpen(true)}
-            className="cursor-pointer rounded-2xl bg-white/[0.06] px-5 py-3 font-bold text-white transition hover:bg-white/[0.1]"
-          >
-            Choose teacher
-          </button>
-        </div>
-      </div>
-
-      <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-6 shadow-2xl sm:p-8">
-        <p className="text-sm font-bold text-cyan-300">Today’s path</p>
-
-        <div className="mt-5 grid gap-3">
-          {["Warm up conversation", "New vocabulary", "Speaking practice", "AI corrections"].map(
-            (item, index) => (
-              <div
-                key={item}
-                className="flex items-center gap-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4"
-              >
-                <div className="grid h-10 w-10 place-items-center rounded-xl bg-cyan-400 text-sm font-black text-slate-950">
-                  {index + 1}
-                </div>
-
-                <p className="font-bold">{item}</p>
+          <div className="mt-5 flex h-full flex-col justify-between gap-5 rounded-3xl border border-cyan-400/20 bg-slate-950/60 p-5">
+            <div className="flex items-center gap-4">
+              <div className="h-16 w-16 overflow-hidden rounded-3xl border border-cyan-400/20">
+                <img
+                  src={teacher.image}
+                  alt={teacher.name}
+                  className="h-full w-full object-cover"
+                />
               </div>
-            )
-          )}
+
+              <div>
+                <h2 className="text-2xl font-black">{teacher.name}</h2>
+                <p className="mt-1 text-sm text-slate-400">{teacher.role}</p>
+                <p className="mt-2 w-fit rounded-full bg-cyan-400/10 px-3 py-1 text-xs font-bold text-cyan-300">
+                  {teacher.accent}
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setIsTeacherModalOpen(true)}
+              className="cursor-pointer rounded-2xl bg-white/[0.06] px-5 py-3 font-bold text-white transition hover:bg-white/[0.1]"
+            >
+              Choose teacher
+            </button>
+          </div>
+        </div>
+
+        <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-6 shadow-2xl sm:p-8">
+          <p className="text-sm font-bold text-cyan-300">Today’s path</p>
+
+          <div className="mt-5 grid gap-3">
+            {["Warm up conversation", "New vocabulary", "Speaking practice", "AI corrections"].map(
+              (item, index) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4"
+                >
+                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-cyan-400 text-sm font-black text-slate-950">
+                    {index + 1}
+                  </div>
+
+                  <p className="font-bold">{item}</p>
+                </div>
+              )
+            )}
+          </div>
         </div>
       </div>
 
@@ -143,13 +145,13 @@ const DashboardPage = () => {
                         : "border-white/10 bg-white/[0.04] hover:border-cyan-400/40"
                     }`}
                   >
-                   <div className="h-52 overflow-hidden bg-gradient-to-br from-blue-950 to-cyan-950">
-  <img
-    src={item.image}
-    alt={item.name}
-    className="h-full w-full object-cover"
-  />
-</div>
+                    <div className="h-52 overflow-hidden bg-gradient-to-br from-blue-950 to-cyan-950">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
 
                     <div className="p-5">
                       <h3 className="text-2xl font-black">{item.name}</h3>
