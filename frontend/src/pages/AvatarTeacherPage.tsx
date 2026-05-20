@@ -1,22 +1,57 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
+type ChatMessage = {
+  _id?: string;
+  role: "user" | "assistant";
+  content: string;
+};
+
+type SpeechRecognitionType = typeof window & {
+  webkitSpeechRecognition?: any;
+  SpeechRecognition?: any;
+};
+
 const AvatarTeacherPage = () => {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+
+  const teacherId = searchParams.get("teacher") || "Maya";
+  const profile = user?.learningProfile || {};
 
   const [conversationUrl, setConversationUrl] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [avatarLoading, setAvatarLoading] = useState(false);
 
-  const [searchParams] = useSearchParams();
-  const teacherId = searchParams.get("teacher") || "Learni-X";
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [message, setMessage] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+  const [listening, setListening] = useState(false);
 
-  const profile = user?.learningProfile || {};
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await api.get("/chat/history", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setMessages(res.data.messages || []);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    loadHistory();
+  }, []);
 
   const startAvatarSession = async () => {
     try {
-      setLoading(true);
+      setAvatarLoading(true);
 
       const token = localStorage.getItem("token");
 
@@ -35,8 +70,93 @@ const AvatarTeacherPage = () => {
       console.log(error);
       alert("Failed to start avatar teacher");
     } finally {
-      setLoading(false);
+      setAvatarLoading(false);
     }
+  };
+
+  const sendMessage = async () => {
+    if (!message.trim()) return;
+
+    const studentMessage = message.trim();
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "user",
+        content: studentMessage,
+      },
+    ]);
+
+    setMessage("");
+
+    try {
+      setChatLoading(true);
+
+      const token = localStorage.getItem("token");
+
+      const res = await api.post(
+        "/chat/message",
+        { message: studentMessage },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: res.data.reply,
+        },
+      ]);
+    } catch (error) {
+      console.log(error);
+      alert("Failed to send message");
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
+  const startSpeechToText = () => {
+    const speechWindow = window as SpeechRecognitionType;
+    const SpeechRecognition =
+      speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Speech recognition is not supported in this browser. Try Chrome.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang =
+      profile.targetLanguage === "Hebrew"
+        ? "he-IL"
+        : profile.targetLanguage === "Arabic"
+        ? "ar"
+        : "en-US";
+
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    setListening(true);
+    recognition.start();
+
+    recognition.onresult = (event: any) => {
+      const text = event.results[0][0].transcript;
+      setMessage(text);
+      setListening(false);
+    };
+
+    recognition.onerror = () => {
+      setListening(false);
+    };
+
+    recognition.onend = () => {
+      setListening(false);
+    };
   };
 
   return (
@@ -47,15 +167,14 @@ const AvatarTeacherPage = () => {
         <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h1 className="text-4xl font-black leading-tight sm:text-5xl">
-              Video lesson with{" "}
+              Learn with{" "}
               <span className="bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
                 {teacherId}
               </span>
             </h1>
 
             <p className="mt-4 max-w-2xl leading-7 text-slate-300">
-              Practice {profile.targetLanguage || "English"} with video,
-              microphone, live conversation, and corrections.
+              Video teacher, chat, microphone, and corrections in one place.
             </p>
           </div>
 
@@ -68,10 +187,10 @@ const AvatarTeacherPage = () => {
         </div>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
+      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <div className="overflow-hidden rounded-[32px] border border-white/10 bg-black shadow-2xl">
           {!conversationUrl ? (
-            <div className="flex min-h-[70vh] flex-col items-center justify-center p-8 text-center">
+            <div className="flex min-h-[68vh] flex-col items-center justify-center p-8 text-center">
               <div className="grid h-24 w-24 place-items-center rounded-[28px] border border-cyan-400/30 bg-cyan-400/10 text-5xl">
                 🤖
               </div>
@@ -81,79 +200,105 @@ const AvatarTeacherPage = () => {
               </h2>
 
               <p className="mt-4 max-w-md leading-7 text-slate-400">
-                Your teacher will speak based on your native language and help
-                you practice your target language step by step.
+                Your teacher will speak with you by video. Use the chat beside
+                it when you want written sentences, corrections, or translation.
               </p>
 
               <button
                 onClick={startAvatarSession}
-                disabled={loading}
+                disabled={avatarLoading}
                 className="mt-8 cursor-pointer rounded-2xl bg-cyan-400 px-8 py-4 font-bold text-slate-950 shadow-xl shadow-cyan-400/20 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {loading ? "Starting lesson..." : "Start Video Lesson"}
+                {avatarLoading ? "Starting lesson..." : "Start Video Lesson"}
               </button>
             </div>
           ) : (
             <iframe
               src={conversationUrl}
               allow="camera; microphone; autoplay; fullscreen"
-              className="h-[78vh] w-full"
+              className="h-[72vh] w-full"
             />
           )}
         </div>
 
-        <aside className="space-y-6">
-          <div className="rounded-[32px] border border-white/10 bg-white/[0.04] p-6 shadow-2xl">
-            <p className="text-sm font-bold text-cyan-300">Student profile</p>
-
-            <div className="mt-5 space-y-4">
-              {[
-                ["Native", profile.nativeLanguage || "Arabic"],
-                ["Learning", profile.targetLanguage || "English"],
-                ["Level", profile.englishLevel || "Beginner"],
-                ["Goal", profile.mainGoal || "Speaking"],
-              ].map(([label, value]) => (
-                <div
-                  key={label}
-                  className="rounded-2xl border border-white/10 bg-slate-950/50 p-4"
-                >
-                  <p className="text-xs font-bold text-cyan-300">{label}</p>
-                  <p className="mt-1 font-bold text-white">{value}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-[32px] border border-white/10 bg-white/[0.04] p-6 shadow-2xl">
-            <p className="text-sm font-bold text-cyan-300">Lesson tools</p>
-
-            <div className="mt-5 grid gap-3">
-              <div className="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-                🎤 Speak with microphone
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-                💬 Chat transcript
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-                ✅ Grammar corrections
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-                🔁 Repeat better sentence
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-[32px] border border-cyan-400/20 bg-cyan-400/10 p-6">
-            <p className="font-bold text-cyan-300">Teaching rule</p>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
-              If your native language is Arabic, the teacher explains in Arabic
-              and practices with you in {profile.targetLanguage || "English"}.
+        <div className="flex min-h-[68vh] flex-col rounded-[32px] border border-white/10 bg-white/[0.04] shadow-2xl">
+          <div className="border-b border-white/10 p-5">
+            <p className="text-sm font-bold text-cyan-300">AI Teacher Chat</p>
+            <h2 className="mt-1 text-2xl font-black">{teacherId}</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-400">
+              Ask for written sentences, corrections, grammar help, or examples.
             </p>
           </div>
-        </aside>
+
+          <div className="flex-1 space-y-4 overflow-y-auto p-5">
+            {messages.length === 0 && (
+              <div className="rounded-3xl border border-dashed border-white/10 bg-slate-950/50 p-5 text-sm leading-7 text-slate-400">
+                Try: “Write what I should say in English” or “Correct my last
+                sentence”.
+              </div>
+            )}
+
+            {messages.map((msg, index) => (
+              <div
+                key={msg._id || index}
+                className={`rounded-3xl p-4 text-sm leading-7 ${
+                  msg.role === "user"
+                    ? "ml-auto max-w-[85%] bg-cyan-400 text-slate-950"
+                    : "mr-auto max-w-[90%] border border-white/10 bg-slate-950/60 text-slate-200"
+                }`}
+              >
+                {msg.content}
+              </div>
+            ))}
+
+            {chatLoading && (
+              <div className="mr-auto max-w-[90%] rounded-3xl border border-white/10 bg-slate-950/60 p-4 text-sm text-slate-400">
+                {teacherId} is writing...
+              </div>
+            )}
+          </div>
+
+          <div className="border-t border-white/10 p-4">
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={startSpeechToText}
+                className={`grid h-12 w-12 shrink-0 cursor-pointer place-items-center rounded-2xl font-bold transition ${
+                  listening
+                    ? "bg-red-400 text-white"
+                    : "bg-cyan-400 text-slate-950 hover:bg-cyan-300"
+                }`}
+              >
+                🎤
+              </button>
+
+              <input
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    sendMessage();
+                  }
+                }}
+                placeholder="Ask your teacher to write, correct, or explain..."
+                className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none focus:border-cyan-400"
+              />
+
+              <button
+                onClick={sendMessage}
+                disabled={chatLoading}
+                className="cursor-pointer rounded-2xl bg-cyan-400 px-5 py-3 font-bold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Send
+              </button>
+            </div>
+
+            <p className="mt-3 text-xs leading-5 text-slate-500">
+              Tavus handles the video call. This chat gives written help,
+              corrections, and readable sentences beside the video.
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );
