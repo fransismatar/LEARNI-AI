@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import LessonRobot from "../assets/LessonRobot.png";
 
 type ChatMessage = {
   _id?: string;
@@ -311,9 +312,13 @@ const AvatarTeacherPage = () => {
         <div className="overflow-hidden rounded-[32px] border border-white/10 bg-black shadow-2xl">
           {!conversationUrl ? (
             <div className="flex min-h-[68vh] flex-col items-center justify-center p-8 text-center">
-              <div className="grid h-24 w-24 place-items-center rounded-[28px] border border-cyan-400/30 bg-cyan-400/10 text-5xl">
-                🤖
-              </div>
+              <div className="h-40 w-40 overflow-hidden rounded-[32px] border border-cyan-400/20 bg-cyan-400/5 shadow-2xl shadow-cyan-500/10">
+  <img
+    src={LessonRobot}
+    alt="AI Teacher"
+    className="h-full w-full object-cover"
+  />
+</div>
 
               <h2 className="mt-6 text-3xl font-black">
                 Ready to meet {teacherId}?
