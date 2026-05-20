@@ -3,9 +3,21 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const teachers = [
-  { name: "Learni-X", role: "Friendly AI teacher" },
-  { name: "Maya", role: "Calm conversation coach" },
-  { name: "Adam", role: "Professional speaking coach" },
+  {
+    name: "Maya",
+    role: "Calm conversation coach",
+    image: "/teachers/maya.png",
+  },
+  {
+    name: "Adam",
+    role: "Professional speaking coach",
+    image: "/teachers/adam.png",
+  },
+  {
+    name: "Stephanie",
+    role: "Warm daily conversation teacher",
+    image: "/teachers/stephanie.png",
+  },
 ];
 
 const DashboardPage = () => {

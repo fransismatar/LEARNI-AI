@@ -1,12 +1,33 @@
 import { Request, Response } from "express";
 
-const teachers: Record<string, string> = {
-  "Learni-X":
-    "You are Learni-X, a friendly and smart private language teacher. You are warm, clear, patient, and you push the student to speak more.",
-  Maya:
-    "You are Maya, a calm and supportive language coach. You explain slowly, make the student feel safe, and build confidence step by step.",
-  Adam:
-    "You are Adam, a professional speaking coach. You focus on pronunciation, fluency, interviews, work conversations, and strong corrections.",
+const teachers: Record<
+  string,
+  {
+    replicaId: string;
+    personaId: string;
+    fallbackPrompt: string;
+  }
+> = {
+  Maya: {
+    replicaId: "r1e52660d3bf",
+    personaId: "pcfc521175c1",
+    fallbackPrompt:
+      "You are Maya, a calm and supportive AI language teacher. Explain slowly and build student confidence.",
+  },
+
+  Adam: {
+    replicaId: "r5f0577fc829",
+    personaId: "pec4fcbacbee",
+    fallbackPrompt:
+      "You are Adam, a professional speaking coach. Focus on pronunciation, fluency, interviews, and strong corrections.",
+  },
+
+  Stephanie: {
+    replicaId: "rcc28da86847",
+    personaId: "p692268dd14e",
+    fallbackPrompt:
+      "You are Stephanie, a warm and friendly AI teacher. Make lessons feel natural, clear, and encouraging.",
+  },
 };
 
 const languageInstruction = (nativeLanguage: string, targetLanguage: string) => {
@@ -28,7 +49,7 @@ export const createAvatarSession = async (req: Request, res: Response) => {
   try {
     const { teacherId } = req.body;
 
-    const selectedPrompt = teachers[teacherId] || teachers["Learni-X"];
+    const selectedTeacher = teachers[teacherId] || teachers.Maya;
 
     const user = (req as any).user;
     const profile = user?.learningProfile || {};
@@ -46,10 +67,11 @@ export const createAvatarSession = async (req: Request, res: Response) => {
         "x-api-key": process.env.TAVUS_API_KEY || "",
       },
       body: JSON.stringify({
-        replica_id: process.env.TAVUS_REPLICA_ID,
+        replica_id: selectedTeacher.replicaId,
+        persona_id: selectedTeacher.personaId,
         conversation_name: `Learni AI - ${teacherId || "Learni-X"}`,
         conversational_context: `
-${selectedPrompt}
+${selectedTeacher.fallbackPrompt}
 
 Student profile:
 - Name: ${user?.name || "Student"}
