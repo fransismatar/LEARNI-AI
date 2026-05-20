@@ -10,6 +10,7 @@ interface User {
   _id?: string;
   name: string;
   email: string;
+  profileImage?: string;
   onboardingCompleted?: boolean;
   learningProfile?: any;
   aiLearningPlan?: any;
@@ -20,6 +21,7 @@ interface AuthContextType {
   token: string | null;
   loading: boolean;
   setAuthData: (user: User, token: string) => void;
+  updateUser: (user: User) => void;
   logout: () => void;
 }
 
@@ -54,6 +56,11 @@ export const AuthProvider = ({
     localStorage.setItem("user", JSON.stringify(user));
   };
 
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+  };
+
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -69,6 +76,7 @@ export const AuthProvider = ({
         token,
         loading,
         setAuthData,
+        updateUser,
         logout,
       }}
     >
