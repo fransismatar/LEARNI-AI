@@ -124,19 +124,23 @@ const AvatarTeacherPage = () => {
           content: res.data.reply,
         },
       ]);
-      if (conversationId) {
-  await api.post(
-    "/avatar/speak",
-    {
-      conversationId,
-      text: res.data.reply,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    if (conversationId) {
+  try {
+    await api.post(
+      "/avatar/speak",
+      {
+        conversationId,
+        text: res.data.reply,
       },
-    }
-  );
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  } catch (speakError) {
+    console.log("Tavus speak failed:", speakError);
+  }
 }
     } catch (error) {
       console.log(error);

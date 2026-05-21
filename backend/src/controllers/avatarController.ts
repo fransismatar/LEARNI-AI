@@ -148,14 +148,15 @@ export const speakWithAvatar = async (req: Request, res: Response) => {
           "Content-Type": "application/json",
           "x-api-key": process.env.TAVUS_API_KEY || "",
         },
-        body: JSON.stringify({
-          event_type: "conversation.echo",
-          conversation_echo: {
-            text,
-          },
-        }),
-      }
-    );
+       body: JSON.stringify({
+  message_type: "conversation",
+  event_type: "conversation.echo",
+  conversation_id: conversationId,
+  properties: {
+    modality: "text",
+    text,
+  },
+}),})
 
     const data = await response.json();
 
