@@ -29,6 +29,7 @@ const TavusChatPanel = ({
   const sendAppMessage = useSendAppMessage();
   const caption = useClosedCaption();
 
+
   const [messages, setMessages] = useState<TavusChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
@@ -189,6 +190,7 @@ const AvatarTeacherPage = () => {
 
   const teacherId = searchParams.get("teacher") || "Maya";
   const profile = user?.learningProfile || {};
+  const sendAppMessage = useSendAppMessage();
 
   const [conversationUrl, setConversationUrl] = useState("");
   const [conversationId, setConversationId] = useState("");
@@ -224,6 +226,21 @@ const AvatarTeacherPage = () => {
 
       setConversationUrl(res.data.conversation_url);
       setConversationId(res.data.conversation_id);
+
+      setTimeout(() => {
+  const welcomeMessage = `Start the lesson now. Greet ${user?.name || "the student"} warmly, mention their goal: ${
+    profile.mainGoal || "language practice"
+  }, and ask the first simple question.`;
+
+  sendAppMessage({
+    message_type: "conversation",
+    event_type: "conversation.respond",
+    conversation_id: res.data.conversation_id,
+    properties: {
+      text: welcomeMessage,
+    },
+  });
+}, 3000);
 
       if (videoContainerRef.current) {
         const call = DailyIframe.createFrame(videoContainerRef.current, {
