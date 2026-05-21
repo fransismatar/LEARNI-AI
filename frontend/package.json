@@ -10,8 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@daily-co/daily-js": "^0.90.0",
+    "@daily-co/daily-react": "^0.25.2",
     "@tailwindcss/vite": "^4.3.0",
     "axios": "^1.16.1",
+    "jotai": "^2.20.0",
     "lucide-react": "^1.16.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
