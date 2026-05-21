@@ -21,6 +21,14 @@ const teachers: Record<
     replicaId: "rcc28da86847",
     personaId: "p692268dd14e",
   },
+  Noor: {
+    replicaId: "rad9d862ec86",
+    personaId: "p41d63348338",
+  },
+   Sophia: {
+    replicaId: "r26aa0662080",
+    personaId: "p58b9b2fac50",
+  },
 };
 
 const languageInstruction = (
