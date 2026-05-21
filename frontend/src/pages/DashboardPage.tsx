@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 const teachers = [
   { name: "Noor", role: "Friendly multilingual language teacher", accent: "Arabic / English", image: "/teachers/Noor.png" },
   { name: "Maya", role: "Calm conversation coach", accent: "Confidence", image: "/teachers/maya.png" },
+  { name: "Zayed", role: "Arabic conversation and culture teacher", accent: "Gulf Arabic", image: "/teachers/Zayed.png" },
   { name: "Adam", role: "Professional speaking coach", accent: "Work / Interviews", image: "/teachers/adam.png" },
   { name: "Stephanie", role: "Warm daily conversation teacher", accent: "Daily talk", image: "/teachers/stephanie.png" },
   { name: "Sophia", role: "Professional speaking and grammar coach", accent: "English fluency", image: "/teachers/Sophia.png" },

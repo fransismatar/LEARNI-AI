@@ -23,6 +23,7 @@ const AvatarTeacherPage = () => {
   const profile = user?.learningProfile || {};
 
   const [conversationUrl, setConversationUrl] = useState("");
+  const [conversationId, setConversationId] = useState("");
   const [avatarLoading, setAvatarLoading] = useState(false);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -76,6 +77,7 @@ const AvatarTeacherPage = () => {
       );
 
       setConversationUrl(res.data.conversation_url);
+      setConversationId(res.data.conversation_id);
     } catch (error) {
       console.log(error);
       alert("Failed to start avatar teacher");
@@ -122,6 +124,20 @@ const AvatarTeacherPage = () => {
           content: res.data.reply,
         },
       ]);
+      if (conversationId) {
+  await api.post(
+    "/avatar/speak",
+    {
+      conversationId,
+      text: res.data.reply,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+}
     } catch (error) {
       console.log(error);
       alert("Failed to send message");

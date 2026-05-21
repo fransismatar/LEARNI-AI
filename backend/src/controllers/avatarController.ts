@@ -21,11 +21,13 @@ const teachers: Record<
     replicaId: "rcc28da86847",
     personaId: "p692268dd14e",
   },
+
   Noor: {
     replicaId: "rad9d862ec86",
     personaId: "p41d63348338",
   },
-   Sophia: {
+
+  Sophia: {
     replicaId: "r26aa0662080",
     personaId: "p58b9b2fac50",
   },
@@ -124,6 +126,55 @@ Important teaching style:
 
     return res.status(500).json({
       message: "Failed to create Tavus conversation",
+    });
+  }
+};
+
+export const speakWithAvatar = async (req: Request, res: Response) => {
+  try {
+    const { conversationId, text } = req.body;
+
+    if (!conversationId || !text) {
+      return res.status(400).json({
+        message: "conversationId and text are required",
+      });
+    }
+
+    const response = await fetch(
+      `https://tavusapi.com/v2/conversations/${conversationId}/events`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.TAVUS_API_KEY || "",
+        },
+        body: JSON.stringify({
+          event_type: "conversation.echo",
+          properties: {
+            modality: "text",
+            text,
+          },
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.log("Tavus speak error:", data);
+
+      return res.status(400).json({
+        message: "Tavus failed to speak",
+        details: data,
+      });
+    }
+
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      message: "Failed to speak with avatar",
     });
   }
 };
