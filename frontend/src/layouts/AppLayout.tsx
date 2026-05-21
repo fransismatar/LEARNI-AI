@@ -8,9 +8,7 @@ const AppLayout = () => {
 
   const navItems = [
     { label: "Dashboard", path: "/dashboard" },
-    { label: "AI Chat", path: "/teacher" },
-    { label: "Speaking Practice", path: "/realtime-teacher" },
-    { label: "Video Teacher", path: "/avatar-teacher" },
+    { label: "Talk with Teacher", path: "/avatar-teacher" },
     { label: "Lessons", path: "/lessons" },
     { label: "Progress", path: "/progress" },
     { label: "Settings", path: "/settings" },
@@ -99,35 +97,23 @@ const AppLayout = () => {
         </div>
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50 grid grid-cols-4 border-t border-white/10 bg-slate-950 p-2 lg:hidden">
-        <NavLink
-          to="/dashboard"
-          className="rounded-xl px-2 py-3 text-center text-xs text-slate-300"
-        >
-          Home
-        </NavLink>
+     <nav className="fixed bottom-0 left-0 right-0 z-50 grid grid-cols-4 border-t border-white/10 bg-slate-950 p-2 lg:hidden">
+  <NavLink to="/dashboard" className="rounded-xl px-2 py-3 text-center text-xs text-slate-300">
+    Home
+  </NavLink>
 
-        <NavLink
-          to="/teacher"
-          className="rounded-xl px-2 py-3 text-center text-xs text-slate-300"
-        >
-          Chat
-        </NavLink>
+  <NavLink to="/avatar-teacher" className="rounded-xl px-2 py-3 text-center text-xs text-slate-300">
+    Teacher
+  </NavLink>
 
-        <NavLink
-          to="/lessons"
-          className="rounded-xl px-2 py-3 text-center text-xs text-slate-300"
-        >
-          Lessons
-        </NavLink>
+  <NavLink to="/lessons" className="rounded-xl px-2 py-3 text-center text-xs text-slate-300">
+    Lessons
+  </NavLink>
 
-        <NavLink
-          to="/avatar-teacher"
-          className="rounded-xl px-2 py-3 text-center text-xs text-cyan-300"
-        >
-          Avatar
-        </NavLink>
-      </nav>
+  <NavLink to="/settings" className="rounded-xl px-2 py-3 text-center text-xs text-slate-300">
+    Settings
+  </NavLink>
+</nav>
     </div>
   );
 };
