@@ -255,6 +255,26 @@ const AvatarTeacherPage = () => {
         await call.join({
           url: res.data.conversation_url,
         });
+          
+         setTimeout(() => {
+  call.sendAppMessage(
+    {
+      message_type: "conversation",
+      event_type: "conversation.respond",
+      conversation_id: res.data.conversation_id,
+      properties: {
+        text: `Start the lesson now. Greet ${user?.name || "the student"} warmly. The student's native language is ${
+          profile.nativeLanguage || "Arabic"
+        }. The target language is ${
+          profile.targetLanguage || "English"
+        }. Their goal is ${
+          profile.mainGoal || "language practice"
+        }. Say hello, mention the goal, and ask the first simple question.`,
+      },
+    },
+    "*"
+  );
+}, 4000);
 
         setCallObject(call);
       }
