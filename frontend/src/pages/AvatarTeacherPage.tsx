@@ -209,7 +209,7 @@ const AvatarTeacherPage = () => {
     };
   };
 
-  const ChatPanel = () => (
+  const ChatPanel = (
     <div className="flex h-full min-h-0 flex-col rounded-[32px] border border-white/10 bg-white/[0.04] shadow-2xl">
       <div className="border-b border-white/10 p-5">
         <p className="text-sm font-bold text-cyan-300">AI Teacher Chat</p>
@@ -362,7 +362,7 @@ const AvatarTeacherPage = () => {
         </div>
 
         <div className="hidden h-[72vh] xl:block">
-          <ChatPanel />
+          {ChatPanel}
         </div>
       </div>
 
@@ -388,7 +388,7 @@ const AvatarTeacherPage = () => {
             </div>
 
             <div className="h-[calc(82vh-73px)]">
-              <ChatPanel />
+              {ChatPanel}
             </div>
           </div>
         </div>

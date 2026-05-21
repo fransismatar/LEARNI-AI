@@ -150,8 +150,7 @@ export const speakWithAvatar = async (req: Request, res: Response) => {
         },
         body: JSON.stringify({
           event_type: "conversation.echo",
-          properties: {
-            modality: "text",
+          conversation_echo: {
             text,
           },
         }),
