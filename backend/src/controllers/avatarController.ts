@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { buildMasterTeacherPrompt } from "../prompts/masterTeacherPrompt";
 
 const teachers: Record<
   string,
@@ -33,24 +34,6 @@ const teachers: Record<
   },
 };
 
-const languageInstruction = (
-  nativeLanguage: string,
-  targetLanguage: string
-) => {
-  return `
-Language rules:
-- The student's native language is ${nativeLanguage}.
-- The student wants to learn ${targetLanguage}.
-- Speak mostly in ${targetLanguage} for practice.
-- When the student is confused, explain in ${nativeLanguage}.
-- If native language is Arabic, explain clearly in Arabic, but keep practice sentences in ${targetLanguage}.
-- Correct mistakes gently.
-- After correction, ask the student to repeat the correct sentence.
-- Do not give long lectures.
-- Make the lesson feel like a real 1-on-1 teacher video call.
-`;
-};
-
 export const createAvatarSession = async (req: Request, res: Response) => {
   try {
     const { teacherId } = req.body;
@@ -66,6 +49,16 @@ export const createAvatarSession = async (req: Request, res: Response) => {
     const mainGoal = profile.mainGoal || "General conversation";
     const dailyGoal = profile.dailyGoal || "10 min/day";
 
+    const masterPrompt = buildMasterTeacherPrompt({
+      teacherName: teacherId || "Maya",
+      nativeLanguage,
+      targetLanguage,
+      level,
+      mainGoal,
+      dailyGoal,
+      profile,
+    });
+
     const response = await fetch("https://tavusapi.com/v2/conversations", {
       method: "POST",
       headers: {
@@ -76,36 +69,7 @@ export const createAvatarSession = async (req: Request, res: Response) => {
         replica_id: selectedTeacher.replicaId,
         persona_id: selectedTeacher.personaId,
         conversation_name: `Learni AI - ${teacherId || "Maya"}`,
-        conversational_context: `
-Student profile:
-- Name: ${user?.name || "Student"}
-- Native language: ${nativeLanguage}
-- Target language: ${targetLanguage}
-- Level: ${level}
-- Main goal: ${mainGoal}
-- Daily practice goal: ${dailyGoal}
-
-${languageInstruction(nativeLanguage, targetLanguage)}
-
-Lesson flow:
-1. Start with a short welcome in the student's native language.
-2. Ask one simple question in ${targetLanguage}.
-3. Let the student answer.
-4. Correct grammar, pronunciation, or vocabulary.
-5. Explain the correction in ${nativeLanguage} if needed.
-6. Give the student a better sentence.
-7. Ask the student to repeat.
-8. Continue with short realistic conversation.
-
-Important teaching style:
-- Be natural, not robotic.
-- Use short questions.
-- Do not speak too much.
-- Always make the student talk.
-- If the student answers in ${nativeLanguage}, help them say it in ${targetLanguage}.
-- Give encouragement after each answer.
-- End each small practice with a quick summary.
-        `,
+        conversational_context: masterPrompt,
       }),
     });
 
@@ -148,15 +112,17 @@ export const speakWithAvatar = async (req: Request, res: Response) => {
           "Content-Type": "application/json",
           "x-api-key": process.env.TAVUS_API_KEY || "",
         },
-       body: JSON.stringify({
-  message_type: "conversation",
-  event_type: "conversation.echo",
-  conversation_id: conversationId,
-  properties: {
-    modality: "text",
-    text,
-  },
-}),})
+        body: JSON.stringify({
+          message_type: "conversation",
+          event_type: "conversation.echo",
+          conversation_id: conversationId,
+          properties: {
+            modality: "text",
+            text,
+          },
+        }),
+      }
+    );
 
     const data = await response.json();
 
