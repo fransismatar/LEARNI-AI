@@ -1,5 +1,6 @@
 import { Link, Navigate } from "react-router-dom";
 import HomeBackground from "../assets/bg-2.png";
+import Footer from "../components/Footer";
 
 const HomePage = () => {
   const token = localStorage.getItem("token");
@@ -8,9 +9,10 @@ const HomePage = () => {
     return <Navigate to="/dashboard" replace />;
   }
 
-  return (
+return (
+  <>
     <main
-    className="relative min-h-screen overflow-hidden bg-no-repeat px-5 py-8
+      className="relative min-h-screen overflow-hidden bg-no-repeat px-5 py-8
 bg-[length:250%] bg-[position:92%_top]
 sm:bg-[length:220%] sm:bg-[position:95%_top]
 md:bg-[length:180%] md:bg-[position:95%_top]
@@ -59,7 +61,10 @@ xl:bg-[length:118%] xl:bg-[position:90%_center]
         <div />
       </section>
     </main>
-  );
+
+    <Footer />
+  </>
+);
 };
 
 export default HomePage;
