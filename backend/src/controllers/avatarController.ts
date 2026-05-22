@@ -32,6 +32,11 @@ const teachers: Record<
     replicaId: "r26aa0662080",
     personaId: "p58b9b2fac50",
   },
+
+  Zayed: {
+    replicaId: "r91ed9976971",
+    personaId: "pd8613d73c74",
+  },
 };
 
 export const createAvatarSession = async (req: Request, res: Response) => {
