@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 
 const teachers = [
   { name: "Noor", role: "Friendly multilingual language teacher", accent: "Arabic / English", image: "/teachers/Noor.png" },
+  { name: "Zyron", role: "Futuristic AI language teacher", accent: "Smart conversation", image: "/teachers/zyron.png" },
   { name: "Maya", role: "Calm conversation coach", accent: "Confidence", image: "/teachers/maya.png" },
   { name: "Zayed", role: "Arabic conversation and culture teacher", accent: "Gulf Arabic", image: "/teachers/Zayed.png" },
   { name: "Adam", role: "Professional speaking coach", accent: "Work / Interviews", image: "/teachers/adam.png" },
@@ -15,7 +16,7 @@ const DashboardPage = () => {
   const { user } = useAuth();
   const profile = user?.learningProfile || {};
 
-  const [selectedTeacher, setSelectedTeacher] = useState("Maya");
+  const [selectedTeacher, setSelectedTeacher] = useState("Zyron");
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
 
   const teacher = teachers.find((item) => item.name === selectedTeacher) || teachers[0];
