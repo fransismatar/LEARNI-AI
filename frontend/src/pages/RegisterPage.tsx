@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import RegisterBg from "../assets/Register-bg.png";
@@ -15,6 +16,11 @@ const RegisterPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const getOnboardingAnswers = () => {
+    const onboardingAnswers = localStorage.getItem("onboardingAnswers");
+    return onboardingAnswers ? JSON.parse(onboardingAnswers) : null;
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -22,11 +28,7 @@ const RegisterPage = () => {
       setLoading(true);
       setError("");
 
-      const onboardingAnswers = localStorage.getItem("onboardingAnswers");
-
-      const parsedOnboardingAnswers = onboardingAnswers
-        ? JSON.parse(onboardingAnswers)
-        : null;
+      const parsedOnboardingAnswers = getOnboardingAnswers();
 
       const res = await api.post("/auth/register", {
         name,
@@ -40,6 +42,33 @@ const RegisterPage = () => {
       navigate("/dashboard");
     } catch (err: any) {
       setError(err.response?.data?.message || "Register failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credential: string | undefined) => {
+    if (!credential) {
+      setError("Google register failed");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const parsedOnboardingAnswers = getOnboardingAnswers();
+
+      const res = await api.post("/auth/google", {
+        credential,
+        onboardingAnswers: parsedOnboardingAnswers,
+      });
+
+      setAuthData(res.data.user, res.data.token);
+      localStorage.removeItem("onboardingAnswers");
+      navigate("/dashboard");
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Google register failed");
     } finally {
       setLoading(false);
     }
@@ -61,7 +90,7 @@ const RegisterPage = () => {
           <h1 className="mt-5 text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl">
             Create your{" "}
             <span className="bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
-              Learni AI
+              Lerni AI
             </span>{" "}
             account
           </h1>
@@ -78,7 +107,7 @@ const RegisterPage = () => {
           <h2 className="text-3xl font-black text-white">Register</h2>
 
           <p className="mt-2 text-sm text-slate-400">
-            Join Learni AI and start your personalized plan.
+            Join Lerni AI and start your personalized plan.
           </p>
 
           {error && (
@@ -88,17 +117,20 @@ const RegisterPage = () => {
           )}
 
           <div className="mt-6 space-y-4">
-            <button
-              type="button"
-              className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-4 font-semibold text-white transition hover:bg-white/[0.07]"
-            >
-              <img
-                src="https://www.svgrepo.com/show/475656/google-color.svg"
-                alt="Google"
-                className="h-5 w-5"
+            <div className="flex justify-center overflow-hidden rounded-2xl bg-white p-1">
+              <GoogleLogin
+                onSuccess={(credentialResponse) =>
+                  handleGoogleSuccess(credentialResponse.credential)
+                }
+                onError={() => {
+                  setError("Google register failed");
+                }}
+                theme="filled_black"
+                size="large"
+                width="100%"
+                text="continue_with"
               />
-              Continue with Google
-            </button>
+            </div>
 
             <div className="relative py-2">
               <div className="absolute left-0 top-1/2 h-px w-full bg-white/10" />
@@ -144,7 +176,10 @@ const RegisterPage = () => {
 
           <p className="mt-7 text-center text-sm text-slate-400">
             Already have an account?{" "}
-            <Link to="/login" className="font-semibold text-cyan-300 transition hover:text-cyan-200">
+            <Link
+              to="/login"
+              className="font-semibold text-cyan-300 transition hover:text-cyan-200"
+            >
               Login
             </Link>
           </p>

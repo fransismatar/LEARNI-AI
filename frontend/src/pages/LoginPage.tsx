@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import RegisterBg from "../assets/Register-bg.png";
@@ -35,6 +36,29 @@ const LoginPage = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credential: string | undefined) => {
+    if (!credential) {
+      setError("Google login failed");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const res = await api.post("/auth/google", {
+        credential,
+      });
+
+      setAuthData(res.data.user, res.data.token);
+      navigate("/dashboard");
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Google login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main
       className="min-h-screen overflow-x-hidden bg-[length:220%] bg-[position:70%_center] bg-no-repeat px-4 py-8 sm:bg-[length:160%] lg:bg-[length:110%]"
@@ -56,7 +80,7 @@ const LoginPage = () => {
           </h1>
 
           <p className="mt-6 max-w-md text-lg leading-8 text-slate-300">
-            Continue your learning plan and practice real conversations with Learni AI.
+            Continue your learning plan and practice real conversations with Lerni AI.
           </p>
         </div>
 
@@ -64,9 +88,7 @@ const LoginPage = () => {
           onSubmit={handleLogin}
           className="rounded-[32px] border border-white/10 bg-slate-950/70 p-6 shadow-2xl backdrop-blur-2xl sm:p-8"
         >
-          <h2 className="text-3xl font-black text-white">
-            Login
-          </h2>
+          <h2 className="text-3xl font-black text-white">Login</h2>
 
           <p className="mt-2 text-slate-400">
             Access your personal learning journey.
@@ -119,26 +141,25 @@ const LoginPage = () => {
               </span>
             </div>
 
-            <button
-              type="button"
-              className="flex w-full items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-4 font-semibold text-white transition hover:bg-white/[0.07]"
-            >
-              <img
-                src="https://www.svgrepo.com/show/475656/google-color.svg"
-                alt="Google"
-                className="h-5 w-5"
+            <div className="flex justify-center overflow-hidden rounded-2xl bg-white p-1">
+              <GoogleLogin
+                onSuccess={(credentialResponse) =>
+                  handleGoogleSuccess(credentialResponse.credential)
+                }
+                onError={() => {
+                  setError("Google login failed");
+                }}
+                theme="filled_black"
+                size="large"
+                width="100%"
+                text="continue_with"
               />
-
-              Continue with Google
-            </button>
+            </div>
           </div>
 
           <p className="mt-7 text-center text-sm text-slate-400">
             New here?{" "}
-            <Link
-              to="/register"
-              className="font-semibold text-cyan-300"
-            >
+            <Link to="/register" className="font-semibold text-cyan-300">
               Create account
             </Link>
           </p>
