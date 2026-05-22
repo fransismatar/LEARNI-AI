@@ -18,11 +18,13 @@ const AppLayout = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <aside className="fixed left-0 top-0 hidden h-screen w-72 border-r border-white/10 bg-slate-950 p-6 lg:block">
-        <img
-  src={logo}
-  alt="Learni AI"
-  className="h-14 w-auto object-contain"
-/>
+<div className="flex justify-center">
+  <img
+    src={logo}
+    alt="Learni AI"
+    className="h-24 w-auto object-contain"
+  />
+</div>
 
         <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
           <div className="flex items-center gap-4">
