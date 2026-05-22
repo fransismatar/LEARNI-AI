@@ -159,7 +159,7 @@ const LoginPage = () => {
 
           <p className="mt-7 text-center text-sm text-slate-400">
             New here?{" "}
-            <Link to="/register" className="font-semibold text-cyan-300">
+            <Link to="/onboarding" className="font-semibold text-cyan-300">
               Create account
             </Link>
           </p>
