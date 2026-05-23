@@ -2,13 +2,19 @@ import { Request, Response } from "express";
 
 export const createHeygenToken = async (req: Request, res: Response) => {
   try {
-    const response = await fetch("https://api.liveavatar.com/v1/sessions/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-KEY": process.env.HEYGEN_API_KEY || "",
-      },
-    });
+    const response = await fetch(
+      "https://api.liveavatar.com/v1/sessions/token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-KEY": process.env.HEYGEN_API_KEY || "",
+        },
+        body: JSON.stringify({
+          mode: "full",
+        }),
+      }
+    );
 
     const data = await response.json();
 
