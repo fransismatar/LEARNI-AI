@@ -11,7 +11,7 @@ export const createHeygenToken = async (req: Request, res: Response) => {
           "X-API-KEY": process.env.HEYGEN_API_KEY || "",
         },
         body: JSON.stringify({
-          mode: "full",
+          mode: "FULL",
         }),
       }
     );
