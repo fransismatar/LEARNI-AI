@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import api from "../services/api";
 
 const HeygenTestPage = () => {
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState("");
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  const testToken = async () => {
+  const [loading, setLoading] = useState(false);
+  const [sessionData, setSessionData] = useState<any>(null);
+
+  const startSession = async () => {
     try {
       setLoading(true);
-      setResult("");
 
       const token = localStorage.getItem("token");
 
@@ -22,37 +23,51 @@ const HeygenTestPage = () => {
         }
       );
 
-      console.log("HeyGen token response:", res.data);
-      setResult(JSON.stringify(res.data, null, 2));
-    } catch (error: any) {
+      console.log("HEYGEN SESSION:", res.data);
+
+      setSessionData(res.data);
+
+      alert("Session created successfully 🔥");
+    } catch (error) {
       console.log(error);
-      setResult(JSON.stringify(error.response?.data || error.message, null, 2));
+      alert("Failed to create HeyGen session");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section className="mx-auto max-w-4xl space-y-6 p-6 text-white">
+    <section className="mx-auto max-w-5xl space-y-6 p-6 text-white">
       <div className="rounded-3xl border border-cyan-400/20 bg-slate-950 p-6">
-        <p className="text-sm font-bold text-cyan-300">HeyGen Test</p>
-        <h1 className="mt-3 text-4xl font-black">LiveAvatar Token Test</h1>
+        <h1 className="text-4xl font-black">
+          HeyGen LiveAvatar Test
+        </h1>
+
         <p className="mt-3 text-slate-400">
-          First we test if backend can get a HeyGen token.
+          Testing realtime avatar connection for Lerni AI.
         </p>
       </div>
 
+      <div className="overflow-hidden rounded-3xl border border-white/10 bg-black">
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          className="h-[70vh] w-full object-cover"
+        />
+      </div>
+
       <button
-        onClick={testToken}
+        onClick={startSession}
         disabled={loading}
-        className="rounded-2xl bg-cyan-400 px-6 py-4 font-bold text-slate-950 disabled:opacity-60"
+        className="rounded-2xl bg-cyan-400 px-6 py-4 font-bold text-slate-950"
       >
-        {loading ? "Testing..." : "Test HeyGen Token"}
+        {loading ? "Starting..." : "Start HeyGen Session"}
       </button>
 
-      {result && (
-        <pre className="overflow-auto rounded-3xl border border-white/10 bg-slate-950 p-5 text-sm text-slate-300">
-          {result}
+      {sessionData && (
+        <pre className="overflow-auto rounded-3xl border border-white/10 bg-slate-950 p-5 text-sm">
+          {JSON.stringify(sessionData, null, 2)}
         </pre>
       )}
     </section>
