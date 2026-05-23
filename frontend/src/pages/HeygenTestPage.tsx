@@ -36,14 +36,14 @@ const HeygenTestPage = () => {
       addLog("Creating LiveAvatarSession...");
       const liveSession = new LiveAvatarSession(sessionToken);
 
-      addLog("Starting session...");
-      await liveSession.start();
+     addLog("Attaching video...");
+if (videoRef.current) {
+  await liveSession.attach(videoRef.current);
+}
 
-      addLog("Attaching video...");
-      if (videoRef.current) {
-        await liveSession.attach(videoRef.current);
-      }
-
+addLog("Starting session...");
+await liveSession.start();
+      
       setSession(liveSession);
       addLog("HeyGen avatar started successfully.");
     } catch (error: any) {
