@@ -36,14 +36,23 @@ const HeygenTestPage = () => {
       addLog("Creating LiveAvatarSession...");
       const liveSession = new LiveAvatarSession(sessionToken);
 
-     addLog("Attaching video...");
+   addLog("Starting session...");
+await liveSession.start();
+
+addLog("Attaching video...");
 if (videoRef.current) {
   await liveSession.attach(videoRef.current);
-}
 
-addLog("Starting session...");
-await liveSession.start();
-      
+  videoRef.current.muted = true;
+  videoRef.current.autoplay = true;
+  videoRef.current.playsInline = true;
+
+  try {
+    await videoRef.current.play();
+  } catch (err) {
+    console.log("Video play error:", err);
+  }
+}
       setSession(liveSession);
       addLog("HeyGen avatar started successfully.");
     } catch (error: any) {
@@ -105,12 +114,13 @@ await liveSession.start();
 
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <div className="overflow-hidden rounded-3xl border border-white/10 bg-black">
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            className="h-[70vh] w-full object-cover"
-          />
+       <video
+  ref={videoRef}
+  autoPlay
+  playsInline
+  muted
+  className="h-[70vh] w-full object-cover"
+/>
         </div>
 
         <div className="rounded-3xl border border-white/10 bg-slate-950 p-6">
