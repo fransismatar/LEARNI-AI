@@ -137,6 +137,46 @@ const HeygenTestPage = () => {
       addLog(error?.message || "Failed to stop");
     }
   };
+  const startListening = () => {
+  const SpeechRecognition =
+    (window as any).SpeechRecognition ||
+    (window as any).webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Speech recognition is not supported in this browser");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+
+  recognition.lang = "en-US";
+  recognition.interimResults = false;
+  recognition.continuous = false;
+
+  recognition.onresult = async (event: any) => {
+    const transcript = event.results[0][0].transcript;
+
+    setText(transcript);
+    addLog(`You said: ${transcript}`);
+
+    if (session) {
+      if (typeof session.speak === "function") {
+        await session.speak({ text: transcript });
+      } else if (typeof session.message === "function") {
+        await session.message(transcript);
+      } else if (typeof session.repeat === "function") {
+        await session.repeat(transcript);
+      }
+    }
+  };
+
+  recognition.onerror = (event: any) => {
+    console.log("Speech error:", event);
+    addLog("Speech recognition error");
+  };
+
+  recognition.start();
+};
 
   return (
     <section className="mx-auto max-w-6xl space-y-6 p-6 text-white">
@@ -180,6 +220,12 @@ const HeygenTestPage = () => {
           >
             Send Message
           </button>
+          <button
+  onClick={startListening}
+  className="mt-4 w-full rounded-2xl border border-cyan-400/40 px-5 py-4 font-bold text-cyan-300"
+>
+  🎤 Talk with Teacher
+</button>
 
           <button
             onClick={stopSession}
