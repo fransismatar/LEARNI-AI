@@ -7,22 +7,26 @@ const HeygenTestPage = () => {
 
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-
   const [text, setText] = useState(
     "Hello, welcome to Lerni AI. I am your AI language teacher."
   );
-
   const [logs, setLogs] = useState<string[]>([]);
 
   const addLog = (message: string) => {
     console.log(message);
-
     setLogs((prev) => [...prev, message]);
   };
 
   const startSession = async () => {
     try {
       setLoading(true);
+
+      addLog("Checking media permissions...");
+
+      await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      });
 
       addLog("Requesting HeyGen token...");
 
@@ -40,7 +44,7 @@ const HeygenTestPage = () => {
 
       console.log("TOKEN RESPONSE:", res.data);
 
-      const sessionToken = res.data.data.session_token;
+      const sessionToken = res.data?.data?.session_token;
 
       if (!sessionToken) {
         addLog("No session token returned");
@@ -49,72 +53,40 @@ const HeygenTestPage = () => {
 
       addLog("Creating LiveAvatarSession...");
 
-      const liveSession = new LiveAvatarSession(
-        sessionToken
-      );
-
-      (liveSession as any).on(
-        "trackPublished",
-        async (publication: any) => {
-          console.log(
-            "TRACK PUBLISHED:",
-            publication
-          );
-
-          addLog(
-            `Track published: ${publication.kind}`
-          );
-
-          if (
-            publication.kind === "video" &&
-            publication.track &&
-            videoRef.current
-          ) {
-            try {
-              publication.setSubscribed(true);
-
-              await new Promise((resolve) =>
-                setTimeout(resolve, 1000)
-              );
-
-              publication.track.attach(
-                videoRef.current
-              );
-
-              videoRef.current.muted = true;
-              videoRef.current.autoplay = true;
-              videoRef.current.playsInline = true;
-
-              await videoRef.current.play();
-
-              addLog("VIDEO ATTACHED SUCCESS");
-            } catch (err) {
-              console.log(
-                "VIDEO ATTACH ERROR:",
-                err
-              );
-            }
-          }
-        }
-      );
+      const liveSession = new LiveAvatarSession(sessionToken);
 
       addLog("Starting avatar session...");
 
       await liveSession.start();
 
+      addLog("Waiting for stream...");
+
+      await new Promise((resolve) => setTimeout(resolve, 2500));
+
+      if (videoRef.current) {
+        videoRef.current.muted = true;
+        videoRef.current.autoplay = true;
+        videoRef.current.playsInline = true;
+
+        addLog("Attaching video...");
+
+        await (liveSession as any).attach(videoRef.current);
+
+        try {
+          await videoRef.current.play();
+        } catch (err) {
+          console.log("VIDEO PLAY ERROR:", err);
+        }
+
+        addLog("Video attached");
+      }
+
       setSession(liveSession);
 
-      addLog(
-        "Avatar session started successfully"
-      );
+      addLog("Avatar session started successfully");
     } catch (error: any) {
-      console.log(error);
-
-      addLog(
-        error?.message ||
-          "Failed to start avatar"
-      );
-
+      console.log("HEYGEN START ERROR:", error);
+      addLog(error?.message || "Failed to start avatar");
       alert("Failed to start HeyGen avatar");
     } finally {
       setLoading(false);
@@ -127,18 +99,22 @@ const HeygenTestPage = () => {
     try {
       addLog("Sending message...");
 
-      await session.speak({
-        text,
-      });
+      if (typeof session.speak === "function") {
+        await session.speak({ text });
+      } else if (typeof session.message === "function") {
+        await session.message(text);
+      } else if (typeof session.repeat === "function") {
+        await session.repeat(text);
+      } else {
+        addLog("No speak/message/repeat method found");
+        console.log("SESSION METHODS:", session);
+        return;
+      }
 
       addLog("Message sent");
     } catch (error: any) {
-      console.log(error);
-
-      addLog(
-        error?.message ||
-          "Failed to send message"
-      );
+      console.log("SEND ERROR:", error);
+      addLog(error?.message || "Failed to send message");
     }
   };
 
@@ -155,24 +131,17 @@ const HeygenTestPage = () => {
       }
 
       setSession(null);
-
       addLog("Session stopped");
     } catch (error: any) {
-      console.log(error);
-
-      addLog(
-        error?.message || "Failed to stop"
-      );
+      console.log("STOP ERROR:", error);
+      addLog(error?.message || "Failed to stop");
     }
   };
 
   return (
     <section className="mx-auto max-w-6xl space-y-6 p-6 text-white">
       <div className="rounded-3xl border border-cyan-400/20 bg-slate-950 p-6">
-        <h1 className="text-4xl font-black">
-          HeyGen Live Avatar Test
-        </h1>
-
+        <h1 className="text-4xl font-black">HeyGen Live Avatar Test</h1>
         <p className="mt-3 text-slate-400">
           Testing real-time avatar for Lerni AI.
         </p>
@@ -186,7 +155,7 @@ const HeygenTestPage = () => {
             playsInline
             muted
             controls={false}
-            className="h-[70vh] w-full object-contain bg-black"
+            className="h-[70vh] w-full bg-black object-contain"
           />
         </div>
 
@@ -196,16 +165,12 @@ const HeygenTestPage = () => {
             disabled={loading}
             className="w-full rounded-2xl bg-cyan-400 px-5 py-4 font-bold text-slate-950 disabled:opacity-60"
           >
-            {loading
-              ? "Starting..."
-              : "Start HeyGen Avatar"}
+            {loading ? "Starting..." : "Start HeyGen Avatar"}
           </button>
 
           <textarea
             value={text}
-            onChange={(e) =>
-              setText(e.target.value)
-            }
+            onChange={(e) => setText(e.target.value)}
             className="mt-5 h-40 w-full rounded-2xl border border-white/10 bg-slate-900 p-4 text-white outline-none"
           />
 
@@ -225,12 +190,9 @@ const HeygenTestPage = () => {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-white/10 bg-slate-950 p-5 space-y-2">
+      <div className="space-y-2 rounded-3xl border border-white/10 bg-slate-950 p-5">
         {logs.map((log, index) => (
-          <p
-            key={index}
-            className="text-sm text-slate-300"
-          >
+          <p key={index} className="text-sm text-slate-300">
             {log}
           </p>
         ))}
