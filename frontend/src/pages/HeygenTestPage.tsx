@@ -50,25 +50,35 @@ const HeygenTestPage = () => {
 
     const liveSession = new LiveAvatarSession(sessionToken);
 
-      (liveSession as any).on("track", async (event: any) => {
-        addLog("Stream ready");
+(liveSession as any).on(
+  "trackPublished",
+  async (track: any) => {
+    addLog("Track published");
 
-        console.log("STREAM EVENT:", event);
+    console.log("TRACK:", track);
 
-        if (videoRef.current) {
-          videoRef.current.srcObject = event.stream;
+    if (
+      track?.mediaStreamTrack &&
+      videoRef.current
+    ) {
+      const mediaStream = new MediaStream([
+        track.mediaStreamTrack,
+      ]);
 
-          videoRef.current.autoplay = true;
-          videoRef.current.playsInline = true;
-          videoRef.current.muted = true;
+      videoRef.current.srcObject = mediaStream;
 
-          try {
-            await videoRef.current.play();
-          } catch (err) {
-            console.log("VIDEO PLAY ERROR:", err);
-          }
-        }
-      });
+      videoRef.current.autoplay = true;
+      videoRef.current.playsInline = true;
+      videoRef.current.muted = true;
+
+      try {
+        await videoRef.current.play();
+      } catch (err) {
+        console.log("VIDEO PLAY ERROR:", err);
+      }
+    }
+  }
+);
 
       addLog("Starting avatar session...");
 
