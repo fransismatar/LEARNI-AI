@@ -10,7 +10,7 @@ import lessonRoutes from "./routes/lessonRoutes";
 import avatarRoutes from "./routes/avatarRoutes";
 import userRoutes from "./routes/userRoutes";
 import connectDB from "./config/db";
-
+import heygenRoutes from "./routes/heygenRoutes";
 dotenv.config();
 
 
@@ -35,6 +35,7 @@ app.use("/api/realtime", realtimeRoutes);
 app.use("/api/lessons", lessonRoutes);
 app.use("/api/avatar", avatarRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/heygen", heygenRoutes);
 
 app.get("/", (req, res) => {
   res.send("Learni AI API Running");
