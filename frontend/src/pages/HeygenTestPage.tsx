@@ -6,7 +6,6 @@ const HeygenTestPage = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const [session, setSession] = useState<any>(null);
-
   const [loading, setLoading] = useState(false);
 
   const [text, setText] = useState(
@@ -16,6 +15,8 @@ const HeygenTestPage = () => {
   const [logs, setLogs] = useState<string[]>([]);
 
   const addLog = (message: string) => {
+    console.log(message);
+
     setLogs((prev) => [...prev, message]);
   };
 
@@ -48,30 +49,54 @@ const HeygenTestPage = () => {
 
       addLog("Creating LiveAvatarSession...");
 
-    const liveSession = new LiveAvatarSession(sessionToken);
+      const liveSession = new LiveAvatarSession(
+        sessionToken
+      );
 
-(liveSession as any).on(
-  "trackPublished",
-  async (track: any) => {
-    console.log("TRACK:", track);
+      (liveSession as any).on(
+        "trackPublished",
+        async (publication: any) => {
+          console.log(
+            "TRACK PUBLISHED:",
+            publication
+          );
 
-    addLog(`Track published: ${track.kind}`);
+          addLog(
+            `Track published: ${publication.kind}`
+          );
 
-    if (
-      track.kind === "video" &&
-      track.track &&
-      videoRef.current
-    ) {
-      track.track.attach(videoRef.current);
+          if (
+            publication.kind === "video" &&
+            publication.track &&
+            videoRef.current
+          ) {
+            try {
+              publication.setSubscribed(true);
 
-      try {
-        await videoRef.current.play();
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  }
-);
+              await new Promise((resolve) =>
+                setTimeout(resolve, 1000)
+              );
+
+              publication.track.attach(
+                videoRef.current
+              );
+
+              videoRef.current.muted = true;
+              videoRef.current.autoplay = true;
+              videoRef.current.playsInline = true;
+
+              await videoRef.current.play();
+
+              addLog("VIDEO ATTACHED SUCCESS");
+            } catch (err) {
+              console.log(
+                "VIDEO ATTACH ERROR:",
+                err
+              );
+            }
+          }
+        }
+      );
 
       addLog("Starting avatar session...");
 
@@ -79,11 +104,16 @@ const HeygenTestPage = () => {
 
       setSession(liveSession);
 
-      addLog("Avatar session started successfully");
+      addLog(
+        "Avatar session started successfully"
+      );
     } catch (error: any) {
       console.log(error);
 
-      addLog(error?.message || "Failed to start avatar");
+      addLog(
+        error?.message ||
+          "Failed to start avatar"
+      );
 
       alert("Failed to start HeyGen avatar");
     } finally {
@@ -105,7 +135,10 @@ const HeygenTestPage = () => {
     } catch (error: any) {
       console.log(error);
 
-      addLog(error?.message || "Failed to send message");
+      addLog(
+        error?.message ||
+          "Failed to send message"
+      );
     }
   };
 
@@ -127,7 +160,9 @@ const HeygenTestPage = () => {
     } catch (error: any) {
       console.log(error);
 
-      addLog(error?.message || "Failed to stop");
+      addLog(
+        error?.message || "Failed to stop"
+      );
     }
   };
 
@@ -145,15 +180,14 @@ const HeygenTestPage = () => {
 
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <div className="overflow-hidden rounded-3xl border border-white/10 bg-black">
-        <video
-  ref={videoRef}
-  autoPlay
-  playsInline
-  muted
-  controls={false}
-  style={{ backgroundColor: "black" }}
-  className="h-[70vh] w-full object-cover"
-/>
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            controls={false}
+            className="h-[70vh] w-full object-contain bg-black"
+          />
         </div>
 
         <div className="rounded-3xl border border-white/10 bg-slate-950 p-6">
@@ -162,12 +196,16 @@ const HeygenTestPage = () => {
             disabled={loading}
             className="w-full rounded-2xl bg-cyan-400 px-5 py-4 font-bold text-slate-950 disabled:opacity-60"
           >
-            {loading ? "Starting..." : "Start HeyGen Avatar"}
+            {loading
+              ? "Starting..."
+              : "Start HeyGen Avatar"}
           </button>
 
           <textarea
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) =>
+              setText(e.target.value)
+            }
             className="mt-5 h-40 w-full rounded-2xl border border-white/10 bg-slate-900 p-4 text-white outline-none"
           />
 
