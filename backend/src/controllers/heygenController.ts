@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 
-export const createHeygenToken = async (req: Request, res: Response) => {
+export const createHeygenToken = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const response = await fetch(
       "https://api.liveavatar.com/v1/sessions/token",
@@ -10,8 +13,18 @@ export const createHeygenToken = async (req: Request, res: Response) => {
           "Content-Type": "application/json",
           "X-API-KEY": process.env.HEYGEN_API_KEY || "",
         },
+
         body: JSON.stringify({
           mode: "FULL",
+
+          avatar_id: process.env.HEYGEN_AVATAR_ID,
+
+          avatar_persona: {
+            name: "Lerni AI Teacher",
+
+            prompt:
+              "You are a friendly AI language teacher for Lerni AI. Help the student practice languages step by step.",
+          },
         }),
       }
     );
