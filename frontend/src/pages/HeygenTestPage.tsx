@@ -53,28 +53,21 @@ const HeygenTestPage = () => {
 (liveSession as any).on(
   "trackPublished",
   async (track: any) => {
-    addLog("Track published");
-
     console.log("TRACK:", track);
 
+    addLog(`Track published: ${track.kind}`);
+
     if (
-      track?.mediaStreamTrack &&
+      track.kind === "video" &&
+      track.track &&
       videoRef.current
     ) {
-      const mediaStream = new MediaStream([
-        track.mediaStreamTrack,
-      ]);
-
-      videoRef.current.srcObject = mediaStream;
-
-      videoRef.current.autoplay = true;
-      videoRef.current.playsInline = true;
-      videoRef.current.muted = true;
+      track.track.attach(videoRef.current);
 
       try {
         await videoRef.current.play();
       } catch (err) {
-        console.log("VIDEO PLAY ERROR:", err);
+        console.log(err);
       }
     }
   }
