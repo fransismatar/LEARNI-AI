@@ -145,13 +145,15 @@ const HeygenTestPage = () => {
 
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <div className="overflow-hidden rounded-3xl border border-white/10 bg-black">
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="h-[70vh] w-full object-cover"
-          />
+        <video
+  ref={videoRef}
+  autoPlay
+  playsInline
+  muted
+  controls={false}
+  style={{ backgroundColor: "black" }}
+  className="h-[70vh] w-full object-cover"
+/>
         </div>
 
         <div className="rounded-3xl border border-white/10 bg-slate-950 p-6">
