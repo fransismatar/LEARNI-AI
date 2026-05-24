@@ -17,7 +17,7 @@ const HeygenTestPage = () => {
     setLogs((prev) => [...prev, message]);
   };
 
-  const startSession = async () => {
+ const startSession = async () => {
     try {
       setLoading(true);
 
@@ -32,9 +32,10 @@ const HeygenTestPage = () => {
 
       const authToken = localStorage.getItem("token");
 
+      // التعديل 1: نرسل اسم المعلم المطلوب في الـ Body (مثلاً Zayed)
       const res = await api.post(
         "/heygen/token",
-        {},
+        { teacherId: "Zayed" }, 
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
@@ -44,10 +45,12 @@ const HeygenTestPage = () => {
 
       console.log("TOKEN RESPONSE:", res.data);
 
-      const sessionToken = res.data?.data?.session_token;
+      // التعديل 2: HeyGen يعيد المتغير باسم 'token' وليس 'session_token'
+      // وبما أننا قمنا بلفّه بداخل { data: data } في الـ Backend، نصل إليه هكذا:
+      const sessionToken = res.data?.data?.token;
 
       if (!sessionToken) {
-        addLog("No session token returned");
+        addLog("No session token returned from backend");
         return;
       }
 

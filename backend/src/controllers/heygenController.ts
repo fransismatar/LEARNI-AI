@@ -75,23 +75,22 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       profile,
     });
 
-   const response = await fetch("https://api.liveavatar.com/v1/sessions/token", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "X-API-KEY": process.env.HEYGEN_API_KEY,
-  },
- body: JSON.stringify({
-  FULL: {
-    avatar_id: avatarId,
-    voice_id: voiceId,
-    avatar_persona: {
-      name: teacherName,
-      prompt: masterPrompt,
-    },
-  },
-}),
-   });
+    // إرسال الـ Payload بالشكل الصحيح والمباشر دون تداخل
+    const response = await fetch("https://api.liveavatar.com/v1/sessions/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-KEY": process.env.HEYGEN_API_KEY,
+      },
+      body: JSON.stringify({
+        avatar_id: avatarId,
+        voice_id: voiceId,
+        avatar_persona: {
+          name: teacherName,
+          prompt: masterPrompt,
+        },
+      }),
+    });
 
     const data = await response.json();
 
@@ -104,7 +103,8 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       });
     }
 
-    return res.status(200).json(data);
+    // هنا نقوم بلف النتيجة داخل كائن data ليتوافق مع الـ Frontend المتوقع لـ res.data.data
+    return res.status(200).json({ data: data });
   } catch (error) {
     console.log("LiveAvatar server error:", error);
 
