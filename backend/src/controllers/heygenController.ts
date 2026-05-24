@@ -81,18 +81,17 @@ export const createHeygenToken = async (req: Request, res: Response) => {
     "Content-Type": "application/json",
     "X-API-KEY": process.env.HEYGEN_API_KEY,
   },
-  body: JSON.stringify({
-    mode: "FULL",
-    config: {
-      avatar_id: avatarId,
-      voice_id: voiceId,
-      avatar_persona: {
-        name: teacherName,
-        prompt: masterPrompt,
-      },
+ body: JSON.stringify({
+  FULL: {
+    avatar_id: avatarId,
+    voice_id: voiceId,
+    avatar_persona: {
+      name: teacherName,
+      prompt: masterPrompt,
     },
-  }),
-});
+  },
+}),
+   });
 
     const data = await response.json();
 
