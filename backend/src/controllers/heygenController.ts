@@ -6,7 +6,7 @@ export const createHeygenToken = async (req: Request, res: Response) => {
     const { teacherId } = req.body;
 
     const teacherAvatars: Record<string, string | undefined> = {
-      Zayed: process.env.HEYGEN_ZAYED_AVATAR_ID,
+      Zayed: process.env.HEYGEN_AVATAR_ID,
       Zyron: process.env.HEYGEN_ZYRON_AVATAR_ID,
       Noor: process.env.HEYGEN_NOOR_AVATAR_ID,
       Sophia: process.env.HEYGEN_SOPHIA_AVATAR_ID,
