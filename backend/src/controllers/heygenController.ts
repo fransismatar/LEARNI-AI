@@ -75,24 +75,24 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       profile,
     });
 
-    const response = await fetch("https://api.liveavatar.com/v1/sessions/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-KEY": process.env.HEYGEN_API_KEY,
+   const response = await fetch("https://api.liveavatar.com/v1/sessions/token", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "X-API-KEY": process.env.HEYGEN_API_KEY,
+  },
+  body: JSON.stringify({
+    mode: "FULL",
+    config: {
+      avatar_id: avatarId,
+      voice_id: voiceId,
+      avatar_persona: {
+        name: teacherName,
+        prompt: masterPrompt,
       },
-      body: JSON.stringify({
-        mode: "FULL",
-        avatar_id: avatarId,
-        voice: {
-  voice_id: voiceId,
-},
-        avatar_persona: {
-          name: teacherName,
-          prompt: masterPrompt,
-        },
-      }),
-    });
+    },
+  }),
+});
 
     const data = await response.json();
 
