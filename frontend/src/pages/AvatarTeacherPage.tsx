@@ -15,7 +15,7 @@ const AvatarTeacherPage = () => {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
 
-  const teacherId = searchParams.get("teacher") || "Zyron";
+ const teacherId = searchParams.get("teacher") || "Zayed";
   const profile = user?.learningProfile || {};
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
