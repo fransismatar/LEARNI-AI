@@ -75,21 +75,26 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       profile,
     });
 
-    // التعديل هنا: تمرير session_mode وتمرير بقية الإعدادات في حقول مستقلة
-    const response = await fetch("https://api.liveavatar.com/v1/sessions/token", {
+      // الالتزام التام بالهيكلية الرسمية المطلوبة لـ LiveAvatar
+    const response = await fetch("https://liveavatar.com", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-API-KEY": process.env.HEYGEN_API_KEY,
       },
       body: JSON.stringify({
-        session_mode: "FULL", // تحديد الوضع المطلوب هنا بشكل صريح
-        avatar_id: avatarId,
-        voice_id: voiceId,
-        avatar_persona: {
-          name: teacherName,
-          prompt: masterPrompt,
-        }
+        // 1. نرسلها كـ Key رئيسي يحتوي على البيانات (لإرضاء الـ Discriminator)
+        "FULL": {
+          avatar_id: avatarId,
+          voice_id: voiceId,
+          avatar_persona: {
+            name: teacherName,
+            prompt: masterPrompt,
+          },
+        },
+        // 2. نرسلها أيضاً كحقل نصي احتياطاً
+        "session_mode": "FULL",
+        "mode": "FULL"
       }),
     });
 
