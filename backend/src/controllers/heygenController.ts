@@ -84,7 +84,9 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       body: JSON.stringify({
         mode: "FULL",
         avatar_id: avatarId,
-        voice_id: voiceId,
+        voice: {
+  voice_id: voiceId,
+},
         avatar_persona: {
           name: teacherName,
           prompt: masterPrompt,
