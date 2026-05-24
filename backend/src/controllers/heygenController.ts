@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { buildMasterTeacherPrompt } from "../prompts/masterTeacherPrompt";
-
 const teacherAvatars: Record<string, string | undefined> = {
   Zayed: process.env.HEYGEN_ZAYED_AVATAR_ID,
   Zyron: process.env.HEYGEN_ZYRON_AVATAR_ID,
@@ -10,6 +9,17 @@ const teacherAvatars: Record<string, string | undefined> = {
   Adam: process.env.HEYGEN_ADAM_AVATAR_ID,
   Stephanie: process.env.HEYGEN_STEPHANIE_AVATAR_ID,
 };
+
+const teacherVoices: Record<string, string | undefined> = {
+  Zayed: process.env.HEYGEN_ZAYED_VOICE_ID,
+  Zyron: process.env.HEYGEN_ZYRON_VOICE_ID,
+  Noor: process.env.HEYGEN_NOOR_VOICE_ID,
+  Sophia: process.env.HEYGEN_SOPHIA_VOICE_ID,
+  Maya: process.env.HEYGEN_MAYA_VOICE_ID,
+  Adam: process.env.HEYGEN_ADAM_VOICE_ID,
+  Stephanie: process.env.HEYGEN_STEPHANIE_VOICE_ID,
+};
+
 
 export const createHeygenToken = async (req: Request, res: Response) => {
   try {
@@ -30,6 +40,10 @@ export const createHeygenToken = async (req: Request, res: Response) => {
   teacherAvatars[teacherName] ||
   process.env.HEYGEN_ZAYED_AVATAR_ID ||
   process.env.HEYGEN_AVATAR_ID;
+  const voiceId =
+  teacherVoices[teacherName] ||
+  process.env.HEYGEN_ZAYED_VOICE_ID ||
+  process.env.HEYGEN_VOICE_ID;
 
     const masterPrompt = buildMasterTeacherPrompt({
       teacherName,
@@ -52,6 +66,7 @@ export const createHeygenToken = async (req: Request, res: Response) => {
         body: JSON.stringify({
           mode: "FULL",
           avatar_id: avatarId,
+          voice_id: voiceId,
           avatar_persona: {
             name: teacherName,
             prompt: masterPrompt,
