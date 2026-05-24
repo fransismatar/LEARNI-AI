@@ -23,10 +23,9 @@ const HeygenTestPage = () => {
 
       addLog("Checking media permissions...");
 
-      // طلب صلاحيات الميكروفون فقط، الكاميرا اختيارية ولا يحتاجها الأفاتار ليتحدث إليك
       await navigator.mediaDevices.getUserMedia({
         audio: true,
-        video: false, 
+        video: true,
       });
 
       addLog("Requesting HeyGen token...");
@@ -35,7 +34,7 @@ const HeygenTestPage = () => {
 
       const res = await api.post(
         "/heygen/token",
-        { teacherId: "Zayed" }, 
+        { teacherId: "Zayed" },
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
@@ -45,42 +44,50 @@ const HeygenTestPage = () => {
 
       console.log("TOKEN RESPONSE:", res.data);
 
-      // استخراج التوكن بناءً على بنية الـ Backend المحدثة
-      const sessionToken = res.data?.data?.token || res.data?.data;
+      const sessionToken = res.data?.data?.session_token;
 
       if (!sessionToken) {
-        addLog("No session token returned from backend");
+        addLog("No session token returned");
         return;
       }
 
       addLog("Creating LiveAvatarSession...");
+
       const liveSession = new LiveAvatarSession(sessionToken);
 
-      // إضافة مستمع للأحداث (Event Listeners) لالتقاط البث فور جاهزيته
-   (liveSession as any).on("stream_ready", (stream: MediaStream) => {
-  addLog("Stream ready event triggered!");
-  if (videoRef.current) {
-    videoRef.current.srcObject = stream;
-    videoRef.current.muted = false; 
-    videoRef.current.play().catch((err) => console.log("Video play error:", err));
-  }
-});
-
- (liveSession as any).on("session_end", () => {
-  addLog("Session ended by server");
-  setSession(null);
-});
-
       addLog("Starting avatar session...");
+
       await liveSession.start();
 
-      addLog("Waiting for connection...");
-      setSession(liveSession);
-      addLog("Avatar session started successfully");
+      addLog("Waiting for stream...");
 
+      await new Promise((resolve) => setTimeout(resolve, 2500));
+
+      if (videoRef.current) {
+        videoRef.current.muted = true;
+        videoRef.current.autoplay = true;
+        videoRef.current.playsInline = true;
+
+        addLog("Attaching video...");
+
+        await (liveSession as any).attach(videoRef.current);
+
+        try {
+          await videoRef.current.play();
+        } catch (err) {
+          console.log("VIDEO PLAY ERROR:", err);
+        }
+
+        addLog("Video attached");
+      }
+
+      setSession(liveSession);
+
+      addLog("Avatar session started successfully");
     } catch (error: any) {
       console.log("HEYGEN START ERROR:", error);
-      addLog(error?.message || "Failed to start avatar");
+      console.log("HEYGEN RESPONSE:", error?.response?.data);
+      addLog(error?.response?.data?.message || error?.message || "Failed to start avatar");
       alert("Failed to start HeyGen avatar");
     } finally {
       setLoading(false);
@@ -93,15 +100,15 @@ const HeygenTestPage = () => {
     try {
       addLog("Sending message...");
 
-      // التحقق من الدوال الرسمية لـ HeyGen LiveAvatar SDK
       if (typeof session.speak === "function") {
         await session.speak({ text });
-      } else if (typeof session.sendTask === "function") {
-        await session.sendTask({ text });
       } else if (typeof session.message === "function") {
         await session.message(text);
+      } else if (typeof session.repeat === "function") {
+        await session.repeat(text);
       } else {
-        addLog("No speak/sendTask/message method found");
+        addLog("No speak/message/repeat method found");
+        console.log("SESSION METHODS:", session);
         return;
       }
 
@@ -117,6 +124,7 @@ const HeygenTestPage = () => {
 
     try {
       addLog("Stopping session...");
+
       await session.stop();
 
       if (videoRef.current) {
@@ -142,22 +150,24 @@ const HeygenTestPage = () => {
     }
 
     const recognition = new SpeechRecognition();
+
     recognition.lang = "en-US";
     recognition.interimResults = false;
     recognition.continuous = false;
 
     recognition.onresult = async (event: any) => {
       const transcript = event.results[0][0].transcript;
+
       setText(transcript);
       addLog(`You said: ${transcript}`);
 
       if (session) {
         if (typeof session.speak === "function") {
           await session.speak({ text: transcript });
-        } else if (typeof session.sendTask === "function") {
-          await session.sendTask({ text: transcript });
         } else if (typeof session.message === "function") {
           await session.message(transcript);
+        } else if (typeof session.repeat === "function") {
+          await session.repeat(transcript);
         }
       }
     };
@@ -174,7 +184,9 @@ const HeygenTestPage = () => {
     <section className="mx-auto max-w-6xl space-y-6 p-6 text-white">
       <div className="rounded-3xl border border-cyan-400/20 bg-slate-950 p-6">
         <h1 className="text-4xl font-black">HeyGen Live Avatar Test</h1>
-        <p className="mt-3 text-slate-400">Testing real-time avatar for Lerni AI.</p>
+        <p className="mt-3 text-slate-400">
+          Testing real-time avatar for Lerni AI.
+        </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
@@ -183,6 +195,7 @@ const HeygenTestPage = () => {
             ref={videoRef}
             autoPlay
             playsInline
+            muted
             controls={false}
             className="h-[70vh] w-full bg-black object-contain"
           />
@@ -209,7 +222,7 @@ const HeygenTestPage = () => {
           >
             Send Message
           </button>
-          
+
           <button
             onClick={startListening}
             className="mt-4 w-full rounded-2xl border border-cyan-400/40 px-5 py-4 font-bold text-cyan-300"
@@ -227,13 +240,12 @@ const HeygenTestPage = () => {
       </div>
 
       <div className="space-y-2 rounded-3xl border border-white/10 bg-slate-950 p-5">
-  {logs.map((log, index) => (
-    <p key={index} className="text-sm text-slate-300">
-      {log}
-    </p>
-  ))}
-</div>
-
+        {logs.map((log, index) => (
+          <p key={index} className="text-sm text-slate-300">
+            {log}
+          </p>
+        ))}
+      </div>
     </section>
   );
 };

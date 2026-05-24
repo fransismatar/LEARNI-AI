@@ -5,38 +5,17 @@ export const createHeygenToken = async (req: Request, res: Response) => {
   try {
     const { teacherId } = req.body;
 
-    const teacherAvatars: Record<string, string | undefined> = {
-      Zayed: process.env.HEYGEN_AVATAR_ID, 
-      Zyron: process.env.HEYGEN_ZYRON_AVATAR_ID,
-      Noor: process.env.HEYGEN_NOOR_AVATAR_ID,
-      Sophia: process.env.HEYGEN_SOPHIA_AVATAR_ID,
-      Maya: process.env.HEYGEN_MAYA_AVATAR_ID,
-      Adam: process.env.HEYGEN_ADAM_AVATAR_ID,
-      Stephanie: process.env.HEYGEN_STEPHANIE_AVATAR_ID,
-    };
-
-    const teacherVoices: Record<string, string | undefined> = {
-      Zayed: process.env.HEYGEN_ZAYED_VOICE_ID, 
-      Zyron: process.env.HEYGEN_ZYRON_VOICE_ID,
-      Noor: process.env.HEYGEN_NOOR_VOICE_ID,
-      Sophia: process.env.HEYGEN_SOPHIA_VOICE_ID,
-      Maya: process.env.HEYGEN_MAYA_VOICE_ID,
-      Adam: process.env.HEYGEN_ADAM_VOICE_ID,
-      Stephanie: process.env.HEYGEN_STEPHANIE_VOICE_ID,
-    };
-
     const requestedTeacher = teacherId || "Zayed";
-
-    const teacherName =
-      teacherAvatars[requestedTeacher] && teacherVoices[requestedTeacher]
-        ? requestedTeacher
-        : "Zayed";
+    const teacherName = requestedTeacher || "Zayed";
 
     const avatarId =
-      teacherAvatars[teacherName] || process.env.HEYGEN_AVATAR_ID;
+      process.env[`HEYGEN_${teacherName.toUpperCase()}_AVATAR_ID`] ||
+      process.env.HEYGEN_AVATAR_ID;
 
     const voiceId =
-      teacherVoices[teacherName] || process.env.HEYGEN_ZAYED_VOICE_ID;
+      process.env[`HEYGEN_${teacherName.toUpperCase()}_VOICE_ID`] ||
+      process.env.HEYGEN_ZAYED_VOICE_ID ||
+      process.env.HEYGEN_VOICE_ID;
 
     console.log("HEYGEN DEBUG:", {
       requestedTeacher,
@@ -46,17 +25,10 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       voiceIdExists: Boolean(voiceId),
     });
 
-    if (!process.env.HEYGEN_API_KEY) {
-      return res.status(500).json({
-        message: "Missing HEYGEN_API_KEY",
-      });
-    }
-
-    if (!avatarId || !voiceId) {
+    if (!process.env.HEYGEN_API_KEY || !avatarId || !voiceId) {
       return res.status(400).json({
-        message: "Missing avatar_id or voice_id",
-        requestedTeacher,
-        teacherName,
+        message: "Missing HeyGen env",
+        hasApiKey: Boolean(process.env.HEYGEN_API_KEY),
         avatarIdExists: Boolean(avatarId),
         voiceIdExists: Boolean(voiceId),
       });
@@ -75,26 +47,22 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       profile,
     });
 
-      // الالتزام التام بالهيكلية الرسمية المطلوبة لـ LiveAvatar
-    const response = await fetch("https://liveavatar.com", {
+    const response = await fetch("https://api.liveavatar.com/v1/sessions/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-API-KEY": process.env.HEYGEN_API_KEY,
       },
       body: JSON.stringify({
-        // 1. نرسلها كـ Key رئيسي يحتوي على البيانات (لإرضاء الـ Discriminator)
-        "FULL": {
+        mode: "FULL",
+        FULL: {
           avatar_id: avatarId,
-          voice_id: voiceId,
           avatar_persona: {
             name: teacherName,
             prompt: masterPrompt,
+            voice_id: voiceId,
           },
         },
-        // 2. نرسلها أيضاً كحقل نصي احتياطاً
-        "session_mode": "FULL",
-        "mode": "FULL"
       }),
     });
 
@@ -109,7 +77,7 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       });
     }
 
-    return res.status(200).json({ data: data.data || data });
+    return res.status(200).json(data);
   } catch (error) {
     console.log("LiveAvatar server error:", error);
 
