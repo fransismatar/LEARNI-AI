@@ -36,7 +36,7 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       teacherAvatars[teacherName] || process.env.HEYGEN_AVATAR_ID;
 
     const voiceId =
-      teacherVoices[teacherName] || process.env.HEYGEN_VOICE_ID;
+      teacherVoices[teacherName] || process.env.HEYGEN_ZAYED_VOICE_ID;
 
     console.log("HEYGEN DEBUG:", {
       requestedTeacher,
