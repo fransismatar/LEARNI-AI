@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { LiveAvatarSession } from "@heygen/liveavatar-web-sdk";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
@@ -11,16 +11,15 @@ type ChatMessage = {
   text: string;
 };
 
+const TEACHER_NAME = "Zayed";
+
 const AvatarTeacherPage = () => {
   const { user } = useAuth();
-  const [searchParams] = useSearchParams();
-
- const teacherId = searchParams.get("teacher") || "Zayed";
   const profile = user?.learningProfile || {};
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const hasStartedRef = useRef(false);
   const sessionRef = useRef<any>(null);
+  const hasStartedRef = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const [session, setSession] = useState<any>(null);
@@ -28,7 +27,7 @@ const AvatarTeacherPage = () => {
   const [input, setInput] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [status, setStatus] = useState("Preparing your AI teacher...");
+  const [status, setStatus] = useState("Preparing Zayed...");
 
   const addMessage = (role: "user" | "teacher", text: string) => {
     setMessages((prev) => [
@@ -55,19 +54,13 @@ const AvatarTeacherPage = () => {
 
   const sendToTeacher = async (text: string) => {
     const finalText = text.trim();
-
     if (!finalText || !sessionRef.current) return;
 
     addMessage("user", finalText);
     setInput("");
 
     try {
-      if (typeof sessionRef.current.message === "function") {
-        await sessionRef.current.message(finalText);
-      } else {
-        await speakText(sessionRef.current, finalText);
-      }
-
+      await speakText(sessionRef.current, finalText);
       addMessage("teacher", "I’m answering you by video.");
     } catch (error) {
       console.log("SEND ERROR:", error);
@@ -81,32 +74,36 @@ const AvatarTeacherPage = () => {
     try {
       hasStartedRef.current = true;
       setAvatarLoading(true);
-      setStatus("Checking camera and microphone...");
+      setStatus("Checking microphone and camera...");
 
       await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: true,
       });
 
-      setStatus("Starting your live teacher...");
+      setStatus("Requesting Zayed session...");
 
-      const token = localStorage.getItem("token");
+      const authToken = localStorage.getItem("token");
 
       const res = await api.post(
         "/heygen/token",
-        { teacherId },
+        { teacherId: TEACHER_NAME },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${authToken}`,
           },
         }
       );
+
+      console.log("HEYGEN TOKEN RESPONSE:", res.data);
 
       const sessionToken = res.data?.data?.session_token;
 
       if (!sessionToken) {
         throw new Error("No HeyGen session token returned");
       }
+
+      setStatus("Starting live avatar...");
 
       const liveSession = new LiveAvatarSession(sessionToken);
 
@@ -115,6 +112,7 @@ const AvatarTeacherPage = () => {
       await new Promise((resolve) => setTimeout(resolve, 2500));
 
       if (videoRef.current) {
+        videoRef.current.muted = true;
         videoRef.current.autoplay = true;
         videoRef.current.playsInline = true;
 
@@ -131,21 +129,24 @@ const AvatarTeacherPage = () => {
       setSession(liveSession);
       setStatus("Lesson started");
 
-      const welcomeText = `Hello ${user?.name || "student"}, welcome to Lerni AI. I am ${teacherId}, your language teacher. Today we will practice ${
+      const welcomeText = `Hello ${
+        user?.name || "student"
+      }, welcome to Lerni AI. I am Zayed, your AI language teacher. Today we will practice ${
         profile.targetLanguage || "English"
-      }. Let's start with a simple question: how are you today?`;
+      }. Let's start: how are you today?`;
 
       addMessage("teacher", welcomeText);
       await speakText(liveSession, welcomeText);
     } catch (error: any) {
       console.log("HEYGEN START ERROR:", error);
-      setStatus(error?.message || "Failed to start teacher");
+      console.log("HEYGEN RESPONSE:", error?.response?.data);
+      setStatus(error?.response?.data?.message || error?.message || "Failed to start teacher");
       alert("Failed to start live teacher");
       hasStartedRef.current = false;
     } finally {
       setAvatarLoading(false);
     }
-  }, [teacherId, user?.name, profile.targetLanguage]);
+  }, [user?.name, profile.targetLanguage]);
 
   const stopSession = async () => {
     try {
@@ -213,9 +214,9 @@ const AvatarTeacherPage = () => {
     <div className="flex h-full min-h-0 flex-col rounded-[32px] border border-white/10 bg-white/[0.04] shadow-2xl">
       <div className="border-b border-white/10 p-5">
         <p className="text-sm font-bold text-cyan-300">Teacher Chat</p>
-        <h2 className="mt-1 text-2xl font-black">{teacherId}</h2>
+        <h2 className="mt-1 text-2xl font-black">Zayed</h2>
         <p className="mt-2 text-sm leading-6 text-slate-400">
-          Write or speak, and your teacher will answer by live avatar.
+          Write or speak, and Zayed will answer by live avatar.
         </p>
       </div>
 
@@ -232,7 +233,6 @@ const AvatarTeacherPage = () => {
             {msg.text}
           </div>
         ))}
-
         <div ref={messagesEndRef} />
       </div>
 
@@ -244,7 +244,7 @@ const AvatarTeacherPage = () => {
             onKeyDown={(e) => {
               if (e.key === "Enter") sendToTeacher(input);
             }}
-            placeholder={`Write to ${teacherId}...`}
+            placeholder="Write to Zayed..."
             className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none focus:border-cyan-400"
           />
 
@@ -276,7 +276,7 @@ const AvatarTeacherPage = () => {
             <h1 className="text-4xl font-black leading-tight sm:text-5xl">
               Learn with{" "}
               <span className="bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
-                {teacherId}
+                Zayed
               </span>
             </h1>
 
@@ -313,6 +313,7 @@ const AvatarTeacherPage = () => {
             ref={videoRef}
             autoPlay
             playsInline
+            muted
             controls={false}
             className="h-[72vh] w-full bg-black object-contain"
           />
@@ -327,9 +328,7 @@ const AvatarTeacherPage = () => {
                 />
               </div>
 
-              <h2 className="mt-6 text-3xl font-black">
-                Starting {teacherId}...
-              </h2>
+              <h2 className="mt-6 text-3xl font-black">Starting Zayed...</h2>
 
               <p className="mt-4 max-w-md leading-7 text-slate-400">
                 Please allow camera and microphone permissions.
