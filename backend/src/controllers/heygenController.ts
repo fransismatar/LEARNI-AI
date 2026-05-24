@@ -5,8 +5,7 @@ export const createHeygenToken = async (req: Request, res: Response) => {
   try {
     const { teacherId } = req.body;
 
-    const requestedTeacher = teacherId || "Zayed";
-    const teacherName = requestedTeacher || "Zayed";
+    const teacherName = teacherId || "Zayed";
 
     const avatarId =
       process.env[`HEYGEN_${teacherName.toUpperCase()}_AVATAR_ID`] ||
@@ -16,14 +15,6 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       process.env[`HEYGEN_${teacherName.toUpperCase()}_VOICE_ID`] ||
       process.env.HEYGEN_ZAYED_VOICE_ID ||
       process.env.HEYGEN_VOICE_ID;
-
-    console.log("HEYGEN DEBUG:", {
-      requestedTeacher,
-      teacherName,
-      hasApiKey: Boolean(process.env.HEYGEN_API_KEY),
-      avatarIdExists: Boolean(avatarId),
-      voiceIdExists: Boolean(voiceId),
-    });
 
     if (!process.env.HEYGEN_API_KEY || !avatarId || !voiceId) {
       return res.status(400).json({
@@ -47,23 +38,36 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       profile,
     });
 
+    const payload = {
+      mode: "FULL",
+      FULL: {
+        avatar_id: avatarId,
+        voice_id: voiceId,
+        avatar_persona: {
+          name: teacherName,
+          prompt: masterPrompt,
+        },
+      },
+    };
+
+    console.log("HEYGEN DEBUG:", {
+      teacherName,
+      hasApiKey: true,
+      avatarIdExists: true,
+      voiceIdExists: true,
+      payloadMode: payload.mode,
+      fullHasAvatarId: Boolean(payload.FULL.avatar_id),
+      fullHasVoiceId: Boolean(payload.FULL.voice_id),
+      fullHasPersona: Boolean(payload.FULL.avatar_persona),
+    });
+
     const response = await fetch("https://api.liveavatar.com/v1/sessions/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-API-KEY": process.env.HEYGEN_API_KEY,
       },
-      body: JSON.stringify({
-        mode: "FULL",
-        FULL: {
-          avatar_id: avatarId,
-          avatar_persona: {
-            name: teacherName,
-            prompt: masterPrompt,
-            voice_id: voiceId,
-          },
-        },
-      }),
+      body: JSON.stringify(payload),
     });
 
     const data = await response.json();
