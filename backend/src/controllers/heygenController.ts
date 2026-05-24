@@ -75,15 +75,16 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       profile,
     });
 
-    // 1. استخدام رابط الـ Streaming API الرسمي للنسخة التفاعلية
-    // 2. ضبط هيكلية الـ Body المباشرة بدون تغليف مع إرسال المتغيرات المطلوبة للـ Session
-    const response = await fetch("https://api.heygen.com/v1/streaming.create_token", {
+    // استخدام الدومين الجديد المعتمد بعد إيقاف السيرفرات القديمة
+    const response = await fetch("https://api.liveavatar.com/v1/sessions/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-API-KEY": process.env.HEYGEN_API_KEY,
+        "Authorization": `Bearer ${process.env.HEYGEN_API_KEY}`, // بعض تحديثات الدومين الجديد تطلب البيرر توكن بدلاً من X-API-KEY للأمان
+        "X-API-KEY": process.env.HEYGEN_API_KEY, // سنبقي عليه أيضاً كـ Fallback لحماية التوافقية
       },
       body: JSON.stringify({
+        mode: "full", // تحديد الـ mode بحروف صغيرة لتفادي خطأ الـ discriminator
         avatar_id: avatarId,
         voice_id: voiceId,
         avatar_persona: {
@@ -104,7 +105,6 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       });
     }
 
-    // إرجاع البيانات بشكل متناسق مع الـ SDK
     return res.status(200).json({ data: data.data || data });
   } catch (error) {
     console.log("LiveAvatar server error:", error);
