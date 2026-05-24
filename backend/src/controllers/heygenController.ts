@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { buildMasterTeacherPrompt } from "../prompts/masterTeacherPrompt";
+
 const teacherAvatars: Record<string, string | undefined> = {
   Zayed: process.env.HEYGEN_ZAYED_AVATAR_ID,
   Zyron: process.env.HEYGEN_ZYRON_AVATAR_ID,
@@ -20,7 +21,6 @@ const teacherVoices: Record<string, string | undefined> = {
   Stephanie: process.env.HEYGEN_STEPHANIE_VOICE_ID,
 };
 
-
 export const createHeygenToken = async (req: Request, res: Response) => {
   try {
     const { teacherId } = req.body;
@@ -37,13 +37,29 @@ export const createHeygenToken = async (req: Request, res: Response) => {
     const teacherName = teacherId || "Zayed";
 
     const avatarId =
-  teacherAvatars[teacherName] ||
-  process.env.HEYGEN_ZAYED_AVATAR_ID ||
-  process.env.HEYGEN_AVATAR_ID;
-  const voiceId =
-  teacherVoices[teacherName] ||
-  process.env.HEYGEN_ZAYED_VOICE_ID ||
-  process.env.HEYGEN_VOICE_ID;
+      teacherAvatars[teacherName] ||
+      process.env.HEYGEN_ZAYED_AVATAR_ID ||
+      process.env.HEYGEN_AVATAR_ID;
+
+    const voiceId =
+      teacherVoices[teacherName] ||
+      process.env.HEYGEN_ZAYED_VOICE_ID ||
+      process.env.HEYGEN_VOICE_ID;
+
+    if (!process.env.HEYGEN_API_KEY) {
+      return res.status(500).json({
+        message: "Missing HEYGEN_API_KEY in server environment",
+      });
+    }
+
+    if (!avatarId || !voiceId) {
+      return res.status(400).json({
+        message: "Missing HeyGen avatar_id or voice_id",
+        teacherName,
+        avatarIdExists: Boolean(avatarId),
+        voiceIdExists: Boolean(voiceId),
+      });
+    }
 
     const masterPrompt = buildMasterTeacherPrompt({
       teacherName,
@@ -61,7 +77,7 @@ export const createHeygenToken = async (req: Request, res: Response) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-API-KEY": process.env.HEYGEN_API_KEY || "",
+          "X-API-KEY": process.env.HEYGEN_API_KEY,
         },
         body: JSON.stringify({
           mode: "FULL",
@@ -78,9 +94,15 @@ export const createHeygenToken = async (req: Request, res: Response) => {
     const data = await response.json();
 
     if (!response.ok) {
-      console.log("LiveAvatar token error:", data);
+      console.log("LiveAvatar token error:", {
+        status: response.status,
+        teacherName,
+        avatarIdExists: Boolean(avatarId),
+        voiceIdExists: Boolean(voiceId),
+        details: data,
+      });
 
-      return res.status(400).json({
+      return res.status(response.status).json({
         message: "Failed to create LiveAvatar token",
         details: data,
       });
@@ -88,7 +110,7 @@ export const createHeygenToken = async (req: Request, res: Response) => {
 
     return res.status(200).json(data);
   } catch (error) {
-    console.log(error);
+    console.log("LiveAvatar server error:", error);
 
     return res.status(500).json({
       message: "LiveAvatar server error",
