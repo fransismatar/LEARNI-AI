@@ -25,7 +25,6 @@ const AvatarTeacherPage = () => {
   const [session, setSession] = useState<any>(null);
   const [avatarLoading, setAvatarLoading] = useState(false);
   const [input, setInput] = useState("");
-  const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [status, setStatus] = useState("Preparing Zayed...");
 
@@ -74,11 +73,11 @@ const AvatarTeacherPage = () => {
     try {
       hasStartedRef.current = true;
       setAvatarLoading(true);
-      setStatus("Checking microphone and camera...");
+      setStatus("Checking microphone permission...");
 
       await navigator.mediaDevices.getUserMedia({
         audio: true,
-        video: true,
+        video: false,
       });
 
       setStatus("Requesting Zayed session...");
@@ -95,8 +94,6 @@ const AvatarTeacherPage = () => {
         }
       );
 
-      console.log("HEYGEN TOKEN RESPONSE:", res.data);
-
       const sessionToken = res.data?.data?.session_token;
 
       if (!sessionToken) {
@@ -108,7 +105,6 @@ const AvatarTeacherPage = () => {
       const liveSession = new LiveAvatarSession(sessionToken);
 
       await liveSession.start();
-
       await new Promise((resolve) => setTimeout(resolve, 2500));
 
       if (videoRef.current) {
@@ -140,8 +136,11 @@ const AvatarTeacherPage = () => {
     } catch (error: any) {
       console.log("HEYGEN START ERROR:", error);
       console.log("HEYGEN RESPONSE:", error?.response?.data);
-      setStatus(error?.response?.data?.message || error?.message || "Failed to start teacher");
-      alert("Failed to start live teacher");
+      setStatus(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to start teacher"
+      );
       hasStartedRef.current = false;
     } finally {
       setAvatarLoading(false);
@@ -211,10 +210,10 @@ const AvatarTeacherPage = () => {
   }, [messages]);
 
   const ChatPanel = (
-    <div className="flex h-full min-h-0 flex-col rounded-[32px] border border-white/10 bg-white/[0.04] shadow-2xl">
+    <div className="flex h-full min-h-0 flex-col rounded-[32px] border border-white/10 bg-slate-950/80 shadow-2xl">
       <div className="border-b border-white/10 p-5">
         <p className="text-sm font-bold text-cyan-300">Teacher Chat</p>
-        <h2 className="mt-1 text-2xl font-black">Zayed</h2>
+        <h2 className="mt-1 text-2xl font-black text-white">Zayed</h2>
         <p className="mt-2 text-sm leading-6 text-slate-400">
           Write or speak, and Zayed will answer by live avatar.
         </p>
@@ -227,7 +226,7 @@ const AvatarTeacherPage = () => {
             className={`rounded-3xl p-4 text-sm leading-7 ${
               msg.role === "user"
                 ? "ml-auto max-w-[85%] bg-cyan-400 text-slate-950"
-                : "mr-auto max-w-[90%] border border-white/10 bg-slate-950/60 text-slate-200"
+                : "mr-auto max-w-[90%] border border-white/10 bg-white/[0.05] text-slate-200"
             }`}
           >
             {msg.text}
@@ -267,24 +266,25 @@ const AvatarTeacherPage = () => {
   );
 
   return (
-    <section className="space-y-6">
-      <div className="rounded-[32px] border border-cyan-400/20 bg-gradient-to-br from-cyan-400/10 via-slate-900 to-blue-500/10 p-6 shadow-2xl sm:p-8">
-        <p className="text-sm font-bold text-cyan-300">Lesson Room</p>
-
-        <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <section className="min-h-screen space-y-6 bg-slate-950 p-4 text-white sm:p-6">
+      <div className="rounded-[32px] border border-cyan-400/20 bg-gradient-to-br from-cyan-400/10 via-slate-900 to-blue-500/10 p-5 shadow-2xl sm:p-7">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 className="text-4xl font-black leading-tight sm:text-5xl">
+            <p className="text-sm font-bold text-cyan-300">Live Lesson Room</p>
+
+            <h1 className="mt-2 text-3xl font-black leading-tight sm:text-5xl">
               Learn with{" "}
               <span className="bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
                 Zayed
               </span>
             </h1>
 
-            <p className="mt-4 max-w-2xl leading-7 text-slate-300">
-              Live avatar, connected chat, microphone, and speaking practice.
+            <p className="mt-3 max-w-2xl leading-7 text-slate-300">
+              Real-time avatar lesson with chat, voice practice, and instant
+              speaking training.
             </p>
 
-            <p className="mt-3 text-sm text-cyan-300">{status}</p>
+            <p className="mt-3 text-sm font-bold text-cyan-300">{status}</p>
           </div>
 
           <div className="flex gap-3">
@@ -307,20 +307,24 @@ const AvatarTeacherPage = () => {
         </div>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-black shadow-2xl">
+      <div className="grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
+        <div className="order-2 h-[70vh] min-h-[520px] xl:order-1">
+          {ChatPanel}
+        </div>
+
+        <div className="order-1 relative min-h-[420px] overflow-hidden rounded-[32px] border border-cyan-400/20 bg-black shadow-2xl xl:order-2 xl:h-[70vh]">
           <video
             ref={videoRef}
             autoPlay
             playsInline
             muted
             controls={false}
-            className="h-[72vh] w-full bg-black object-contain"
+            className="h-full min-h-[420px] w-full bg-black object-contain xl:h-[70vh]"
           />
 
           {avatarLoading && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 p-8 text-center">
-              <div className="h-40 w-40 overflow-hidden rounded-[32px] border border-cyan-400/20 bg-cyan-400/5 shadow-2xl shadow-cyan-500/10">
+              <div className="h-40 w-40 overflow-hidden rounded-[32px] border border-cyan-400/20 bg-cyan-400/5">
                 <img
                   src={LessonRobot}
                   alt="AI Teacher"
@@ -331,40 +335,12 @@ const AvatarTeacherPage = () => {
               <h2 className="mt-6 text-3xl font-black">Starting Zayed...</h2>
 
               <p className="mt-4 max-w-md leading-7 text-slate-400">
-                Please allow camera and microphone permissions.
+                {status}
               </p>
             </div>
           )}
         </div>
-
-        <div className="hidden h-[72vh] xl:block">{ChatPanel}</div>
       </div>
-
-      <button
-        onClick={() => setIsChatOpen(true)}
-        className="fixed bottom-24 right-4 z-50 rounded-2xl bg-cyan-400 px-5 py-4 font-bold text-slate-950 shadow-2xl shadow-cyan-400/30 xl:hidden"
-      >
-        Open Chat
-      </button>
-
-      {isChatOpen && (
-        <div className="fixed inset-0 z-[100] flex items-end bg-black/70 p-3 backdrop-blur-md xl:hidden">
-          <div className="h-[82vh] w-full overflow-hidden rounded-[32px] bg-slate-950">
-            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-              <p className="font-bold text-cyan-300">Teacher chat</p>
-
-              <button
-                onClick={() => setIsChatOpen(false)}
-                className="grid h-10 w-10 place-items-center rounded-2xl border border-white/10 text-xl text-slate-300"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="h-[calc(82vh-73px)]">{ChatPanel}</div>
-          </div>
-        </div>
-      )}
     </section>
   );
 };
