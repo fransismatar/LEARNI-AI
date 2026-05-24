@@ -6,7 +6,7 @@ export const createHeygenToken = async (req: Request, res: Response) => {
     const { teacherId } = req.body;
 
     const teacherAvatars: Record<string, string | undefined> = {
-      Zayed: process.env.HEYGEN_AVATAR_ID,
+      Zayed: process.env.HEYGEN_AVATAR_ID, // يقرأ المتغير الحالي من لوحة تحكم Render لديك
       Zyron: process.env.HEYGEN_ZYRON_AVATAR_ID,
       Noor: process.env.HEYGEN_NOOR_AVATAR_ID,
       Sophia: process.env.HEYGEN_SOPHIA_AVATAR_ID,
@@ -16,7 +16,7 @@ export const createHeygenToken = async (req: Request, res: Response) => {
     };
 
     const teacherVoices: Record<string, string | undefined> = {
-      Zayed: process.env.HEYGEN_ZAYED_VOICE_ID,
+      Zayed: process.env.HEYGEN_ZAYED_VOICE_ID, // يقرأ المتغير الموضح بالصورة
       Zyron: process.env.HEYGEN_ZYRON_VOICE_ID,
       Noor: process.env.HEYGEN_NOOR_VOICE_ID,
       Sophia: process.env.HEYGEN_SOPHIA_VOICE_ID,
@@ -75,21 +75,21 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       profile,
     });
 
-    // استخدام الدومين الجديد المعتمد بعد إيقاف السيرفرات القديمة
+    // الالتزام التام بالهيكلية الرسمية المطلوبة: استخدام مفتاح FULL بحروف كبيرة
     const response = await fetch("https://api.liveavatar.com/v1/sessions/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.HEYGEN_API_KEY}`, // بعض تحديثات الدومين الجديد تطلب البيرر توكن بدلاً من X-API-KEY للأمان
-        "X-API-KEY": process.env.HEYGEN_API_KEY, // سنبقي عليه أيضاً كـ Fallback لحماية التوافقية
+        "X-API-KEY": process.env.HEYGEN_API_KEY,
       },
       body: JSON.stringify({
-        mode: "full", // تحديد الـ mode بحروف صغيرة لتفادي خطأ الـ discriminator
-        avatar_id: avatarId,
-        voice_id: voiceId,
-        avatar_persona: {
-          name: teacherName,
-          prompt: masterPrompt,
+        FULL: {
+          avatar_id: avatarId,
+          voice_id: voiceId,
+          avatar_persona: {
+            name: teacherName,
+            prompt: masterPrompt,
+          },
         },
       }),
     });
@@ -105,6 +105,7 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       });
     }
 
+    // إرسال البيانات للـ Frontend
     return res.status(200).json({ data: data.data || data });
   } catch (error) {
     console.log("LiveAvatar server error:", error);
