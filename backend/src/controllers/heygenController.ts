@@ -1,16 +1,14 @@
 import { Request, Response } from "express";
 import { buildMasterTeacherPrompt } from "../prompts/masterTeacherPrompt";
 
-const teacherAvatars: Record<string, string> = {
-  Zayed: "da22349c-2233-441c-864d-b0d1c766b6e0",
-
-  // مؤقتًا كلهم يستخدمون Zayed لحد ما تعمل avatars جديدة
-  Zyron: "da22349c-2233-441c-864d-b0d1c766b6e0",
-  Noor: "da22349c-2233-441c-864d-b0d1c766b6e0",
-  Sophia: "da22349c-2233-441c-864d-b0d1c766b6e0",
-  Maya: "da22349c-2233-441c-864d-b0d1c766b6e0",
-  Adam: "da22349c-2233-441c-864d-b0d1c766b6e0",
-  Stephanie: "da22349c-2233-441c-864d-b0d1c766b6e0",
+const teacherAvatars: Record<string, string | undefined> = {
+  Zayed: process.env.HEYGEN_ZAYED_AVATAR_ID,
+  Zyron: process.env.HEYGEN_ZYRON_AVATAR_ID,
+  Noor: process.env.HEYGEN_NOOR_AVATAR_ID,
+  Sophia: process.env.HEYGEN_SOPHIA_AVATAR_ID,
+  Maya: process.env.HEYGEN_MAYA_AVATAR_ID,
+  Adam: process.env.HEYGEN_ADAM_AVATAR_ID,
+  Stephanie: process.env.HEYGEN_STEPHANIE_AVATAR_ID,
 };
 
 export const createHeygenToken = async (req: Request, res: Response) => {
@@ -29,7 +27,9 @@ export const createHeygenToken = async (req: Request, res: Response) => {
     const teacherName = teacherId || "Zayed";
 
     const avatarId =
-      teacherAvatars[teacherName] || teacherAvatars.Zayed;
+  teacherAvatars[teacherName] ||
+  process.env.HEYGEN_ZAYED_AVATAR_ID ||
+  process.env.HEYGEN_AVATAR_ID;
 
     const masterPrompt = buildMasterTeacherPrompt({
       teacherName,
