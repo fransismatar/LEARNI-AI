@@ -75,21 +75,20 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       profile,
     });
 
-    // التعديل الجوهري هنا: إرسال الكائن بالصيغة التي تطلبها خوادم HeyGen تماماً
-    const response = await fetch("https://api.liveavatar.com/v1/sessions/token", {
+    // 1. استخدام رابط الـ Streaming API الرسمي للنسخة التفاعلية
+    // 2. ضبط هيكلية الـ Body المباشرة بدون تغليف مع إرسال المتغيرات المطلوبة للـ Session
+    const response = await fetch("https://api.heygen.com/v1/streaming.create_token", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-API-KEY": process.env.HEYGEN_API_KEY,
       },
       body: JSON.stringify({
-        FULL: {
-          avatar_id: avatarId,
-          voice_id: voiceId,
-          avatar_persona: {
-            name: teacherName,
-            prompt: masterPrompt,
-          },
+        avatar_id: avatarId,
+        voice_id: voiceId,
+        avatar_persona: {
+          name: teacherName,
+          prompt: masterPrompt,
         },
       }),
     });
@@ -105,7 +104,7 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       });
     }
 
-    // هنا نمرر الـ data بالكامل لأن HeyGen سيعيد كائن يحتوي على التوكن بالداخل
+    // إرجاع البيانات بشكل متناسق مع الـ SDK
     return res.status(200).json({ data: data.data || data });
   } catch (error) {
     console.log("LiveAvatar server error:", error);
