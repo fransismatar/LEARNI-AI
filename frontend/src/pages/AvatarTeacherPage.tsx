@@ -189,18 +189,24 @@ const AvatarTeacherPage = () => {
 
   transcriptRef.current = "";
 
-  const recognition = new SpeechRecognition();
+ const recognition = new SpeechRecognition();
 
-  recognition.lang = "en-US";
-  recognition.interimResults = true;
-  recognition.continuous = true;
+recognition.lang =
+  profile.nativeLanguage === "Arabic"
+    ? "ar-SA"
+    : profile.nativeLanguage === "Hebrew"
+    ? "he-IL"
+    : "en-US";
 
-  recognitionRef.current = recognition;
+recognition.interimResults = true;
+recognition.continuous = true;
 
-  recognition.onstart = () => {
-    setIsRecording(true);
-    setStatus("Recording...");
-  };
+recognitionRef.current = recognition;
+
+recognition.onstart = () => {
+  setIsRecording(true);
+  setStatus("Recording...");
+};
 
   recognition.onresult = (event: any) => {
     let finalTranscript = "";
