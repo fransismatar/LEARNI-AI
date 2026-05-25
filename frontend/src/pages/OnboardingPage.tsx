@@ -1,5 +1,5 @@
 import { useState, type ElementType } from "react";
-import { useNavigate } from "react-router-dom";
+import {Link, useNavigate } from "react-router-dom";
 import {
   Briefcase,
   Plane,
@@ -488,6 +488,11 @@ const OnboardingPage = () => {
   const currentQuestion = visibleQuestions[step];
   const progress = ((step + 1) / visibleQuestions.length) * 100;
   const currentAnswer = answers[currentQuestion.id];
+  const isWordLevelQuestion = [
+  "a1a2WordsKnown",
+  "b1b2WordsKnown",
+  "c1c2WordsKnown",
+].includes(currentQuestion.id);
 
   const selectSingle = (value: string) => {
     setAnswers((prev) => {
@@ -589,32 +594,39 @@ const handleBack = () => {
         backgroundImage: `linear-gradient(90deg, rgba(2,6,23,0.98) 0%, rgba(2,6,23,0.88) 55%, rgba(2,6,23,0.55) 100%), url(${HomeBackground})`,
       }}
     >
-      <section className="mx-auto flex min-h-[calc(100vh-48px)] max-w-3xl flex-col">
-        <div className="mb-6 flex items-center gap-4">
-          <button
-            onClick={handleBack}
-            disabled={step === 0}
-            className="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-slate-950/50 text-slate-300 backdrop-blur-xl transition hover:border-cyan-400/50 hover:text-white disabled:opacity-25"
-          >
-            <ArrowLeft size={20} />
-          </button>
+     <section className="mx-auto flex min-h-[calc(100vh-48px)] max-w-3xl flex-col">
+  <div className="mb-6 flex items-center gap-4">
+    <Link
+      to="/"
+      className="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-slate-950/50 text-slate-300 backdrop-blur-xl transition hover:border-cyan-400/50 hover:text-white"
+    >
+      <Home size={20} />
+    </Link>
 
-          <div className="flex-1">
-            <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
-              <span>
-                Step {step + 1} of {visibleQuestions.length}
-              </span>
-              <span>{Math.round(progress)}%</span>
-            </div>
+    <button
+      onClick={handleBack}
+      disabled={step === 0}
+      className="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-slate-950/50 text-slate-300 backdrop-blur-xl transition hover:border-cyan-400/50 hover:text-white disabled:opacity-25"
+    >
+      <ArrowLeft size={20} />
+    </button>
 
-            <div className="h-2 rounded-full bg-white/10">
-              <div
-                className="h-2 rounded-full bg-gradient-to-r from-cyan-300 to-blue-500 transition-all duration-500"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
-        </div>
+    <div className="flex-1">
+      <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
+        <span>
+          Step {step + 1} of {visibleQuestions.length}
+        </span>
+        <span>{Math.round(progress)}%</span>
+      </div>
+
+      <div className="h-2 rounded-full bg-white/10">
+        <div
+          className="h-2 rounded-full bg-gradient-to-r from-cyan-300 to-blue-500 transition-all duration-500"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    </div>
+  </div>
 
         <div className="flex flex-1 flex-col rounded-[32px] border border-white/10 bg-slate-950/65 p-5 shadow-2xl shadow-cyan-950/30 backdrop-blur-2xl sm:p-8">
           <div className="text-center">
@@ -682,51 +694,72 @@ const handleBack = () => {
               </div>
             )}
 
-            {currentQuestion.type === "multi" && (
-              <div className="space-y-3">
-                {currentQuestion.options?.map((option) => {
-                  const selected =
-                    Array.isArray(currentAnswer) && currentAnswer.includes(option);
-                  const Icon = optionIcons[option] || Circle;
+            {currentQuestion.type === "multi" && !isWordLevelQuestion && (
+  <div className="space-y-3">
+    {currentQuestion.options?.map((option) => {
+      const selected =
+        Array.isArray(currentAnswer) && currentAnswer.includes(option);
+      const Icon = optionIcons[option] || Circle;
 
-                  return (
-                    <button
-                      key={option}
-                      onClick={() => toggleMulti(option)}
-                      className={`flex w-full cursor-pointer items-center justify-between rounded-2xl border px-4 py-4 text-left transition ${
-                        selected
-                          ? "border-cyan-300 bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-400/10"
-                          : "border-white/10 bg-white/[0.04] text-white hover:border-cyan-400/60 hover:bg-white/[0.07]"
-                      }`}
-                    >
-                      <span className="flex items-center gap-4">
-                        <span
-                          className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${
-                            selected
-                              ? "bg-slate-950/10"
-                              : "bg-cyan-400/10 text-cyan-300"
-                          }`}
-                        >
-                          <Icon size={20} />
-                        </span>
+      return (
+        <button
+          key={option}
+          onClick={() => toggleMulti(option)}
+          className={`flex w-full cursor-pointer items-center justify-between rounded-2xl border px-4 py-4 text-left transition ${
+            selected
+              ? "border-cyan-300 bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-400/10"
+              : "border-white/10 bg-white/[0.04] text-white hover:border-cyan-400/60 hover:bg-white/[0.07]"
+          }`}
+        >
+          <span className="flex items-center gap-4">
+            <span
+              className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${
+                selected ? "bg-slate-950/10" : "bg-cyan-400/10 text-cyan-300"
+              }`}
+            >
+              <Icon size={20} />
+            </span>
 
-                        <span className="font-semibold">{option}</span>
-                      </span>
+            <span className="font-semibold">{option}</span>
+          </span>
 
-                      <span
-                        className={`grid h-7 w-7 place-items-center rounded-full border ${
-                          selected
-                            ? "border-slate-950/20 bg-slate-950/10"
-                            : "border-white/20"
-                        }`}
-                      >
-                        {selected ? <Check size={17} /> : <Circle size={12} />}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+          <span
+            className={`grid h-7 w-7 place-items-center rounded-full border ${
+              selected
+                ? "border-slate-950/20 bg-slate-950/10"
+                : "border-white/20"
+            }`}
+          >
+            {selected ? <Check size={17} /> : <Circle size={12} />}
+          </span>
+        </button>
+      );
+    })}
+  </div>
+)}
+
+{currentQuestion.type === "multi" && isWordLevelQuestion && (
+  <div className="flex flex-wrap gap-3">
+    {currentQuestion.options?.map((option) => {
+      const selected =
+        Array.isArray(currentAnswer) && currentAnswer.includes(option);
+
+      return (
+        <button
+          key={option}
+          onClick={() => toggleMulti(option)}
+          className={`rounded-2xl border px-4 py-2 text-sm font-semibold transition ${
+            selected
+              ? "border-cyan-300 bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-400/20"
+              : "border-white/10 bg-white/[0.05] text-white hover:border-cyan-400/60 hover:bg-white/[0.08]"
+          }`}
+        >
+          {option}
+        </button>
+      );
+    })}
+  </div>
+)}
 
             {currentQuestion.type === "info" && (
               <div className="rounded-3xl border border-cyan-400/20 bg-cyan-400/10 p-8 text-center">
