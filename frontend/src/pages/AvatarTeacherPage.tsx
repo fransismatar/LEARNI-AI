@@ -22,7 +22,7 @@ const AvatarTeacherPage = () => {
   const hasStartedRef = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  const [session, setSession] = useState<any>(null);
+  const [, setSession] = useState<any>(null);
   const [avatarLoading, setAvatarLoading] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
