@@ -17,7 +17,6 @@ import { LiveAvatarSession } from "@heygen/liveavatar-web-sdk";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
-
 type ChatMessage = {
   id: string;
   role: "user" | "teacher";
@@ -32,6 +31,7 @@ const AvatarTeacherPage = () => {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const sessionRef = useRef<any>(null);
+  const recognitionRef = useRef<any>(null);
   const hasStartedRef = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -43,15 +43,12 @@ const AvatarTeacherPage = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [isChatVisible, setIsChatVisible] = useState(true);
   const [showExitModal, setShowExitModal] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
 
   const addMessage = (role: "user" | "teacher", text: string) => {
     setMessages((prev) => [
       ...prev,
-      {
-        id: `${role}-${Date.now()}-${Math.random()}`,
-        role,
-        text,
-      },
+      { id: `${role}-${Date.now()}-${Math.random()}`, role, text },
     ]);
   };
 
@@ -91,10 +88,7 @@ const AvatarTeacherPage = () => {
       setAvatarLoading(true);
       setStatus("Checking microphone permission...");
 
-      await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: false,
-      });
+      await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
 
       setStatus("Requesting Zayed session...");
 
@@ -103,18 +97,12 @@ const AvatarTeacherPage = () => {
       const res = await api.post(
         "/heygen/token",
         { teacherId: TEACHER_NAME },
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${authToken}` } }
       );
 
       const sessionToken = res.data?.data?.session_token;
 
-      if (!sessionToken) {
-        throw new Error("No HeyGen session token returned");
-      }
+      if (!sessionToken) throw new Error("No HeyGen session token returned");
 
       setStatus("Starting live avatar...");
 
@@ -165,13 +153,9 @@ const AvatarTeacherPage = () => {
 
   const stopSession = async () => {
     try {
-      if (sessionRef.current) {
-        await sessionRef.current.stop();
-      }
+      if (sessionRef.current) await sessionRef.current.stop();
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = null;
-      }
+      if (videoRef.current) videoRef.current.srcObject = null;
 
       sessionRef.current = null;
       setSession(null);
@@ -191,6 +175,8 @@ const AvatarTeacherPage = () => {
   };
 
   const startListening = () => {
+    if (recognitionRef.current || isRecording) return;
+
     const SpeechRecognition =
       (window as any).SpeechRecognition ||
       (window as any).webkitSpeechRecognition;
@@ -205,45 +191,61 @@ const AvatarTeacherPage = () => {
     recognition.lang = "en-US";
     recognition.interimResults = false;
     recognition.continuous = false;
+
+    recognitionRef.current = recognition;
+
     recognition.onstart = () => {
-  setStatus("Listening...");
-};
+      setIsRecording(true);
+      setStatus("Recording...");
+    };
 
-recognition.onend = () => {
-  setStatus("Lesson started");
-};
-
-   recognition.onresult = async (event: any) => {
-  const transcript = event.results[0][0].transcript;
-
-  console.log("VOICE TRANSCRIPT:", transcript);
-
-  setInput(transcript);
-
-  await sendToTeacher(transcript);
-};
+    recognition.onresult = async (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      console.log("VOICE TRANSCRIPT:", transcript);
+      setInput(transcript);
+      await sendToTeacher(transcript);
+    };
 
     recognition.onerror = (event: any) => {
       console.log("SPEECH ERROR:", event);
-      alert("Speech recognition error. Try typing in chat.");
+      setIsRecording(false);
+      setStatus("Lesson started");
+      recognitionRef.current = null;
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      setStatus("Lesson started");
+      recognitionRef.current = null;
     };
 
     recognition.start();
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
   };
 
   useEffect(() => {
     startAvatarSession();
 
     return () => {
-      if (sessionRef.current) {
-        sessionRef.current.stop();
-      }
+      if (sessionRef.current) sessionRef.current.stop();
+      if (recognitionRef.current) recognitionRef.current.stop();
     };
   }, [startAvatarSession]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const micButtonClass = `grid h-20 w-20 cursor-pointer place-items-center rounded-full text-3xl text-white shadow-xl transition duration-200 hover:scale-105 ${
+    isRecording
+      ? "bg-red-500 shadow-red-500/30"
+      : "bg-blue-500 shadow-blue-500/25 hover:bg-blue-600"
+  }`;
 
   return (
     <section className="min-h-screen bg-slate-50 text-slate-950">
@@ -252,7 +254,7 @@ recognition.onend = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowExitModal(true)}
-               className="grid h-11 w-11 cursor-pointer place-items-center rounded-full bg-red-500 text-white shadow-lg shadow-red-500/20 transition duration-200 hover:scale-105 hover:bg-red-600"
+              className="grid h-11 w-11 cursor-pointer place-items-center rounded-full bg-red-500 text-white shadow-lg shadow-red-500/20 transition duration-200 hover:scale-105 hover:bg-red-600"
             >
               <FontAwesomeIcon icon={faXmark} />
             </button>
@@ -263,11 +265,9 @@ recognition.onend = () => {
 
             <button
               onClick={toggleMute}
-             className="grid h-11 w-11 cursor-pointer place-items-center rounded-full bg-blue-950 text-white transition duration-200 hover:scale-105 hover:bg-blue-900 hover:shadow-lg hover:shadow-blue-500/20"
+              className="grid h-11 w-11 cursor-pointer place-items-center rounded-full bg-blue-950 text-white transition duration-200 hover:scale-105 hover:bg-blue-900 hover:shadow-lg hover:shadow-blue-500/20"
             >
-              <FontAwesomeIcon
-                icon={isMuted ? faVolumeXmark : faVolumeHigh}
-              />
+              <FontAwesomeIcon icon={isMuted ? faVolumeXmark : faVolumeHigh} />
             </button>
 
             <button
@@ -279,7 +279,7 @@ recognition.onend = () => {
           </div>
 
           <div className="hidden items-center gap-2 text-sm font-bold text-slate-600 sm:flex">
-            <span>04:28</span>
+            <span>{isRecording ? "Recording" : "04:28"}</span>
             <FontAwesomeIcon icon={faClock} />
           </div>
 
@@ -307,7 +307,7 @@ recognition.onend = () => {
               <div className="flex items-center justify-between gap-3 rounded-2xl bg-amber-400 px-4 py-3 text-white">
                 <p className="text-sm font-black">Lecture</p>
                 <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-black">
-                  Active
+                  {isRecording ? "Recording" : "Active"}
                 </span>
               </div>
             </div>
@@ -351,8 +351,12 @@ recognition.onend = () => {
                 </button>
 
                 <button
-                  onClick={startListening}
-                  className="grid h-20 w-20 place-items-center cursor-pointer rounded-full bg-blue-500 text-3xl text-white shadow-xl shadow-blue-500/25 transition hover:scale-105"
+                  onMouseDown={startListening}
+                  onMouseUp={stopListening}
+                  onMouseLeave={stopListening}
+                  onTouchStart={startListening}
+                  onTouchEnd={stopListening}
+                  className={micButtonClass}
                 >
                   <FontAwesomeIcon icon={faMicrophone} />
                 </button>
@@ -362,14 +366,20 @@ recognition.onend = () => {
                     const finalText = input.trim();
                     if (finalText) sendToTeacher(finalText);
                   }}
-                  className="flex flex-col items-center gap-2 text-xs font-bold text-blue-500"
+                  className="flex cursor-pointer flex-col items-center gap-2 text-xs font-bold text-blue-500 transition duration-200 hover:scale-105"
                 >
-                  <span className="grid h-12 w-12 cursor-pointer place-items-center rounded-full bg-blue-50 text-lg transition duration-200 hover:scale-105 hover:bg-blue-100">
+                  <span className="grid h-12 w-12 place-items-center rounded-full bg-blue-50 text-lg transition duration-200 hover:bg-blue-100">
                     <FontAwesomeIcon icon={faKeyboard} />
                   </span>
                   Type
                 </button>
               </div>
+
+              {isRecording && (
+                <p className="mt-3 text-center text-xs font-bold text-red-500">
+                  Recording... release to send
+                </p>
+              )}
 
               <div className="mt-4 flex gap-3">
                 <input
@@ -384,7 +394,7 @@ recognition.onend = () => {
 
                 <button
                   onClick={() => sendToTeacher(input)}
-                  className="rounded-2xl bg-blue-500 px-5 py-3 text-sm font-black text-white cursor-pointer transition duration-200 hover:bg-blue-600 hover:scale-[1.02]"
+                  className="cursor-pointer rounded-2xl bg-blue-500 px-5 py-3 text-sm font-black text-white transition duration-200 hover:scale-[1.02] hover:bg-blue-600"
                 >
                   Send
                 </button>
@@ -394,104 +404,107 @@ recognition.onend = () => {
         )}
 
         <div
-  className={`order-1 bg-slate-50 p-4 lg:order-2 lg:min-h-[calc(100vh-68px)] lg:p-8 ${
-    !isChatVisible ? "lg:col-span-2" : ""
-  }`}
->
-  <div className="relative overflow-hidden rounded-[28px] bg-blue-950 shadow-2xl">
-    <video
-      ref={videoRef}
-      autoPlay
-      playsInline
-      muted={isMuted}
-      controls={false}
-      className="h-[240px] w-full bg-blue-950 object-contain sm:h-[320px] lg:h-[420px]"
-    />
+          className={`order-1 bg-slate-50 p-4 lg:order-2 lg:min-h-[calc(100vh-68px)] lg:p-8 ${
+            !isChatVisible ? "lg:col-span-2" : ""
+          }`}
+        >
+          <div className="relative overflow-hidden rounded-[28px] bg-blue-950 shadow-2xl">
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted={isMuted}
+              controls={false}
+              className="h-[240px] w-full bg-blue-950 object-contain sm:h-[320px] lg:h-[420px]"
+            />
 
-    <div className="absolute bottom-5 left-5 space-y-2 text-sm font-bold text-white">
-      <div className="flex items-center gap-2">
-        <span>Lecture</span>
-        <span className="h-3 w-3 rounded-full bg-white"></span>
-      </div>
+            <div className="absolute bottom-5 left-5 space-y-2 text-sm font-bold text-white">
+              <div className="flex items-center gap-2">
+                <span>Lecture</span>
+                <span className="h-3 w-3 rounded-full bg-white"></span>
+              </div>
 
-      <div className="flex items-center gap-2 text-white/40">
-        <span>Practice</span>
-        <span className="h-3 w-3 rounded-full bg-white/30"></span>
-      </div>
-    </div>
+              <div className="flex items-center gap-2 text-white/40">
+                <span>Practice</span>
+                <span className="h-3 w-3 rounded-full bg-white/30"></span>
+              </div>
+            </div>
 
-    {avatarLoading && (
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-950/90 p-8 text-center text-white">
-        <div className="h-32 w-32 overflow-hidden rounded-[28px] border border-white/20 bg-white/10">
-          <img
-  src="/teachers/Zayed.png"
-  alt="Zayed"
-  className="h-full max-h-[320px] w-auto object-contain"
-/>
+            {avatarLoading && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-950/90 p-8 text-center text-white">
+                <div className="h-32 w-32 overflow-hidden rounded-[28px] border border-white/20 bg-white/10">
+                  <img
+                    src="/teachers/Zayed.png"
+                    alt="Zayed"
+                    className="h-full max-h-[320px] w-auto object-contain"
+                  />
+                </div>
+
+                <h2 className="mt-5 text-2xl font-black">Starting Zayed...</h2>
+
+                <p className="mt-3 max-w-md text-sm leading-6 text-white/70">
+                  {status}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {!isChatVisible && (
+            <div className="mt-5 flex items-center justify-center gap-8">
+              <button className="flex cursor-pointer flex-col items-center gap-2 text-xs font-bold text-blue-500 transition duration-200 hover:scale-105">
+                <span className="grid h-12 w-12 place-items-center rounded-full bg-blue-50 text-lg transition duration-200 hover:bg-blue-100">
+                  <FontAwesomeIcon icon={faLightbulb} />
+                </span>
+                Hint
+              </button>
+
+              <button
+                onMouseDown={startListening}
+                onMouseUp={stopListening}
+                onMouseLeave={stopListening}
+                onTouchStart={startListening}
+                onTouchEnd={stopListening}
+                className={micButtonClass}
+              >
+                <FontAwesomeIcon icon={faMicrophone} />
+              </button>
+
+              <button
+                onClick={() => setIsChatVisible(true)}
+                className="flex cursor-pointer flex-col items-center gap-2 text-xs font-bold text-blue-500 transition duration-200 hover:scale-105"
+              >
+                <span className="grid h-12 w-12 place-items-center rounded-full bg-blue-50 text-lg transition duration-200 hover:bg-blue-100">
+                  <FontAwesomeIcon icon={faComments} />
+                </span>
+                Chat
+              </button>
+            </div>
+          )}
+
+          {isChatVisible && (
+            <div className="mt-5 hidden rounded-[28px] bg-blue-50 p-6 lg:block">
+              <div className="mx-auto grid h-48 place-items-center rounded-full bg-white text-5xl font-black text-blue-500 sm:h-56">
+                F
+              </div>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl bg-white p-4">
+                  <p className="text-xs font-bold text-slate-500">Today</p>
+                  <p className="mt-1 text-lg font-black">Speaking practice</p>
+                </div>
+
+                <div className="rounded-2xl bg-white p-4">
+                  <p className="text-xs font-bold text-slate-500">Target</p>
+                  <p className="mt-1 text-lg font-black">
+                    {profile.targetLanguage || "English"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-
-        <h2 className="mt-5 text-2xl font-black">Starting Zayed...</h2>
-
-        <p className="mt-3 max-w-md text-sm leading-6 text-white/70">
-          {status}
-        </p>
-      </div>
-    )}
-  </div>
-
-  {!isChatVisible && (
-    <div className="mt-5 flex items-center justify-center gap-8">
-      <button className="flex flex-col items-center gap-2 text-xs font-bold text-blue-500">
-        <span className="grid h-12 w-12 place-items-center rounded-full bg-blue-50 text-lg">
-          <FontAwesomeIcon icon={faLightbulb} />
-        </span>
-        Hint
-      </button>
-
-      <button
-        onClick={startListening}
-        className="grid h-20 w-20 place-items-center rounded-full bg-blue-500 text-3xl text-white shadow-xl shadow-blue-500/25 transition hover:scale-105"
-      >
-        <FontAwesomeIcon icon={faMicrophone} />
-      </button>
-
-      <button
-        onClick={() => setIsChatVisible(true)}
-        className="flex flex-col items-center gap-2 text-xs font-bold text-blue-500"
-      >
-        <span className="grid h-12 w-12 place-items-center rounded-full bg-blue-50 text-lg">
-          <FontAwesomeIcon icon={faComments} />
-        </span>
-        Chat
-      </button>
-    </div>
-  )}
-
-  {isChatVisible && (
-    <div className="mt-5 hidden rounded-[28px] bg-blue-50 p-6 lg:block">
-      <div className="mx-auto grid h-48 place-items-center rounded-full bg-white text-5xl font-black text-blue-500 sm:h-56">
-        F
       </div>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-2xl bg-white p-4">
-          <p className="text-xs font-bold text-slate-500">Today</p>
-          <p className="mt-1 text-lg font-black">Speaking practice</p>
-        </div>
-
-        <div className="rounded-2xl bg-white p-4">
-          <p className="text-xs font-bold text-slate-500">Target</p>
-          <p className="mt-1 text-lg font-black">
-            {profile.targetLanguage || "English"}
-          </p>
-        </div>
-      </div>
-    </div>
-  )}
-</div>
-</div>
-
-          
       {showExitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-[32px] bg-white p-7 text-center shadow-2xl">
@@ -510,7 +523,7 @@ recognition.onend = () => {
             <div className="mt-7 flex gap-3">
               <button
                 onClick={() => setShowExitModal(false)}
-                className="flex-1 rounded-2xl bg-slate-100 px-5 py-4 font-bold text-slate-700"
+                className="flex-1 cursor-pointer rounded-2xl bg-slate-100 px-5 py-4 font-bold text-slate-700 transition duration-200 hover:bg-slate-200"
               >
                 Continue Talking
               </button>
@@ -518,7 +531,7 @@ recognition.onend = () => {
               <Link
                 to="/dashboard"
                 onClick={stopSession}
-                className="flex-1 rounded-2xl bg-red-500 px-5 py-4 text-center font-bold text-white"
+                className="flex-1 rounded-2xl bg-red-500 px-5 py-4 text-center font-bold text-white transition duration-200 hover:bg-red-600"
               >
                 Finish
               </Link>
