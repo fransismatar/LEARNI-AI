@@ -12,7 +12,7 @@ const AppLayout = () => {
 
   const navItems = [
     { label: "Dashboard", path: "/dashboard" },
-    { label: "Talk with Teacher", path: "/avatar-teacher" },
+    { label: "Talk with Teacher", path: "/avatar-teacher?teacher=Zayed" },
     { label: "Lessons", path: "/lessons" },
     { label: "Progress", path: "/progress" },
     { label: "Settings", path: "/settings" },

@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 import { LiveAvatarSession } from "@heygen/liveavatar-web-sdk";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
-import LessonRobot from "../assets/LessonRobot.png";
+
 
 type ChatMessage = {
   id: string;
@@ -205,11 +205,23 @@ const AvatarTeacherPage = () => {
     recognition.lang = "en-US";
     recognition.interimResults = false;
     recognition.continuous = false;
+    recognition.onstart = () => {
+  setStatus("Listening...");
+};
 
-    recognition.onresult = async (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      await sendToTeacher(transcript);
-    };
+recognition.onend = () => {
+  setStatus("Lesson started");
+};
+
+   recognition.onresult = async (event: any) => {
+  const transcript = event.results[0][0].transcript;
+
+  console.log("VOICE TRANSCRIPT:", transcript);
+
+  setInput(transcript);
+
+  await sendToTeacher(transcript);
+};
 
     recognition.onerror = (event: any) => {
       console.log("SPEECH ERROR:", event);
@@ -412,10 +424,10 @@ const AvatarTeacherPage = () => {
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-950/90 p-8 text-center text-white">
         <div className="h-32 w-32 overflow-hidden rounded-[28px] border border-white/20 bg-white/10">
           <img
-            src={LessonRobot}
-            alt="AI Teacher"
-            className="h-full w-full object-cover"
-          />
+  src="/teachers/Zayed.png"
+  alt="Zayed"
+  className="h-full max-h-[320px] w-auto object-contain"
+/>
         </div>
 
         <h2 className="mt-5 text-2xl font-black">Starting Zayed...</h2>
