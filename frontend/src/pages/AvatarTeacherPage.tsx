@@ -40,7 +40,7 @@ const AvatarTeacherPage = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [status, setStatus] = useState("Preparing Zayed...");
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [isChatVisible, setIsChatVisible] = useState(true);
   const [showExitModal, setShowExitModal] = useState(false);
 
@@ -124,7 +124,7 @@ const AvatarTeacherPage = () => {
       await new Promise((resolve) => setTimeout(resolve, 2500));
 
       if (videoRef.current) {
-        videoRef.current.muted = true;
+        videoRef.current.muted = false;
         videoRef.current.autoplay = true;
         videoRef.current.playsInline = true;
 
@@ -391,7 +391,7 @@ const AvatarTeacherPage = () => {
       ref={videoRef}
       autoPlay
       playsInline
-      muted
+      muted={isMuted}
       controls={false}
       className="h-[240px] w-full bg-blue-950 object-contain sm:h-[320px] lg:h-[420px]"
     />
