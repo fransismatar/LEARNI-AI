@@ -66,30 +66,32 @@ const cleanForSpeech = (text: string) => {
     .trim();
 };
 
-const splitSpeech = (text: string) => {
-  const clean = cleanForSpeech(text);
 
-  return clean
-    .split(/(?<=[.!?؟])\s+/)
-    .map((part) => part.trim())
-    .filter(Boolean);
-};
 
 const speakText = async (liveSession: any, text: string) => {
   if (!liveSession || !text.trim()) return;
 
-  const parts = splitSpeech(text);
+  const cleanText = cleanForSpeech(text);
 
-  for (const part of parts) {
-    if (typeof liveSession.speak === "function") {
-      await liveSession.speak({ text: part });
-    } else if (typeof liveSession.message === "function") {
-      await liveSession.message(part);
-    } else if (typeof liveSession.repeat === "function") {
-      await liveSession.repeat(part);
+  console.log("TEXT SENT TO AVATAR:", cleanText);
+
+  try {
+    if (typeof liveSession.repeat === "function") {
+      await liveSession.repeat(cleanText);
+      return;
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 700));
+    if (typeof liveSession.speak === "function") {
+      await liveSession.speak({ text: cleanText });
+      return;
+    }
+
+    if (typeof liveSession.message === "function") {
+      await liveSession.message(cleanText);
+      return;
+    }
+  } catch (error) {
+    console.log("AVATAR SPEAK ERROR:", error);
   }
 };
 
