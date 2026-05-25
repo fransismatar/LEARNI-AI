@@ -209,136 +209,205 @@ const AvatarTeacherPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const ChatPanel = (
-    <div className="flex h-full min-h-0 flex-col rounded-[32px] border border-white/10 bg-slate-950/80 shadow-2xl">
-      <div className="border-b border-white/10 p-5">
-        <p className="text-sm font-bold text-cyan-300">Teacher Chat</p>
-        <h2 className="mt-1 text-2xl font-black text-white">Zayed</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-400">
-          Write or speak, and Zayed will answer by live avatar.
-        </p>
-      </div>
-
-      <div className="flex-1 space-y-4 overflow-y-auto p-5">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`rounded-3xl p-4 text-sm leading-7 ${
-              msg.role === "user"
-                ? "ml-auto max-w-[85%] bg-cyan-400 text-slate-950"
-                : "mr-auto max-w-[90%] border border-white/10 bg-white/[0.05] text-slate-200"
-            }`}
-          >
-            {msg.text}
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
-
-      <div className="border-t border-white/10 p-4">
-        <div className="flex gap-3">
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") sendToTeacher(input);
-            }}
-            placeholder="Write to Zayed..."
-            className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none focus:border-cyan-400"
-          />
-
-          <button
-            onClick={() => sendToTeacher(input)}
-            className="rounded-2xl bg-cyan-400 px-5 py-3 font-bold text-slate-950"
-          >
-            Send
-          </button>
-        </div>
-
-        <button
-          onClick={startListening}
-          className="mt-3 w-full rounded-2xl border border-cyan-400/40 px-5 py-3 font-bold text-cyan-300"
-        >
-          🎤 Talk
-        </button>
-      </div>
-    </div>
-  );
-
   return (
-    <section className="min-h-screen space-y-6 bg-slate-950 p-4 text-white sm:p-6">
-      <div className="rounded-[32px] border border-cyan-400/20 bg-gradient-to-br from-cyan-400/10 via-slate-900 to-blue-500/10 p-5 shadow-2xl sm:p-7">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-sm font-bold text-cyan-300">Live Lesson Room</p>
-
-            <h1 className="mt-2 text-3xl font-black leading-tight sm:text-5xl">
-              Learn with{" "}
-              <span className="bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
-                Zayed
-              </span>
-            </h1>
-
-            <p className="mt-3 max-w-2xl leading-7 text-slate-300">
-              Real-time avatar lesson with chat, voice practice, and instant
-              speaking training.
-            </p>
-
-            <p className="mt-3 text-sm font-bold text-cyan-300">{status}</p>
-          </div>
-
-          <div className="flex gap-3">
+    <section className="min-h-screen bg-slate-50 text-slate-950">
+      <div className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
             <Link
               to="/dashboard"
-              className="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3 text-center font-bold text-slate-200"
+              onClick={stopSession}
+              className="grid h-11 w-11 place-items-center rounded-full bg-red-500 text-lg font-black text-white shadow-lg shadow-red-500/20"
             >
-              Change teacher
+              ×
             </Link>
 
-            {session && (
-              <button
-                onClick={stopSession}
-                className="rounded-2xl border border-red-400/40 px-5 py-3 font-bold text-red-300"
-              >
-                Stop
-              </button>
-            )}
+            <button className="grid h-11 w-11 place-items-center rounded-full bg-slate-100 text-slate-500">
+              🎥
+            </button>
+
+            <button className="grid h-11 w-11 place-items-center rounded-full bg-blue-950 text-white">
+              🔊
+            </button>
+
+            <button className="grid h-11 w-11 place-items-center rounded-full bg-blue-950 text-white">
+              📄
+            </button>
+          </div>
+
+          <div className="hidden items-center gap-2 text-sm font-bold text-slate-600 sm:flex">
+            <span>04:28</span>
+            <span>◷</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden text-right sm:block">
+              <p className="text-sm font-black">Zayed</p>
+              <p className="text-xs text-slate-500">{status}</p>
+            </div>
+
+            <div className="h-11 w-11 overflow-hidden rounded-2xl bg-blue-500">
+              <img
+                src="/teachers/Zayed.png"
+                alt="Zayed"
+                className="h-full w-full object-cover"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
-        <div className="order-2 h-[70vh] min-h-[520px] xl:order-1">
-          {ChatPanel}
+      <div className="mx-auto grid max-w-7xl gap-0 lg:grid-cols-[0.95fr_1.05fr]">
+        <div className="order-2 flex min-h-[calc(100vh-68px)] flex-col border-r border-slate-200 bg-white lg:order-1">
+          <div className="border-b border-slate-100 px-5 py-4">
+            <div className="flex items-center justify-between gap-3 rounded-2xl bg-amber-400 px-4 py-3 text-white">
+              <p className="text-sm font-black">Lecture</p>
+              <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-black">
+                Active
+              </span>
+            </div>
+          </div>
+
+          <div className="flex-1 space-y-5 overflow-y-auto px-5 py-6">
+            {messages.length === 0 && (
+              <div className="mx-auto max-w-md rounded-3xl bg-slate-100 p-5 text-center text-sm leading-7 text-slate-500">
+                Zayed is preparing your first lesson message...
+              </div>
+            )}
+
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`flex ${
+                  msg.role === "user" ? "justify-start" : "justify-end"
+                }`}
+              >
+                <div
+                  className={`max-w-[82%] rounded-[28px] px-5 py-4 text-sm leading-7 shadow-sm ${
+                    msg.role === "user"
+                      ? "bg-blue-50 text-slate-800"
+                      : "bg-slate-100 text-slate-900"
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          <div className="sticky bottom-0 border-t border-slate-100 bg-white px-5 py-4">
+            <div className="flex items-center justify-center gap-8">
+              <button className="flex flex-col items-center gap-2 text-xs font-bold text-blue-500">
+                <span className="grid h-12 w-12 place-items-center rounded-full bg-blue-50 text-lg">
+                  💡
+                </span>
+                Hint
+              </button>
+
+              <button
+                onClick={startListening}
+                className="grid h-20 w-20 place-items-center rounded-full bg-blue-500 text-3xl text-white shadow-xl shadow-blue-500/25 transition hover:scale-105"
+              >
+                🎙️
+              </button>
+
+              <button
+                onClick={() => {
+                  const finalText = input.trim();
+                  if (finalText) sendToTeacher(finalText);
+                }}
+                className="flex flex-col items-center gap-2 text-xs font-bold text-blue-500"
+              >
+                <span className="grid h-12 w-12 place-items-center rounded-full bg-blue-50 text-lg">
+                  ⌨️
+                </span>
+                Type
+              </button>
+            </div>
+
+            <div className="mt-4 flex gap-3">
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") sendToTeacher(input);
+                }}
+                placeholder="Write to Zayed..."
+                className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400"
+              />
+
+              <button
+                onClick={() => sendToTeacher(input)}
+                className="rounded-2xl bg-blue-500 px-5 py-3 text-sm font-black text-white"
+              >
+                Send
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="order-1 relative min-h-[420px] overflow-hidden rounded-[32px] border border-cyan-400/20 bg-black shadow-2xl xl:order-2 xl:h-[70vh]">
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            controls={false}
-            className="h-full min-h-[420px] w-full bg-black object-contain xl:h-[70vh]"
-          />
+        <div className="order-1 min-h-[calc(100vh-68px)] bg-slate-50 p-4 lg:order-2 lg:p-8">
+          <div className="relative overflow-hidden rounded-[28px] bg-blue-950 shadow-2xl">
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              controls={false}
+              className="h-[280px] w-full bg-blue-950 object-contain sm:h-[360px] lg:h-[420px]"
+            />
 
-          {avatarLoading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 p-8 text-center">
-              <div className="h-40 w-40 overflow-hidden rounded-[32px] border border-cyan-400/20 bg-cyan-400/5">
-                <img
-                  src={LessonRobot}
-                  alt="AI Teacher"
-                  className="h-full w-full object-cover"
-                />
+            <div className="absolute bottom-5 left-5 space-y-2 text-sm font-bold text-white">
+              <div className="flex items-center gap-2">
+                <span>Lecture</span>
+                <span className="h-3 w-3 rounded-full bg-white"></span>
+              </div>
+              <div className="flex items-center gap-2 text-white/40">
+                <span>Practice</span>
+                <span className="h-3 w-3 rounded-full bg-white/30"></span>
+              </div>
+            </div>
+
+            {avatarLoading && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-950/90 p-8 text-center text-white">
+                <div className="h-32 w-32 overflow-hidden rounded-[28px] border border-white/20 bg-white/10">
+                  <img
+                    src={LessonRobot}
+                    alt="AI Teacher"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+
+                <h2 className="mt-5 text-2xl font-black">Starting Zayed...</h2>
+
+                <p className="mt-3 max-w-md text-sm leading-6 text-white/70">
+                  {status}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-5 rounded-[28px] bg-blue-50 p-6">
+            <div className="mx-auto grid h-48 place-items-center rounded-full bg-white text-5xl font-black text-blue-500 sm:h-56">
+              F
+            </div>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl bg-white p-4">
+                <p className="text-xs font-bold text-slate-500">Today</p>
+                <p className="mt-1 text-lg font-black">Speaking practice</p>
               </div>
 
-              <h2 className="mt-6 text-3xl font-black">Starting Zayed...</h2>
-
-              <p className="mt-4 max-w-md leading-7 text-slate-400">
-                {status}
-              </p>
+              <div className="rounded-2xl bg-white p-4">
+                <p className="text-xs font-bold text-slate-500">Target</p>
+                <p className="mt-1 text-lg font-black">
+                  {profile.targetLanguage || "English"}
+                </p>
+              </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </section>
