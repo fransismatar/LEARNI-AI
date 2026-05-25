@@ -382,72 +382,104 @@ const AvatarTeacherPage = () => {
         )}
 
         <div
-           className={`order-1 bg-slate-50 p-4 lg:order-2 lg:min-h-[calc(100vh-68px)] lg:p-8 ${
+  className={`order-1 bg-slate-50 p-4 lg:order-2 lg:min-h-[calc(100vh-68px)] lg:p-8 ${
     !isChatVisible ? "lg:col-span-2" : ""
-          }`}
-        >
-          <div className="relative overflow-hidden rounded-[28px] bg-blue-950 shadow-2xl">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              controls={false}
-              className="h-[240px] w-full bg-blue-950 object-contain sm:h-[320px] lg:h-[420px]"
-            />
+  }`}
+>
+  <div className="relative overflow-hidden rounded-[28px] bg-blue-950 shadow-2xl">
+    <video
+      ref={videoRef}
+      autoPlay
+      playsInline
+      muted
+      controls={false}
+      className="h-[240px] w-full bg-blue-950 object-contain sm:h-[320px] lg:h-[420px]"
+    />
 
-            <div className="absolute bottom-5 left-5 space-y-2 text-sm font-bold text-white">
-              <div className="flex items-center gap-2">
-                <span>Lecture</span>
-                <span className="h-3 w-3 rounded-full bg-white"></span>
-              </div>
-              <div className="flex items-center gap-2 text-white/40">
-                <span>Practice</span>
-                <span className="h-3 w-3 rounded-full bg-white/30"></span>
-              </div>
-            </div>
-
-            {avatarLoading && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-950/90 p-8 text-center text-white">
-                <div className="h-32 w-32 overflow-hidden rounded-[28px] border border-white/20 bg-white/10">
-                  <img
-                    src={LessonRobot}
-                    alt="AI Teacher"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-
-                <h2 className="mt-5 text-2xl font-black">Starting Zayed...</h2>
-
-                <p className="mt-3 max-w-md text-sm leading-6 text-white/70">
-                  {status}
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div className="mt-5 hidden rounded-[28px] bg-blue-50 p-6 lg:block">
-            <div className="mx-auto grid h-48 place-items-center rounded-full bg-white text-5xl font-black text-blue-500 sm:h-56">
-              F
-            </div>
-
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl bg-white p-4">
-                <p className="text-xs font-bold text-slate-500">Today</p>
-                <p className="mt-1 text-lg font-black">Speaking practice</p>
-              </div>
-
-              <div className="rounded-2xl bg-white p-4">
-                <p className="text-xs font-bold text-slate-500">Target</p>
-                <p className="mt-1 text-lg font-black">
-                  {profile.targetLanguage || "English"}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="absolute bottom-5 left-5 space-y-2 text-sm font-bold text-white">
+      <div className="flex items-center gap-2">
+        <span>Lecture</span>
+        <span className="h-3 w-3 rounded-full bg-white"></span>
       </div>
 
+      <div className="flex items-center gap-2 text-white/40">
+        <span>Practice</span>
+        <span className="h-3 w-3 rounded-full bg-white/30"></span>
+      </div>
+    </div>
+
+    {avatarLoading && (
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-950/90 p-8 text-center text-white">
+        <div className="h-32 w-32 overflow-hidden rounded-[28px] border border-white/20 bg-white/10">
+          <img
+            src={LessonRobot}
+            alt="AI Teacher"
+            className="h-full w-full object-cover"
+          />
+        </div>
+
+        <h2 className="mt-5 text-2xl font-black">Starting Zayed...</h2>
+
+        <p className="mt-3 max-w-md text-sm leading-6 text-white/70">
+          {status}
+        </p>
+      </div>
+    )}
+  </div>
+
+  {!isChatVisible && (
+    <div className="mt-5 flex items-center justify-center gap-8">
+      <button className="flex flex-col items-center gap-2 text-xs font-bold text-blue-500">
+        <span className="grid h-12 w-12 place-items-center rounded-full bg-blue-50 text-lg">
+          <FontAwesomeIcon icon={faLightbulb} />
+        </span>
+        Hint
+      </button>
+
+      <button
+        onClick={startListening}
+        className="grid h-20 w-20 place-items-center rounded-full bg-blue-500 text-3xl text-white shadow-xl shadow-blue-500/25 transition hover:scale-105"
+      >
+        <FontAwesomeIcon icon={faMicrophone} />
+      </button>
+
+      <button
+        onClick={() => setIsChatVisible(true)}
+        className="flex flex-col items-center gap-2 text-xs font-bold text-blue-500"
+      >
+        <span className="grid h-12 w-12 place-items-center rounded-full bg-blue-50 text-lg">
+          <FontAwesomeIcon icon={faComments} />
+        </span>
+        Chat
+      </button>
+    </div>
+  )}
+
+  {isChatVisible && (
+    <div className="mt-5 hidden rounded-[28px] bg-blue-50 p-6 lg:block">
+      <div className="mx-auto grid h-48 place-items-center rounded-full bg-white text-5xl font-black text-blue-500 sm:h-56">
+        F
+      </div>
+
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-2xl bg-white p-4">
+          <p className="text-xs font-bold text-slate-500">Today</p>
+          <p className="mt-1 text-lg font-black">Speaking practice</p>
+        </div>
+
+        <div className="rounded-2xl bg-white p-4">
+          <p className="text-xs font-bold text-slate-500">Target</p>
+          <p className="mt-1 text-lg font-black">
+            {profile.targetLanguage || "English"}
+          </p>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+</div>
+
+          
       {showExitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-[32px] bg-white p-7 text-center shadow-2xl">
