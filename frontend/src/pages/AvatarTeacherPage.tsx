@@ -257,7 +257,7 @@ const AvatarTeacherPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const micButtonClass = `grid h-20 w-20 cursor-pointer place-items-center rounded-full text-3xl text-white shadow-xl transition duration-200 hover:scale-105 ${
+  const micButtonClass = `grid h-20 w-20 select-none cursor-pointer place-items-center rounded-full text-3xl text-white shadow-xl transition duration-200 hover:scale-105 ${
     isRecording
       ? "bg-red-500 shadow-red-500/30"
       : "bg-blue-500 shadow-blue-500/25 hover:bg-blue-600"
