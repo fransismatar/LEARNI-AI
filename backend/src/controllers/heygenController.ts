@@ -49,14 +49,13 @@ const profile = {
     });
 
     const payload = {
-      mode: "FULL",
-      avatar_id: avatarId,
-      avatar_persona: {
-        prompt: masterPrompt,
-        voice_id: voiceId,
-        language: "en",
-      },
-    };
+  mode: "FULL",
+  avatar_id: avatarId,
+  avatar_persona: {
+    voice_id: voiceId,
+    language: "en",
+  },
+};
 
     console.log("HEYGEN DEBUG:", {
       teacherName,
