@@ -185,7 +185,7 @@ const welcomeText = `Hello ${studentName}, I'm ${TEACHER_NAME} from Lerni AI, yo
   profile.mainGoal || "conversation"
 }, and your level is ${
   profile.englishLevel || profile.level || "Beginner"
-}. Are you ready to start your first lesson?`;
+}. I will guide the lesson step by step, and you can answer me anytime. Are you ready to start?`;
 
       addMessage("teacher", welcomeText);
       await speakText(liveSession, welcomeText);

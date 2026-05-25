@@ -4,6 +4,7 @@ dotenv.config();
 import { Request, Response } from "express";
 import OpenAI from "openai";
 import User from "../models/User";
+import { buildMasterTeacherPrompt } from "../prompts/masterTeacherPrompt";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -56,7 +57,7 @@ Return ONLY valid JSON.
       plan,
     });
   } catch (error) {
-    console.log(error);
+    console.log("GENERATE PLAN ERROR:", error);
 
     return res.status(500).json({
       message: "Failed to generate AI plan",
@@ -67,7 +68,17 @@ Return ONLY valid JSON.
 export const generateTeacherReply = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
-    const { message, teacherName = "Zayed", profile: frontendProfile } = req.body;
+    const {
+      message,
+      teacherName = "Zayed",
+      profile: frontendProfile = {},
+    } = req.body;
+
+    if (!message || !message.trim()) {
+      return res.status(400).json({
+        message: "Message is required",
+      });
+    }
 
     const fullUser = await User.findById(user._id).select("-password");
 
@@ -75,52 +86,54 @@ export const generateTeacherReply = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const profile = fullUser.learningProfile || frontendProfile || {};
+    const dbProfile = fullUser.learningProfile || {};
+
+    const profile = {
+      ...frontendProfile,
+      ...dbProfile,
+    };
 
     const targetLanguage = profile.targetLanguage || "English";
     const nativeLanguage = profile.nativeLanguage || "Arabic";
     const level = profile.englishLevel || profile.level || "Beginner";
     const mainGoal = profile.mainGoal || "General conversation";
+    const dailyGoal = profile.dailyGoal || "10 min/day";
+
+    const systemPrompt = buildMasterTeacherPrompt({
+      teacherName,
+      nativeLanguage,
+      targetLanguage,
+      level,
+      mainGoal,
+      dailyGoal,
+      profile,
+    });
 
     const response = await openai.responses.create({
       model: "gpt-5.5",
       input: `
-You are ${teacherName}, a live AI language teacher from Lerni AI.
+${systemPrompt}
 
-Student profile:
-${JSON.stringify(profile, null, 2)}
-
-Student message:
+CURRENT STUDENT MESSAGE:
 "${message}"
 
-Rules:
-- You are teaching ${targetLanguage}.
-- The student's native language is ${nativeLanguage}.
-- The student's level is ${level}.
-- The student's main goal is ${mainGoal}.
-- Do NOT repeat the student's message.
-- Do NOT translate only.
-- Lead the lesson like a real teacher.
-- If the student says "ready", "yes", "ok", "ابدأ", "جاهز", start Lesson 1 immediately.
-- If the goal is Travel, teach airport/hotel/restaurant/directions/shopping/emergency phrases.
-- If the goal is Career, teach interview/meeting/email/coworker phrases.
-- If the goal is Study, teach exam/class/academic phrases.
-- If the goal is Business, teach client/sales/negotiation/networking phrases.
-- Correct grammar and vocabulary mistakes gently.
-- Keep response short: 1-3 spoken sentences.
-- Ask one simple question or practice task at the end.
-- Reply in maximum 2 short sentences.
-- Do not use bullet points.
+IMPORTANT RESPONSE RULES:
+- Return only the teacher spoken reply.
 - Do not use markdown.
+- Do not use bullet points.
 - Do not write numbered lists.
-- The answer must be clean spoken text for avatar speech.
-
-Return only the teacher's spoken reply.
+- Speak naturally for a live avatar.
+- Give 2 to 4 short spoken sentences.
+- Always teach something useful from the student's goal.
+- If the student asks something outside the lesson, answer briefly then return to the lesson.
+- End with one simple practice question.
       `,
     });
 
     return res.status(200).json({
-      reply: response.output_text,
+      reply:
+        response.output_text?.trim() ||
+        "Great, let's continue your lesson. Repeat after me: I am ready to learn.",
     });
   } catch (error) {
     console.log("TEACHER REPLY ERROR:", error);
