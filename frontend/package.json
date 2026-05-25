@@ -12,6 +12,9 @@
   "dependencies": {
     "@daily-co/daily-js": "^0.90.0",
     "@daily-co/daily-react": "^0.25.2",
+    "@fortawesome/fontawesome-svg-core": "^7.2.0",
+    "@fortawesome/free-solid-svg-icons": "^7.2.0",
+    "@fortawesome/react-fontawesome": "^3.3.1",
     "@heygen/liveavatar-web-sdk": "^0.0.18",
     "@react-oauth/google": "^0.13.5",
     "@tailwindcss/vite": "^4.3.0",
