@@ -34,6 +34,7 @@ const AvatarTeacherPage = () => {
   const recognitionRef = useRef<any>(null);
   const hasStartedRef = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const transcriptRef = useRef("");
 
   const [, setSession] = useState<any>(null);
   const [avatarLoading, setAvatarLoading] = useState(false);
@@ -174,53 +175,68 @@ const AvatarTeacherPage = () => {
     }
   };
 
-  const startListening = () => {
-    if (recognitionRef.current || isRecording) return;
+ const startListening = () => {
+  if (recognitionRef.current || isRecording) return;
 
-    const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
+  const SpeechRecognition =
+    (window as any).SpeechRecognition ||
+    (window as any).webkitSpeechRecognition;
 
-    if (!SpeechRecognition) {
-      alert("Speech recognition is not supported in this browser");
-      return;
+  if (!SpeechRecognition) {
+    alert("Speech recognition is not supported in this browser");
+    return;
+  }
+
+  transcriptRef.current = "";
+
+  const recognition = new SpeechRecognition();
+
+  recognition.lang = "en-US";
+  recognition.interimResults = true;
+  recognition.continuous = true;
+
+  recognitionRef.current = recognition;
+
+  recognition.onstart = () => {
+    setIsRecording(true);
+    setStatus("Recording...");
+  };
+
+  recognition.onresult = (event: any) => {
+    let finalTranscript = "";
+
+    for (let i = 0; i < event.results.length; i++) {
+      finalTranscript += event.results[i][0].transcript;
     }
 
-    const recognition = new SpeechRecognition();
+    transcriptRef.current = finalTranscript.trim();
+    setInput(transcriptRef.current);
 
-    recognition.lang = "en-US";
-    recognition.interimResults = false;
-    recognition.continuous = false;
-
-    recognitionRef.current = recognition;
-
-    recognition.onstart = () => {
-      setIsRecording(true);
-      setStatus("Recording...");
-    };
-
-    recognition.onresult = async (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      console.log("VOICE TRANSCRIPT:", transcript);
-      setInput(transcript);
-      await sendToTeacher(transcript);
-    };
-
-    recognition.onerror = (event: any) => {
-      console.log("SPEECH ERROR:", event);
-      setIsRecording(false);
-      setStatus("Lesson started");
-      recognitionRef.current = null;
-    };
-
-    recognition.onend = () => {
-      setIsRecording(false);
-      setStatus("Lesson started");
-      recognitionRef.current = null;
-    };
-
-    recognition.start();
+    console.log("VOICE TRANSCRIPT:", transcriptRef.current);
   };
+
+  recognition.onerror = (event: any) => {
+    console.log("SPEECH ERROR:", event);
+    setIsRecording(false);
+    setStatus("Lesson started");
+    recognitionRef.current = null;
+  };
+
+  recognition.onend = async () => {
+    const finalText = transcriptRef.current.trim();
+
+    setIsRecording(false);
+    setStatus("Lesson started");
+    recognitionRef.current = null;
+
+    if (finalText) {
+      await sendToTeacher(finalText);
+      transcriptRef.current = "";
+    }
+  };
+
+  recognition.start();
+};
 
   const stopListening = () => {
     if (recognitionRef.current) {
