@@ -102,16 +102,16 @@ const sendToTeacher = async (text: string) => {
 
   try {
     const authToken = localStorage.getItem("token");
-
-    const res = await api.post(
-      "/ai/teacher-reply",
-      {
-        message: finalText,
-        teacherName: TEACHER_NAME,
-        profile,
-      },
-      { headers: { Authorization: `Bearer ${authToken}` } }
-    );
+const res = await api.post(
+  "/ai/teacher-reply",
+  {
+    message: finalText,
+    teacherName: TEACHER_NAME,
+    profile,
+    conversationMode: "live_voice",
+  },
+  { headers: { Authorization: `Bearer ${authToken}` } }
+);
 
     const teacherReply =
       res.data?.reply ||
@@ -241,13 +241,22 @@ const welcomeText = `Hello ${studentName}, I'm ${TEACHER_NAME} from Lerni AI, yo
   transcriptRef.current = "";
 
  const recognition = new SpeechRecognition();
+ const getSpeechLang = () => {
+  const lang = profile.targetLanguage || "English";
 
-recognition.lang =
-  profile.nativeLanguage === "Arabic"
-    ? "ar-SA"
-    : profile.nativeLanguage === "Hebrew"
-    ? "he-IL"
-    : "en-US";
+  if (lang === "Arabic") return "ar-SA";
+  if (lang === "Hebrew") return "he-IL";
+  if (lang === "English") return "en-US";
+  if (lang === "French") return "fr-FR";
+  if (lang === "Spanish") return "es-ES";
+  if (lang === "German") return "de-DE";
+  if (lang === "Italian") return "it-IT";
+  if (lang === "Russian") return "ru-RU";
+
+  return "en-US";
+};
+
+recognition.lang = getSpeechLang();
 
 recognition.interimResults = true;
 recognition.continuous = true;
@@ -259,18 +268,18 @@ recognition.onstart = () => {
   setStatus("Recording...");
 };
 
-  recognition.onresult = (event: any) => {
-    let finalTranscript = "";
+recognition.onresult = (event: any) => {
+  let finalTranscript = "";
 
-    for (let i = 0; i < event.results.length; i++) {
-      finalTranscript += event.results[i][0].transcript;
-    }
+  for (let i = event.resultIndex; i < event.results.length; i++) {
+    finalTranscript += event.results[i][0].transcript;
+  }
 
-    transcriptRef.current = finalTranscript.trim();
-    setInput(transcriptRef.current);
+  transcriptRef.current = finalTranscript.trim();
+  setInput(transcriptRef.current);
 
-    console.log("VOICE TRANSCRIPT:", transcriptRef.current);
-  };
+  console.log("VOICE TRANSCRIPT:", transcriptRef.current);
+};
 
   recognition.onerror = (event: any) => {
     console.log("SPEECH ERROR:", event);
