@@ -134,7 +134,10 @@ const profile =
       setSession(liveSession);
       setStatus("Lesson started");
 
-     const welcomeText = `Hello ${user?.name || "student"}, I'm Zayed, your ${
+    const studentName =
+  user?.name && user.name !== TEACHER_NAME ? user.name : "student";
+
+const welcomeText = `Hello ${studentName}, I'm ${TEACHER_NAME}, your ${
   profile.targetLanguage || "English"
 } teacher. I saw that your native language is ${
   profile.nativeLanguage || "Arabic"
