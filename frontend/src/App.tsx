@@ -19,7 +19,7 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
-import HeygenTestPage from "./pages/HeygenTestPage";
+
 
 function App() {
   return (
@@ -47,7 +47,6 @@ function App() {
           <Route path="/lessons" element={<LessonsPage />} />
           <Route path="/lessons/:lessonId" element={<LessonDetailsPage />} />
           <Route path="/avatar-teacher" element={<AvatarTeacherPage />} />
-          <Route path="/heygen-test" element={<HeygenTestPage />} />
           <Route path="/progress" element={<ProgressPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
