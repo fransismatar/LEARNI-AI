@@ -1,15 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { teachers } from "../data/teachers";
 
-const teachers = [
-  {
-    name: "Zayed",
-    role: "Arabic conversation and culture teacher",
-    accent: "Gulf Arabic",
-    image: "/teachers/Zayed.png",
-  },
-];
 
 const dailyMissions = [
   {
