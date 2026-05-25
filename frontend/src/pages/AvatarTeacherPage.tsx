@@ -290,7 +290,7 @@ const AvatarTeacherPage = () => {
 
       <div className="mx-auto flex max-w-7xl flex-col lg:grid lg:grid-cols-[0.95fr_1.05fr]">
         {isChatVisible && (
-          <div className="order-2 flex min-h-[520px] flex-col border-r border-slate-200 bg-white lg:order-1 lg:min-h-[calc(100vh-68px)]">
+          <div className="order-2 flex min-h-[420px] flex-col border-r border-slate-200 bg-white lg:order-1 lg:min-h-[calc(100vh-68px)]">
             <div className="border-b border-slate-100 px-5 py-4">
               <div className="flex items-center justify-between gap-3 rounded-2xl bg-amber-400 px-4 py-3 text-white">
                 <p className="text-sm font-black">Lecture</p>
@@ -382,8 +382,8 @@ const AvatarTeacherPage = () => {
         )}
 
         <div
-          className={`order-1 min-h-[calc(100vh-68px)] bg-slate-50 p-4 lg:order-2 lg:p-8 ${
-            !isChatVisible ? "lg:col-span-2" : ""
+           className={`order-1 bg-slate-50 p-4 lg:order-2 lg:min-h-[calc(100vh-68px)] lg:p-8 ${
+    !isChatVisible ? "lg:col-span-2" : ""
           }`}
         >
           <div className="relative overflow-hidden rounded-[28px] bg-blue-950 shadow-2xl">
@@ -393,7 +393,7 @@ const AvatarTeacherPage = () => {
               playsInline
               muted
               controls={false}
-              className="h-[280px] w-full bg-blue-950 object-contain sm:h-[360px] lg:h-[420px]"
+              className="h-[240px] w-full bg-blue-950 object-contain sm:h-[320px] lg:h-[420px]"
             />
 
             <div className="absolute bottom-5 left-5 space-y-2 text-sm font-bold text-white">
