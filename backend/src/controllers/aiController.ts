@@ -5,6 +5,7 @@ import { Request, Response } from "express";
 import OpenAI from "openai";
 import User from "../models/User";
 import { buildMasterTeacherPrompt } from "../prompts/masterTeacherPrompt";
+import { toFile } from "openai/uploads";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -61,6 +62,37 @@ Return ONLY valid JSON.
 
     return res.status(500).json({
       message: "Failed to generate AI plan",
+    });
+  }
+};
+
+export const transcribeVoice = async (req: Request, res: Response) => {
+  try {
+    const audioFile = req.file;
+
+    if (!audioFile) {
+      return res.status(400).json({
+        message: "Audio file is required",
+      });
+    }
+
+    const file = await toFile(audioFile.buffer, "voice.webm", {
+      type: audioFile.mimetype || "audio/webm",
+    });
+
+    const transcription = await openai.audio.transcriptions.create({
+      model: "gpt-4o-mini-transcribe",
+      file,
+    });
+
+    return res.status(200).json({
+      text: transcription.text,
+    });
+  } catch (error) {
+    console.log("TRANSCRIBE ERROR:", error);
+
+    return res.status(500).json({
+      message: "Failed to transcribe voice",
     });
   }
 };

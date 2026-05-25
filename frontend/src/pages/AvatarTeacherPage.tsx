@@ -27,18 +27,19 @@ const TEACHER_NAME = "Zayed";
 
 const AvatarTeacherPage = () => {
   const { user } = useAuth();
- const storedProfile = localStorage.getItem("learningProfile");
+  const storedProfile = localStorage.getItem("learningProfile");
 
-const profile =
-  user?.learningProfile ||
-  (storedProfile ? JSON.parse(storedProfile) : {});
+  const profile =
+    user?.learningProfile || (storedProfile ? JSON.parse(storedProfile) : {});
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const sessionRef = useRef<any>(null);
-  const recognitionRef = useRef<any>(null);
   const hasStartedRef = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  const transcriptRef = useRef("");
+
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const currentStreamRef = useRef<MediaStream | null>(null);
 
   const [, setSession] = useState<any>(null);
   const [avatarLoading, setAvatarLoading] = useState(false);
@@ -57,75 +58,71 @@ const profile =
     ]);
   };
 
-const cleanForSpeech = (text: string) => {
-  return text
-    .replace(/\*\*/g, "")
-    .replace(/[-•]/g, "")
-    .replace(/\n/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-};
+  const cleanForSpeech = (text: string) => {
+    return text
+      .replace(/\*\*/g, "")
+      .replace(/[-•]/g, "")
+      .replace(/\n/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  };
 
+  const speakText = async (liveSession: any, text: string) => {
+    if (!liveSession || !text.trim()) return;
 
+    const cleanText = cleanForSpeech(text);
+    console.log("TEXT SENT TO AVATAR:", cleanText);
 
-const speakText = async (liveSession: any, text: string) => {
-  if (!liveSession || !text.trim()) return;
+    try {
+      if (typeof liveSession.repeat === "function") {
+        await liveSession.repeat(cleanText);
+        return;
+      }
 
-  const cleanText = cleanForSpeech(text);
+      if (typeof liveSession.speak === "function") {
+        await liveSession.speak({ text: cleanText });
+        return;
+      }
 
-  console.log("TEXT SENT TO AVATAR:", cleanText);
-
-  try {
-    if (typeof liveSession.repeat === "function") {
-      await liveSession.repeat(cleanText);
-      return;
+      if (typeof liveSession.message === "function") {
+        await liveSession.message(cleanText);
+        return;
+      }
+    } catch (error) {
+      console.log("AVATAR SPEAK ERROR:", error);
     }
+  };
 
-    if (typeof liveSession.speak === "function") {
-      await liveSession.speak({ text: cleanText });
-      return;
+  const sendToTeacher = async (text: string) => {
+    const finalText = text.trim();
+    if (!finalText || !sessionRef.current) return;
+
+    addMessage("user", finalText);
+    setInput("");
+
+    try {
+      const authToken = localStorage.getItem("token");
+
+      const res = await api.post(
+        "/ai/teacher-reply",
+        {
+          message: finalText,
+          teacherName: TEACHER_NAME,
+          profile,
+          conversationMode: "live_voice",
+        },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      );
+
+      const teacherReply = res.data?.reply || "Great, let's start your lesson.";
+
+      addMessage("teacher", teacherReply);
+      await speakText(sessionRef.current, teacherReply);
+    } catch (error) {
+      console.log("SEND ERROR:", error);
+      addMessage("teacher", "Sorry, I could not answer right now.");
     }
-
-    if (typeof liveSession.message === "function") {
-      await liveSession.message(cleanText);
-      return;
-    }
-  } catch (error) {
-    console.log("AVATAR SPEAK ERROR:", error);
-  }
-};
-
-const sendToTeacher = async (text: string) => {
-  const finalText = text.trim();
-  if (!finalText || !sessionRef.current) return;
-
-  addMessage("user", finalText);
-  setInput("");
-
-  try {
-    const authToken = localStorage.getItem("token");
-const res = await api.post(
-  "/ai/teacher-reply",
-  {
-    message: finalText,
-    teacherName: TEACHER_NAME,
-    profile,
-    conversationMode: "live_voice",
-  },
-  { headers: { Authorization: `Bearer ${authToken}` } }
-);
-
-    const teacherReply =
-      res.data?.reply ||
-      "Great, let's start your lesson.";
-
-    addMessage("teacher", teacherReply);
-    await speakText(sessionRef.current, teacherReply);
-  } catch (error) {
-    console.log("SEND ERROR:", error);
-    addMessage("teacher", "Sorry, I could not answer right now.");
-  }
-};
+  };
 
   const startAvatarSession = useCallback(async () => {
     if (hasStartedRef.current) return;
@@ -147,7 +144,11 @@ const res = await api.post(
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
 
-      const sessionToken = res.data?.data?.session_token;
+      const sessionToken =
+        res.data?.data?.session_token ||
+        res.data?.session_token ||
+        res.data?.token ||
+        res.data?.data?.token;
 
       if (!sessionToken) throw new Error("No HeyGen session token returned");
 
@@ -176,34 +177,34 @@ const res = await api.post(
       setSession(liveSession);
       setStatus("Lesson started");
 
-const studentName =
-  user?.name && user.name !== TEACHER_NAME
-    ? user.name
-    : "student";
+      const studentName =
+        user?.name && user.name !== TEACHER_NAME ? user.name : "student";
 
-const welcomeText = `Hello ${studentName}, I'm ${TEACHER_NAME} from Lerni AI, your ${
-  profile.targetLanguage || "English"
-} teacher. I saw your goal is ${
-  profile.mainGoal || "conversation"
-}, and your level is ${
-  profile.englishLevel || profile.level || "Beginner"
-}. I will guide the lesson step by step, and you can answer me anytime. Are you ready to start?`;
+      const welcomeText = `Hello ${studentName}, I'm ${TEACHER_NAME} from Lerni AI, your ${
+        profile.targetLanguage || "English"
+      } teacher. I saw your goal is ${
+        profile.mainGoal || "conversation"
+      }, and your level is ${
+        profile.englishLevel || profile.level || "Beginner"
+      }. I will guide the lesson step by step, and you can answer me anytime. Are you ready to start?`;
 
       addMessage("teacher", welcomeText);
       await speakText(liveSession, welcomeText);
     } catch (error: any) {
       console.log("HEYGEN START ERROR:", error);
       console.log("HEYGEN RESPONSE:", error?.response?.data);
+
       setStatus(
         error?.response?.data?.message ||
           error?.message ||
           "Failed to start teacher"
       );
+
       hasStartedRef.current = false;
     } finally {
       setAvatarLoading(false);
     }
-     }, [user?.name]);
+  }, [user?.name]);
 
   const stopSession = async () => {
     try {
@@ -227,93 +228,98 @@ const welcomeText = `Hello ${studentName}, I'm ${TEACHER_NAME} from Lerni AI, yo
       setIsMuted(nextMuted);
     }
   };
-  const getLanguageCode = (language?: string) => {
-  const lang = language || "English";
 
-  if (lang === "Arabic") return "ar-SA";
-  if (lang === "Hebrew") return "he-IL";
-  if (lang === "English") return "en-US";
-  if (lang === "French") return "fr-FR";
-  if (lang === "Spanish") return "es-ES";
-  if (lang === "German") return "de-DE";
-  if (lang === "Italian") return "it-IT";
-  if (lang === "Russian") return "ru-RU";
+  const startListening = async () => {
+    if (
+      isRecording ||
+      (mediaRecorderRef.current &&
+        mediaRecorderRef.current.state === "recording")
+    ) {
+      return;
+    }
 
-  return "en-US";
-};
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      currentStreamRef.current = stream;
+      audioChunksRef.current = [];
 
-const getCurrentSpeechLang = () => {
-  if (profile.nativeLanguage === "Arabic") return "ar-SA";
-  if (profile.nativeLanguage === "Hebrew") return "he-IL";
+      const mimeType = MediaRecorder.isTypeSupported("audio/webm")
+        ? "audio/webm"
+        : "";
 
-  return getLanguageCode(profile.targetLanguage || "English");
-};
+      const recorder = mimeType
+        ? new MediaRecorder(stream, { mimeType })
+        : new MediaRecorder(stream);
 
- const startListening = () => {
-  if (recognitionRef.current || isRecording) return;
+      mediaRecorderRef.current = recorder;
 
-  const SpeechRecognition =
-    (window as any).SpeechRecognition ||
-    (window as any).webkitSpeechRecognition;
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
 
-  if (!SpeechRecognition) {
-    alert("Speech recognition is not supported in this browser");
-    return;
-  }
+      recorder.onstart = () => {
+        setIsRecording(true);
+        setStatus("Recording...");
+        setInput("");
+      };
 
-  transcriptRef.current = "";
+      recorder.onstop = async () => {
+        setIsRecording(false);
+        setStatus("Transcribing...");
 
- const recognition = new SpeechRecognition();
-recognition.lang = getCurrentSpeechLang();
-recognition.interimResults = true;
-recognition.continuous = true;
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: recorder.mimeType || "audio/webm",
+        });
 
-recognitionRef.current = recognition;
+        stream.getTracks().forEach((track) => track.stop());
+        currentStreamRef.current = null;
 
-recognition.onstart = () => {
-  setIsRecording(true);
-  setStatus("Recording...");
-};
+        const formData = new FormData();
+        formData.append("audio", audioBlob, "voice.webm");
 
-recognition.onresult = (event: any) => {
-  let finalTranscript = "";
+        try {
+          const authToken = localStorage.getItem("token");
 
-  for (let i = event.resultIndex; i < event.results.length; i++) {
-    finalTranscript += event.results[i][0].transcript;
-  }
+          const res = await api.post("/ai/transcribe-voice", formData, {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "multipart/form-data",
+            },
+          });
 
-  transcriptRef.current = finalTranscript.trim();
-  setInput(transcriptRef.current);
+          const transcript = res.data?.text?.trim();
 
-  console.log("VOICE TRANSCRIPT:", transcriptRef.current);
-};
+          if (transcript) {
+            setInput(transcript);
+            await sendToTeacher(transcript);
+          }
 
-  recognition.onerror = (event: any) => {
-    console.log("SPEECH ERROR:", event);
-    setIsRecording(false);
-    setStatus("Lesson started");
-    recognitionRef.current = null;
-  };
+          setStatus("Lesson started");
+        } catch (error) {
+          console.log("TRANSCRIBE CLIENT ERROR:", error);
+          setStatus("Lesson started");
+        } finally {
+          mediaRecorderRef.current = null;
+          audioChunksRef.current = [];
+        }
+      };
 
-  recognition.onend = async () => {
-    const finalText = transcriptRef.current.trim();
-
-    setIsRecording(false);
-    setStatus("Lesson started");
-    recognitionRef.current = null;
-
-    if (finalText) {
-      await sendToTeacher(finalText);
-      transcriptRef.current = "";
+      recorder.start();
+    } catch (error) {
+      console.log("MIC RECORD ERROR:", error);
+      setIsRecording(false);
+      setStatus("Lesson started");
     }
   };
 
-  recognition.start();
-};
-
   const stopListening = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      mediaRecorderRef.current.stop();
     }
   };
 
@@ -322,7 +328,17 @@ recognition.onresult = (event: any) => {
 
     return () => {
       if (sessionRef.current) sessionRef.current.stop();
-      if (recognitionRef.current) recognitionRef.current.stop();
+
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state !== "inactive"
+      ) {
+        mediaRecorderRef.current.stop();
+      }
+
+      if (currentStreamRef.current) {
+        currentStreamRef.current.getTracks().forEach((track) => track.stop());
+      }
     };
   }, [startAvatarSession]);
 
