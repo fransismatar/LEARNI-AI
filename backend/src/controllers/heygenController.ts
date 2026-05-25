@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { buildMasterTeacherPrompt } from "../prompts/masterTeacherPrompt";
 
 export const createHeygenToken = async (req: Request, res: Response) => {
   try {
@@ -25,44 +24,21 @@ export const createHeygenToken = async (req: Request, res: Response) => {
       });
     }
 
-    const user = (req as any).user;
-    const safeStudentName =
-  user?.name && user.name !== teacherName
-    ? user.name
-    : user?.username && user.username !== teacherName
-    ? user.username
-    : "student";
-
-const profile = {
-  ...(user?.learningProfile || {}),
-  name: safeStudentName,
-};
-
-    const masterPrompt = buildMasterTeacherPrompt({
-      teacherName,
-      nativeLanguage: profile.nativeLanguage || "Arabic",
-      targetLanguage: profile.targetLanguage || "English",
-      level: profile.englishLevel || profile.level || "Beginner",
-      mainGoal: profile.mainGoal || "General conversation",
-      dailyGoal: profile.dailyGoal || "10 min/day",
-      profile,
-    });
-
     const payload = {
-  mode: "FULL",
-  avatar_id: avatarId,
-  avatar_persona: {
-    voice_id: voiceId,
-    language: "en",
-  },
-};
+      mode: "FULL",
+      avatar_id: avatarId,
+      avatar_persona: {
+        voice_id: voiceId,
+        language: "en",
+      },
+    };
 
-    console.log("HEYGEN DEBUG:", {
+    console.log("HEYGEN TOKEN PAYLOAD:", {
       teacherName,
-      hasApiKey: true,
-      avatarIdExists: Boolean(avatarId),
-      voiceIdExists: Boolean(voiceId),
-      hasPersona: Boolean(payload.avatar_persona),
+      avatarId,
+      voiceId,
+      mode: payload.mode,
+      language: payload.avatar_persona.language,
     });
 
     const response = await fetch("https://api.liveavatar.com/v1/sessions/token", {
@@ -76,9 +52,9 @@ const profile = {
 
     const data = await response.json();
 
-    if (!response.ok) {
-      console.log("LiveAvatar token error:", data);
+    console.log("HEYGEN TOKEN RESPONSE:", data);
 
+    if (!response.ok) {
       return res.status(response.status).json({
         message: "Failed to create LiveAvatar token",
         details: data,
