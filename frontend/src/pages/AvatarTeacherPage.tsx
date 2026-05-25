@@ -227,6 +227,27 @@ const welcomeText = `Hello ${studentName}, I'm ${TEACHER_NAME} from Lerni AI, yo
       setIsMuted(nextMuted);
     }
   };
+  const getLanguageCode = (language?: string) => {
+  const lang = language || "English";
+
+  if (lang === "Arabic") return "ar-SA";
+  if (lang === "Hebrew") return "he-IL";
+  if (lang === "English") return "en-US";
+  if (lang === "French") return "fr-FR";
+  if (lang === "Spanish") return "es-ES";
+  if (lang === "German") return "de-DE";
+  if (lang === "Italian") return "it-IT";
+  if (lang === "Russian") return "ru-RU";
+
+  return "en-US";
+};
+
+const getCurrentSpeechLang = () => {
+  if (profile.nativeLanguage === "Arabic") return "ar-SA";
+  if (profile.nativeLanguage === "Hebrew") return "he-IL";
+
+  return getLanguageCode(profile.targetLanguage || "English");
+};
 
  const startListening = () => {
   if (recognitionRef.current || isRecording) return;
@@ -243,23 +264,7 @@ const welcomeText = `Hello ${studentName}, I'm ${TEACHER_NAME} from Lerni AI, yo
   transcriptRef.current = "";
 
  const recognition = new SpeechRecognition();
- const getSpeechLang = () => {
-  const lang = profile.targetLanguage || "English";
-
-  if (lang === "Arabic") return "ar-SA";
-  if (lang === "Hebrew") return "he-IL";
-  if (lang === "English") return "en-US";
-  if (lang === "French") return "fr-FR";
-  if (lang === "Spanish") return "es-ES";
-  if (lang === "German") return "de-DE";
-  if (lang === "Italian") return "it-IT";
-  if (lang === "Russian") return "ru-RU";
-
-  return "en-US";
-};
-
-recognition.lang = getSpeechLang();
-
+recognition.lang = getCurrentSpeechLang();
 recognition.interimResults = true;
 recognition.continuous = true;
 
