@@ -331,8 +331,8 @@ const AvatarTeacherPage = () => {
 
             <div className="sticky bottom-0 border-t border-slate-100 bg-white px-5 py-4">
               <div className="flex items-center justify-center gap-8">
-                <button className="flex flex-col items-center gap-2 text-xs font-bold text-blue-500">
-                  <span className="grid h-12 w-12 place-items-center rounded-full bg-blue-50 text-lg">
+                <button className="flex cursor-pointer flex-col items-center gap-2 text-xs font-bold text-blue-500 transition duration-200 hover:scale-105">
+                  <span className="grid h-12 w-12 place-items-center rounded-full bg-blue-50 text-lg transition duration-200 hover:bg-blue-100">
                     <FontAwesomeIcon icon={faLightbulb} />
                   </span>
                   Hint
@@ -340,7 +340,7 @@ const AvatarTeacherPage = () => {
 
                 <button
                   onClick={startListening}
-                  className="grid h-20 w-20 place-items-center rounded-full bg-blue-500 text-3xl text-white shadow-xl shadow-blue-500/25 transition hover:scale-105"
+                  className="grid h-20 w-20 place-items-center cursor-pointer rounded-full bg-blue-500 text-3xl text-white shadow-xl shadow-blue-500/25 transition hover:scale-105"
                 >
                   <FontAwesomeIcon icon={faMicrophone} />
                 </button>
@@ -352,7 +352,7 @@ const AvatarTeacherPage = () => {
                   }}
                   className="flex flex-col items-center gap-2 text-xs font-bold text-blue-500"
                 >
-                  <span className="grid h-12 w-12 place-items-center rounded-full bg-blue-50 text-lg">
+                  <span className="grid h-12 w-12 cursor-pointer place-items-center rounded-full bg-blue-50 text-lg transition duration-200 hover:scale-105 hover:bg-blue-100">
                     <FontAwesomeIcon icon={faKeyboard} />
                   </span>
                   Type
@@ -372,7 +372,7 @@ const AvatarTeacherPage = () => {
 
                 <button
                   onClick={() => sendToTeacher(input)}
-                  className="rounded-2xl bg-blue-500 px-5 py-3 text-sm font-black text-white"
+                  className="rounded-2xl bg-blue-500 px-5 py-3 text-sm font-black text-white cursor-pointer transition duration-200 hover:bg-blue-600 hover:scale-[1.02]"
                 >
                   Send
                 </button>
