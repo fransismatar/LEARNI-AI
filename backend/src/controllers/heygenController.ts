@@ -26,9 +26,16 @@ export const createHeygenToken = async (req: Request, res: Response) => {
     }
 
     const user = (req as any).user;
-    const profile = {
+    const safeStudentName =
+  user?.name && user.name !== teacherName
+    ? user.name
+    : user?.username && user.username !== teacherName
+    ? user.username
+    : "student";
+
+const profile = {
   ...(user?.learningProfile || {}),
-  name: user?.name || user?.username || "student",
+  name: safeStudentName,
 };
 
     const masterPrompt = buildMasterTeacherPrompt({

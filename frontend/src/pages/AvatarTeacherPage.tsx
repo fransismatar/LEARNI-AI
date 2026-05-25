@@ -134,8 +134,10 @@ const profile =
       setSession(liveSession);
       setStatus("Lesson started");
 
-    const studentName =
-  user?.name && user.name !== TEACHER_NAME ? user.name : "student";
+const studentName =
+  user?.name && user.name !== TEACHER_NAME
+    ? user.name
+    : "student";
 
 const welcomeText = `Hello ${studentName}, I'm ${TEACHER_NAME}, your ${
   profile.targetLanguage || "English"
