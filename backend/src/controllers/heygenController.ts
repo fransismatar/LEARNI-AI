@@ -26,13 +26,16 @@ export const createHeygenToken = async (req: Request, res: Response) => {
     }
 
     const user = (req as any).user;
-    const profile = user?.learningProfile || {};
+    const profile = {
+  ...(user?.learningProfile || {}),
+  name: user?.name || user?.username || "student",
+};
 
     const masterPrompt = buildMasterTeacherPrompt({
       teacherName,
       nativeLanguage: profile.nativeLanguage || "Arabic",
       targetLanguage: profile.targetLanguage || "English",
-      level: profile.englishLevel || "Beginner",
+      level: profile.englishLevel || profile.level || "Beginner",
       mainGoal: profile.mainGoal || "General conversation",
       dailyGoal: profile.dailyGoal || "10 min/day",
       profile,

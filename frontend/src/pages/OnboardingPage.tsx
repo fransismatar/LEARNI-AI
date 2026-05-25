@@ -59,6 +59,37 @@ type Question = {
   options?: string[];
 };
 
+const levelWordOptions = {
+  a1a2WordsKnown: [
+    "hello", "goodbye", "water", "food", "house", "school", "friend", "family",
+    "work", "money", "today", "tomorrow", "happy", "sad", "big", "small",
+    "eat", "drink", "go", "come",
+  ],
+  b1b2WordsKnown: [
+    "appointment", "experience", "improve", "decision", "explain", "prepare",
+    "comfortable", "important", "conversation", "opportunity", "relationship",
+    "environment", "suggest", "compare", "describe", "support", "arrive",
+    "continue", "probably", "although",
+  ],
+  c1c2WordsKnown: [
+    "nevertheless", "substantial", "perspective", "sophisticated", "circumstance",
+    "comprehensive", "implementation", "negotiation", "assumption", "consequence",
+    "interpretation", "sustainable", "prioritize", "fundamental", "complexity",
+    "fluency", "adaptability", "controversial", "efficient", "precise",
+  ],
+};
+
+const calculateLevel = (answers: Record<string, AnswerValue>) => {
+  const a = Array.isArray(answers.a1a2WordsKnown) ? answers.a1a2WordsKnown.length : 0;
+  const b = Array.isArray(answers.b1b2WordsKnown) ? answers.b1b2WordsKnown.length : 0;
+  const c = Array.isArray(answers.c1c2WordsKnown) ? answers.c1c2WordsKnown.length : 0;
+
+  if (c >= 10) return "C1-C2";
+  if (b >= 10 || c >= 5) return "B1-B2";
+  if (a >= 8) return "A1-A2";
+  return "Beginner";
+};
+
 const questions: Question[] = [
   {
     id: "ageRange",
@@ -287,6 +318,27 @@ const questions: Question[] = [
     options: ["5 min/day", "10 min/day", "15 min/day", "30 min/day"],
   },
   {
+  id: "a1a2WordsKnown",
+  title: "Which beginner words do you know?",
+  subtitle: "Select the words you understand.",
+  type: "multi",
+  options: levelWordOptions.a1a2WordsKnown,
+},
+{
+  id: "b1b2WordsKnown",
+  title: "Which intermediate words do you know?",
+  subtitle: "Select the words you understand.",
+  type: "multi",
+  options: levelWordOptions.b1b2WordsKnown,
+},
+{
+  id: "c1c2WordsKnown",
+  title: "Which advanced words do you know?",
+  subtitle: "Select the words you understand.",
+  type: "multi",
+  options: levelWordOptions.c1c2WordsKnown,
+},
+  {
     id: "aiIntro",
     title: "Your AI teacher will build lessons around your goals",
     subtitle: "Practice real conversations, get corrections, and improve step by step.",
@@ -480,23 +532,55 @@ const OnboardingPage = () => {
     currentQuestion.type === "loading" ||
     hasAnswer;
 
-  const handleNext = () => {
-    if (currentQuestion.type === "loading") {
-      localStorage.setItem("onboardingAnswers", JSON.stringify(answers));
-      navigate("/register");
-      return;
-    }
+const handleNext = () => {
+  if (currentQuestion.type === "loading") {
+    const calculatedLevel = calculateLevel(answers);
 
-    if (step < visibleQuestions.length - 1) {
-      setStep((prev) => prev + 1);
-    }
-  };
+    const learningProfile = {
+      nativeLanguage: answers.nativeLanguage || "Arabic",
+      targetLanguage: answers.targetLanguage || "English",
+      englishLevel: calculatedLevel,
+      level: calculatedLevel,
+      selfReportedEnglishLevel: answers.englishLevel || "",
+      mainGoal: answers.mainGoal || "General conversation",
+      dailyGoal: answers.dailyGoal || "10 min/day",
+      speakingProblems: Array.isArray(answers.speakingProblems)
+        ? answers.speakingProblems
+        : [],
+      improveAreas: Array.isArray(answers.improveAreas)
+        ? answers.improveAreas
+        : [],
+      levelWordCheck: {
+        a1a2WordsKnown: Array.isArray(answers.a1a2WordsKnown)
+          ? answers.a1a2WordsKnown
+          : [],
+        b1b2WordsKnown: Array.isArray(answers.b1b2WordsKnown)
+          ? answers.b1b2WordsKnown
+          : [],
+        c1c2WordsKnown: Array.isArray(answers.c1c2WordsKnown)
+          ? answers.c1c2WordsKnown
+          : [],
+      },
+      onboardingAnswers: answers,
+    };
 
-  const handleBack = () => {
-    if (step > 0) {
-      setStep((prev) => prev - 1);
-    }
-  };
+    localStorage.setItem("onboardingAnswers", JSON.stringify(answers));
+    localStorage.setItem("learningProfile", JSON.stringify(learningProfile));
+
+    navigate("/register");
+    return;
+  }
+
+  if (step < visibleQuestions.length - 1) {
+    setStep((prev) => prev + 1);
+  }
+};
+
+const handleBack = () => {
+  if (step > 0) {
+    setStep((prev) => prev - 1);
+  }
+};
 
   return (
     <main

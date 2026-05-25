@@ -27,7 +27,11 @@ const TEACHER_NAME = "Zayed";
 
 const AvatarTeacherPage = () => {
   const { user } = useAuth();
-  const profile = user?.learningProfile || {};
+  const storedProfile = localStorage.getItem("learningProfile");
+
+const profile =
+  user?.learningProfile ||
+  (storedProfile ? JSON.parse(storedProfile) : {});
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const sessionRef = useRef<any>(null);
@@ -130,11 +134,13 @@ const AvatarTeacherPage = () => {
       setSession(liveSession);
       setStatus("Lesson started");
 
-      const welcomeText = `Hello ${
-        user?.name || "student"
-      }, welcome to Lerni AI. I am Zayed, your AI language teacher. Today we will practice ${
-        profile.targetLanguage || "English"
-      }. Let's start: how are you today?`;
+     const welcomeText = `Hello ${user?.name || "student"}, I'm Zayed, your ${
+  profile.targetLanguage || "English"
+} teacher. I saw that your native language is ${
+  profile.nativeLanguage || "Arabic"
+}, your goal is ${profile.mainGoal || "conversation"}, and your level is ${
+  profile.englishLevel || profile.level || "Beginner"
+}. Today we will practice a real situation for your goal. Are you ready?`;
 
       addMessage("teacher", welcomeText);
       await speakText(liveSession, welcomeText);
