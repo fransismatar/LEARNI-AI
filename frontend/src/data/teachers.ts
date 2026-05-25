@@ -5,7 +5,7 @@ export const teachers = [
     name: "Zyron",
     role: "Futuristic AI language teacher",
     accent: "Smart conversation",
-    image: "/teachers/Zyron.png",
+    image: "/teachers/zyron.png",
   },
   {
     name: "Zayed",
