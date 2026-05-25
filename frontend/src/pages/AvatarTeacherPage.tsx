@@ -57,17 +57,41 @@ const profile =
     ]);
   };
 
-  const speakText = async (liveSession: any, text: string) => {
-    if (!liveSession || !text.trim()) return;
+const cleanForSpeech = (text: string) => {
+  return text
+    .replace(/\*\*/g, "")
+    .replace(/[-•]/g, "")
+    .replace(/\n/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+};
 
+const splitSpeech = (text: string) => {
+  const clean = cleanForSpeech(text);
+
+  return clean
+    .split(/(?<=[.!?؟])\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+};
+
+const speakText = async (liveSession: any, text: string) => {
+  if (!liveSession || !text.trim()) return;
+
+  const parts = splitSpeech(text);
+
+  for (const part of parts) {
     if (typeof liveSession.speak === "function") {
-      await liveSession.speak({ text });
+      await liveSession.speak({ text: part });
     } else if (typeof liveSession.message === "function") {
-      await liveSession.message(text);
+      await liveSession.message(part);
     } else if (typeof liveSession.repeat === "function") {
-      await liveSession.repeat(text);
+      await liveSession.repeat(part);
     }
-  };
+
+    await new Promise((resolve) => setTimeout(resolve, 700));
+  }
+};
 
 const sendToTeacher = async (text: string) => {
   const finalText = text.trim();
@@ -177,13 +201,7 @@ const welcomeText = `Hello ${studentName}, I'm ${TEACHER_NAME} from Lerni AI, yo
     } finally {
       setAvatarLoading(false);
     }
- }, [
-  user?.name,
-  profile.targetLanguage,
-  profile.mainGoal,
-  profile.englishLevel,
-  profile.level,
-]);
+     }, [user?.name]);
 
   const stopSession = async () => {
     try {
