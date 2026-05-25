@@ -11,6 +11,30 @@ const teachers = [
   },
 ];
 
+const dailyMissions = [
+  {
+    title: "Daily Speaking",
+    level: "Beginner",
+    time: "5 min",
+    xp: "+50 XP",
+    words: ["Hello", "How are you?", "Nice to meet you"],
+  },
+  {
+    title: "Travel English",
+    level: "Beginner",
+    time: "8 min",
+    xp: "+80 XP",
+    words: ["Airport", "Ticket", "Passport"],
+  },
+  {
+    title: "Restaurant Talk",
+    level: "Beginner",
+    time: "7 min",
+    xp: "+70 XP",
+    words: ["Menu", "Order", "Water"],
+  },
+];
+
 const DashboardPage = () => {
   const { user } = useAuth();
   const profile = user?.learningProfile || {};
@@ -18,51 +42,56 @@ const DashboardPage = () => {
   const [selectedTeacher, setSelectedTeacher] = useState("Zayed");
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
 
-  const teacher = teachers.find((item) => item.name === selectedTeacher) || teachers[0];
+  const teacher =
+    teachers.find((item) => item.name === selectedTeacher) || teachers[0];
 
   return (
-    <section className="mx-auto max-w-6xl space-y-6">
-      <div className="rounded-[36px] border border-cyan-400/20 bg-gradient-to-br from-cyan-400/10 via-slate-900 to-blue-500/10 p-6 shadow-2xl sm:p-8">
-        <p className="text-sm font-bold text-cyan-300">
-          Welcome back, {user?.name || "Student"}
-        </p>
+    <section className="mx-auto max-w-6xl space-y-5">
+      <div className="rounded-[28px] border border-cyan-400/20 bg-gradient-to-br from-cyan-400/10 via-slate-900 to-blue-500/10 p-5 shadow-2xl sm:p-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="text-sm font-bold text-cyan-300">
+              Welcome back, {user?.name || "Student"}
+            </p>
 
-        <h1 className="mt-4 text-4xl font-black leading-tight sm:text-5xl">
-          Start your lesson with{" "}
-          <span className="bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
-            {selectedTeacher}
-          </span>
-        </h1>
+            <h1 className="mt-2 text-3xl font-black leading-tight sm:text-4xl">
+              Continue with{" "}
+              <span className="bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
+                {selectedTeacher}
+              </span>
+            </h1>
 
-        <p className="mt-4 max-w-2xl leading-7 text-slate-300">
-          Practice {profile.targetLanguage || "English"} with video, voice,
-          chat, and corrections in one lesson room.
-        </p>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
+              Practice {profile.targetLanguage || "English"} with video, voice,
+              chat, missions, and AI corrections.
+            </p>
+          </div>
 
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <Link
-            to={`/avatar-teacher?teacher=${selectedTeacher}`}
-            className="rounded-2xl bg-cyan-400 px-6 py-4 text-center font-bold text-slate-950 shadow-xl shadow-cyan-400/20 transition hover:bg-cyan-300"
-          >
-            Start Lesson
-          </Link>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link
+              to={`/avatar-teacher?teacher=${selectedTeacher}`}
+              className="rounded-2xl bg-cyan-400 px-6 py-3 text-center font-bold text-slate-950 shadow-xl shadow-cyan-400/20 transition hover:bg-cyan-300"
+            >
+              Start Lesson
+            </Link>
 
-          <button
-            onClick={() => setIsTeacherModalOpen(true)}
-            className="cursor-pointer rounded-2xl border border-cyan-400/40 bg-cyan-400/5 px-6 py-4 text-center font-bold text-cyan-300 transition hover:bg-cyan-400/10"
-          >
-            Change Teacher
-          </button>
+            <button
+              onClick={() => setIsTeacherModalOpen(true)}
+              className="cursor-pointer rounded-2xl border border-cyan-400/40 bg-cyan-400/5 px-6 py-3 text-center font-bold text-cyan-300 transition hover:bg-cyan-400/10"
+            >
+              Change Teacher
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-        <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-6 shadow-2xl sm:p-8">
+      <div className="grid gap-5 lg:grid-cols-[0.75fr_1.25fr]">
+        <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-2xl">
           <p className="text-sm font-bold text-cyan-300">Your teacher</p>
 
-          <div className="mt-5 flex h-full flex-col justify-between gap-5 rounded-3xl border border-cyan-400/20 bg-slate-950/60 p-5">
+          <div className="mt-4 rounded-3xl border border-cyan-400/20 bg-slate-950/60 p-4">
             <div className="flex items-center gap-4">
-              <div className="h-16 w-16 overflow-hidden rounded-3xl border border-cyan-400/20">
+              <div className="h-14 w-14 overflow-hidden rounded-2xl border border-cyan-400/20">
                 <img
                   src={teacher.image}
                   alt={teacher.name}
@@ -71,8 +100,8 @@ const DashboardPage = () => {
               </div>
 
               <div>
-                <h2 className="text-2xl font-black">{teacher.name}</h2>
-                <p className="mt-1 text-sm text-slate-400">{teacher.role}</p>
+                <h2 className="text-xl font-black">{teacher.name}</h2>
+                <p className="mt-1 text-xs text-slate-400">{teacher.role}</p>
                 <p className="mt-2 w-fit rounded-full bg-cyan-400/10 px-3 py-1 text-xs font-bold text-cyan-300">
                   {teacher.accent}
                 </p>
@@ -81,34 +110,100 @@ const DashboardPage = () => {
 
             <button
               onClick={() => setIsTeacherModalOpen(true)}
-              className="cursor-pointer rounded-2xl bg-white/[0.06] px-5 py-3 font-bold text-white transition hover:bg-white/[0.1]"
+              className="mt-4 w-full cursor-pointer rounded-2xl bg-white/[0.06] px-5 py-3 font-bold text-white transition hover:bg-white/[0.1]"
             >
               Choose teacher
             </button>
           </div>
         </div>
 
-        <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-6 shadow-2xl sm:p-8">
-          <p className="text-sm font-bold text-cyan-300">Today’s path</p>
+        <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-2xl">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-cyan-300">Today’s path</p>
+              <h2 className="mt-1 text-2xl font-black">Your lesson plan</h2>
+            </div>
 
-          <div className="mt-5 grid gap-3">
-            {["Warm up conversation", "New vocabulary", "Speaking practice", "AI corrections"].map(
-              (item, index) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4"
-                >
-                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-cyan-400 text-sm font-black text-slate-950">
-                    {index + 1}
-                  </div>
+            <span className="rounded-full bg-cyan-400/10 px-4 py-2 text-xs font-bold text-cyan-300">
+              4 steps
+            </span>
+          </div>
 
-                  <p className="font-bold">{item}</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {[
+              "Warm up conversation",
+              "New vocabulary",
+              "Speaking practice",
+              "AI corrections",
+            ].map((item, index) => (
+              <div
+                key={item}
+                className="flex items-center gap-4 rounded-2xl border border-white/10 bg-slate-950/50 p-4"
+              >
+                <div className="grid h-10 w-10 place-items-center rounded-xl bg-cyan-400 text-sm font-black text-slate-950">
+                  {index + 1}
                 </div>
-              )
-            )}
+
+                <p className="font-bold">{item}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
+
+      <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-2xl">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-bold text-cyan-300">Daily Missions</p>
+            <h2 className="mt-1 text-2xl font-black">Practice today</h2>
+          </div>
+
+          <span className="rounded-full bg-cyan-400/10 px-4 py-2 text-xs font-bold text-cyan-300">
+            Earn XP
+          </span>
+        </div>
+
+        <div className="mt-5 grid gap-4 md:grid-cols-3">
+          {dailyMissions.map((mission) => (
+            <button
+              key={mission.title}
+              className="rounded-3xl border border-white/10 bg-slate-950/60 p-5 text-left transition hover:border-cyan-400/50 hover:bg-cyan-400/5"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-bold text-cyan-300">
+                  {mission.level} • {mission.time}
+                </p>
+
+                <span className="rounded-full bg-cyan-400/10 px-3 py-1 text-xs font-bold text-cyan-300">
+                  {mission.xp}
+                </span>
+              </div>
+
+              <h3 className="mt-3 text-xl font-black">{mission.title}</h3>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {mission.words.map((word) => (
+                  <span
+                    key={word}
+                    className="rounded-full bg-white/[0.06] px-3 py-1 text-xs font-bold text-slate-300"
+                  >
+                    {word}
+                  </span>
+                ))}
+              </div>
+
+              <p className="mt-5 text-sm font-bold text-cyan-300">
+                Start mission →
+              </p>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <footer className="border-t border-white/10 py-5 text-center text-xs text-slate-500">
+        © {new Date().getFullYear()} Lerni AI. Learn languages with real-time AI
+        teachers.
+      </footer>
 
       {isTeacherModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-end bg-black/70 p-4 backdrop-blur-md sm:items-center sm:justify-center">
