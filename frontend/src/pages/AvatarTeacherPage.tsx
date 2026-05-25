@@ -27,7 +27,7 @@ const TEACHER_NAME = "Zayed";
 
 const AvatarTeacherPage = () => {
   const { user } = useAuth();
-  const storedProfile = localStorage.getItem("learningProfile");
+ const storedProfile = localStorage.getItem("learningProfile");
 
 const profile =
   user?.learningProfile ||
@@ -69,21 +69,37 @@ const profile =
     }
   };
 
-  const sendToTeacher = async (text: string) => {
-    const finalText = text.trim();
-    if (!finalText || !sessionRef.current) return;
+const sendToTeacher = async (text: string) => {
+  const finalText = text.trim();
+  if (!finalText || !sessionRef.current) return;
 
-    addMessage("user", finalText);
-    setInput("");
+  addMessage("user", finalText);
+  setInput("");
 
-    try {
-      await speakText(sessionRef.current, finalText);
-      addMessage("teacher", "I’m answering you by video.");
-    } catch (error) {
-      console.log("SEND ERROR:", error);
-      addMessage("teacher", "Sorry, I could not answer right now.");
-    }
-  };
+  try {
+    const authToken = localStorage.getItem("token");
+
+    const res = await api.post(
+      "/ai/teacher-reply",
+      {
+        message: finalText,
+        teacherName: TEACHER_NAME,
+        profile,
+      },
+      { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+
+    const teacherReply =
+      res.data?.reply ||
+      "Great, let's start your lesson.";
+
+    addMessage("teacher", teacherReply);
+    await speakText(sessionRef.current, teacherReply);
+  } catch (error) {
+    console.log("SEND ERROR:", error);
+    addMessage("teacher", "Sorry, I could not answer right now.");
+  }
+};
 
   const startAvatarSession = useCallback(async () => {
     if (hasStartedRef.current) return;
@@ -161,7 +177,13 @@ const welcomeText = `Hello ${studentName}, I'm ${TEACHER_NAME} from Lerni AI, yo
     } finally {
       setAvatarLoading(false);
     }
-  }, [user?.name, profile.targetLanguage]);
+ }, [
+  user?.name,
+  profile.targetLanguage,
+  profile.mainGoal,
+  profile.englishLevel,
+  profile.level,
+]);
 
   const stopSession = async () => {
     try {
