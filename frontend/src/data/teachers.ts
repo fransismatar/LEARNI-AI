@@ -33,6 +33,6 @@ export const teachers = [
   name: "Stephanie",
   role: "Professional business English teacher",
   accent: "Daily conversation",
-  image: "/teachers/Stephanie.png",
+  image: "/teachers/stephanie.png",
 },
 ];
