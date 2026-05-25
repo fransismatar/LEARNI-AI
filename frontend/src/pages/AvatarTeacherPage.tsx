@@ -240,18 +240,18 @@ const AvatarTeacherPage = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowExitModal(true)}
-              className="grid h-11 w-11 place-items-center rounded-full bg-red-500 text-white shadow-lg shadow-red-500/20"
+               className="grid h-11 w-11 cursor-pointer place-items-center rounded-full bg-red-500 text-white shadow-lg shadow-red-500/20 transition duration-200 hover:scale-105 hover:bg-red-600"
             >
               <FontAwesomeIcon icon={faXmark} />
             </button>
 
-            <button className="grid h-11 w-11 place-items-center rounded-full bg-slate-100 text-slate-500">
+            <button className="grid h-11 w-11 cursor-pointer place-items-center rounded-full bg-slate-100 text-slate-500 transition duration-200 hover:scale-105 hover:bg-slate-200">
               <FontAwesomeIcon icon={faVideo} />
             </button>
 
             <button
               onClick={toggleMute}
-              className="grid h-11 w-11 place-items-center rounded-full bg-blue-950 text-white"
+             className="grid h-11 w-11 cursor-pointer place-items-center rounded-full bg-blue-950 text-white transition duration-200 hover:scale-105 hover:bg-blue-900 hover:shadow-lg hover:shadow-blue-500/20"
             >
               <FontAwesomeIcon
                 icon={isMuted ? faVolumeXmark : faVolumeHigh}
@@ -260,7 +260,7 @@ const AvatarTeacherPage = () => {
 
             <button
               onClick={() => setIsChatVisible(!isChatVisible)}
-              className="grid h-11 w-11 place-items-center rounded-full bg-blue-950 text-white"
+              className="grid h-11 w-11 cursor-pointer place-items-center rounded-full bg-blue-950 text-white transition duration-200 hover:scale-105 hover:bg-blue-900 hover:shadow-lg hover:shadow-blue-500/20"
             >
               <FontAwesomeIcon icon={faComments} />
             </button>
