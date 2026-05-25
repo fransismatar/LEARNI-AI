@@ -139,13 +139,13 @@ const studentName =
     ? user.name
     : "student";
 
-const welcomeText = `Hello ${studentName}, I'm ${TEACHER_NAME}, your ${
+const welcomeText = `Hello ${studentName}, I'm ${TEACHER_NAME} from Lerni AI, your ${
   profile.targetLanguage || "English"
-} teacher. I saw that your native language is ${
-  profile.nativeLanguage || "Arabic"
-}, your goal is ${profile.mainGoal || "conversation"}, and your level is ${
+} teacher. I saw your goal is ${
+  profile.mainGoal || "conversation"
+}, and your level is ${
   profile.englishLevel || profile.level || "Beginner"
-}. Today we will practice a real situation for your goal. Are you ready?`;
+}. Are you ready to start your first lesson?`;
 
       addMessage("teacher", welcomeText);
       await speakText(liveSession, welcomeText);
