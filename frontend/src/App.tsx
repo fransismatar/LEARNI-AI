@@ -18,7 +18,7 @@ import AvatarTeacherPage from "./pages/AvatarTeacherPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import WordsPracticePage from "./pages/WordsPracticePage";
-
+import StoriesPage from "./pages/StoriesPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 
@@ -44,6 +44,7 @@ function App() {
         >
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/words" element={<WordsPracticePage />} />
+          <Route path="/stories" element={<StoriesPage />} />
           <Route path="/teacher" element={<AITeacherPage />} />
           <Route path="/realtime-teacher" element={<RealtimeTeacherPage />} />
           <Route path="/lessons" element={<LessonsPage />} />

@@ -20,7 +20,7 @@ const practiceCards = [
     title: "Stories",
     description: "Read simple stories by level with translation and audio.",
     action: "Open stories",
-    to: "#",
+    to: "/stories",
   },
 ];
 
