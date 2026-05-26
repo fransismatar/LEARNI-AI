@@ -233,9 +233,18 @@ const StoriesPage = () => {
                     key={`${selectedStory.id}-${index}`}
                     className="rounded-3xl border border-slate-200 bg-slate-50 p-5"
                   >
-                    <p className="text-base font-black leading-8 text-slate-950">
-                      {index + 1}. {sentence}
-                    </p>
+                    <div className="flex items-start justify-between gap-4">
+  <p className="text-base font-black leading-8 text-slate-950">
+    {index + 1}. {sentence}
+  </p>
+
+  <button
+    onClick={() => speakText([sentence])}
+    className="shrink-0 rounded-2xl bg-blue-500 px-4 py-2 text-xs font-black text-white transition hover:bg-blue-600"
+  >
+    Listen
+  </button>
+</div>
 
                     {showTranslation && (
                       <div className="mt-4 grid gap-3 md:grid-cols-2">
