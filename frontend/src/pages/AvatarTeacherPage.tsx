@@ -304,9 +304,10 @@ const [isTranscribing, setIsTranscribing] = useState(false);
           console.log("TRANSCRIBE CLIENT ERROR:", error);
           setStatus("Lesson started");
         } finally {
-          mediaRecorderRef.current = null;
-          audioChunksRef.current = [];
-        }
+  setIsTranscribing(false);
+  mediaRecorderRef.current = null;
+  audioChunksRef.current = [];
+}
       };
 
       recorder.start();
@@ -326,12 +327,14 @@ const [isTranscribing, setIsTranscribing] = useState(false);
     }
   };
 
- const sendRecordedMessage = async () => {
+const sendRecordedMessage = async () => {
   const finalText = recordedTranscript.trim();
   if (!finalText) return;
 
   setRecordedTranscript("");
+  setStatus("Sending voice...");
   await sendToTeacher(finalText);
+  setStatus("Lesson started");
 };
 
 const cancelRecordedMessage = () => {
