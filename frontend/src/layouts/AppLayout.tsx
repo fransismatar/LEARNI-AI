@@ -133,10 +133,10 @@ const AppLayout = () => {
           </NavLink>
 
           <NavLink
-            to="/lessons"
+            to="/words"
             className="rounded-xl px-2 py-3 text-center text-xs font-bold text-slate-500"
           >
-            Lessons
+            Words
           </NavLink>
 
           <NavLink
