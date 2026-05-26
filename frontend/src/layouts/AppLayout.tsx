@@ -9,13 +9,13 @@ const AppLayout = () => {
   const isLessonRoom = location.pathname.startsWith("/avatar-teacher");
   const avatarLetter = user?.name?.charAt(0)?.toUpperCase() || "U";
 
-  const navItems = [
-    { label: "Dashboard", path: "/dashboard" },
-    { label: "Talk with Teacher", path: "/avatar-teacher?teacher=Zayed" },
-    { label: "Lessons", path: "/lessons" },
-    { label: "Progress", path: "/progress" },
-    { label: "Settings", path: "/settings" },
-  ];
+ const navItems = [
+  { label: "Dashboard", path: "/dashboard" },
+  { label: "Live Teacher", path: "/avatar-teacher?teacher=Zayed" },
+  { label: "Words Practice", path: "/words-practice" },
+  { label: "Stories", path: "/stories" },
+  { label: "Settings", path: "/settings" },
+];
 
   return (
     <div className="min-h-screen bg-[#f5f7fb] text-slate-950">
