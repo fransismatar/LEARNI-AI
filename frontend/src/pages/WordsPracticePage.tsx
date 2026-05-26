@@ -7,25 +7,28 @@ const WordsPracticePage = () => {
   const [selectedLevel, setSelectedLevel] = useState("A1-A2");
   const [selectedTopic, setSelectedTopic] = useState("All");
 
-  const topics = useMemo(() => {
-    const filtered = wordLessons.filter(
-      (item) => item.level === selectedLevel
-    );
+  const speakText = (text: string) => {
+    window.speechSynthesis.cancel();
 
-    return [
-      "All",
-      ...new Set(filtered.map((item) => item.topic)),
-    ];
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 0.85;
+    utterance.pitch = 1;
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const topics = useMemo(() => {
+    const filtered = wordLessons.filter((item) => item.level === selectedLevel);
+
+    return ["All", ...new Set(filtered.map((item) => item.topic))];
   }, [selectedLevel]);
 
   const filteredLessons = useMemo(() => {
     return wordLessons.filter((item) => {
       const levelMatch = item.level === selectedLevel;
-
       const topicMatch =
-        selectedTopic === "All"
-          ? true
-          : item.topic === selectedTopic;
+        selectedTopic === "All" ? true : item.topic === selectedTopic;
 
       return levelMatch && topicMatch;
     });
@@ -58,7 +61,7 @@ const WordsPracticePage = () => {
             className={`rounded-2xl px-5 py-3 text-sm font-black transition ${
               selectedLevel === level
                 ? "bg-blue-500 text-white"
-                : "bg-white text-slate-600 border border-slate-200 hover:border-blue-300"
+                : "border border-slate-200 bg-white text-slate-600 hover:border-blue-300"
             }`}
           >
             {level}
@@ -74,7 +77,7 @@ const WordsPracticePage = () => {
             className={`rounded-2xl px-5 py-3 text-sm font-bold transition ${
               selectedTopic === topic
                 ? "bg-slate-950 text-white"
-                : "bg-white border border-slate-200 text-slate-600 hover:border-slate-400"
+                : "border border-slate-200 bg-white text-slate-600 hover:border-slate-400"
             }`}
           >
             {topic}
@@ -113,7 +116,10 @@ const WordsPracticePage = () => {
             </div>
 
             <div className="mt-6 flex gap-3">
-              <button className="flex-1 rounded-2xl bg-blue-500 px-4 py-3 text-sm font-black text-white transition hover:bg-blue-600">
+              <button
+                onClick={() => speakText(item.example)}
+                className="flex-1 rounded-2xl bg-blue-500 px-4 py-3 text-sm font-black text-white transition hover:bg-blue-600"
+              >
                 Listen
               </button>
 
