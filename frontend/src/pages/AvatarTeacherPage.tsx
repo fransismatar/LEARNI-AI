@@ -50,6 +50,8 @@ const AvatarTeacherPage = () => {
   const [isChatVisible, setIsChatVisible] = useState(true);
   const [showExitModal, setShowExitModal] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [recordedTranscript, setRecordedTranscript] = useState("");
+const [isTranscribing, setIsTranscribing] = useState(false);
 
   const addMessage = (role: "user" | "teacher", text: string) => {
     setMessages((prev) => [
@@ -263,10 +265,12 @@ const AvatarTeacherPage = () => {
         setIsRecording(true);
         setStatus("Recording...");
         setInput("");
+        setRecordedTranscript("");
       };
 
       recorder.onstop = async () => {
         setIsRecording(false);
+        setIsTranscribing(true);
         setStatus("Transcribing...");
 
         const audioBlob = new Blob(audioChunksRef.current, {
@@ -292,11 +296,11 @@ const AvatarTeacherPage = () => {
           const transcript = res.data?.text?.trim();
 
           if (transcript) {
-            setInput(transcript);
-            await sendToTeacher(transcript);
-          }
+          setInput(transcript);
+          setRecordedTranscript(transcript);
+            }
 
-          setStatus("Lesson started");
+          setStatus("Review your message");
         } catch (error) {
           console.log("TRANSCRIBE CLIENT ERROR:", error);
           setStatus("Lesson started");
@@ -322,6 +326,20 @@ const AvatarTeacherPage = () => {
       mediaRecorderRef.current.stop();
     }
   };
+
+  const sendRecordedMessage = async () => {
+  const finalText = recordedTranscript.trim() || input.trim();
+  if (!finalText) return;
+
+  setRecordedTranscript("");
+  await sendToTeacher(finalText);
+};
+
+const cancelRecordedMessage = () => {
+  setRecordedTranscript("");
+  setInput("");
+  setStatus("Lesson started");
+};
 
   useEffect(() => {
     startAvatarSession();
@@ -481,10 +499,42 @@ const AvatarTeacherPage = () => {
               </div>
 
               {isRecording && (
-                <p className="mt-3 text-center text-xs font-bold text-red-500">
-                  Recording... release to send
-                </p>
-              )}
+  <p className="mt-3 text-center text-xs font-bold text-red-500">
+    Recording... release to stop
+  </p>
+)}
+
+{isTranscribing && (
+  <p className="mt-3 text-center text-xs font-bold text-blue-500">
+    Transcribing your voice...
+  </p>
+)}
+
+{recordedTranscript && !isRecording && !isTranscribing && (
+  <div className="mt-4 rounded-3xl border border-blue-100 bg-blue-50 p-4">
+    <p className="text-xs font-black text-blue-500">Voice message ready</p>
+
+    <p className="mt-2 text-sm leading-7 text-slate-700">
+      {recordedTranscript}
+    </p>
+
+    <div className="mt-4 flex gap-3">
+      <button
+        onClick={cancelRecordedMessage}
+        className="flex-1 rounded-2xl bg-white px-4 py-3 text-sm font-black text-slate-600"
+      >
+        Cancel
+      </button>
+
+      <button
+        onClick={sendRecordedMessage}
+        className="flex-1 rounded-2xl bg-blue-500 px-4 py-3 text-sm font-black text-white"
+      >
+        Send
+      </button>
+    </div>
+  </div>
+)}
 
               <div className="mt-4 flex gap-3">
                 <input
