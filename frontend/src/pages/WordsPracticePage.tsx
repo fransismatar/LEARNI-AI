@@ -11,7 +11,7 @@ import {
   FaVolumeUp,
 } from "react-icons/fa";
 import api from "../services/api";
-import { wordLessons } from "../data/wordLessons";
+import { wordLessons } from "../data/words";
 
 const levels = ["A1-A2", "B1-B2", "C1-C2"];
 
