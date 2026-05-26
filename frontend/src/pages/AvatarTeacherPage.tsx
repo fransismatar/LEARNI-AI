@@ -296,8 +296,7 @@ const [isTranscribing, setIsTranscribing] = useState(false);
           const transcript = res.data?.text?.trim();
 
           if (transcript) {
-          setInput(transcript);
-          setRecordedTranscript(transcript);
+         setRecordedTranscript(transcript);
             }
 
           setStatus("Review your message");
@@ -327,8 +326,8 @@ const [isTranscribing, setIsTranscribing] = useState(false);
     }
   };
 
-  const sendRecordedMessage = async () => {
-  const finalText = recordedTranscript.trim() || input.trim();
+ const sendRecordedMessage = async () => {
+  const finalText = recordedTranscript.trim();
   if (!finalText) return;
 
   setRecordedTranscript("");
@@ -435,7 +434,7 @@ const cancelRecordedMessage = () => {
               </div>
             </div>
 
-            <div className="flex-1 space-y-5 overflow-y-auto px-5 py-6">
+            <div className="max-h-[420px] flex-1 space-y-5 overflow-y-auto px-5 py-6 lg:max-h-[calc(100vh-270px)]">
               {messages.length === 0 && (
                 <div className="mx-auto max-w-md rounded-3xl bg-slate-100 p-5 text-center text-sm leading-7 text-slate-500">
                   Zayed is preparing your first lesson message...
@@ -512,27 +511,35 @@ const cancelRecordedMessage = () => {
 
 {recordedTranscript && !isRecording && !isTranscribing && (
   <div className="mt-4 rounded-3xl border border-blue-100 bg-blue-50 p-4">
-    <p className="text-xs font-black text-blue-500">Voice message ready</p>
-
-    <p className="mt-2 text-sm leading-7 text-slate-700">
-      {recordedTranscript}
-    </p>
-
-    <div className="mt-4 flex gap-3">
+    <div className="flex items-center gap-3">
       <button
         onClick={cancelRecordedMessage}
-        className="flex-1 rounded-2xl bg-white px-4 py-3 text-sm font-black text-slate-600"
+        className="grid h-10 w-10 place-items-center rounded-full bg-white text-sm font-black text-red-500"
       >
-        Cancel
+        ×
       </button>
+
+      <div className="flex flex-1 items-center gap-1">
+        {[10, 18, 26, 14, 22, 30, 16, 24, 12, 20, 28, 14].map((h, i) => (
+          <span
+            key={i}
+            style={{ height: `${h}px` }}
+            className="w-1 rounded-full bg-blue-400"
+          />
+        ))}
+      </div>
 
       <button
         onClick={sendRecordedMessage}
-        className="flex-1 rounded-2xl bg-blue-500 px-4 py-3 text-sm font-black text-white"
+        className="grid h-11 w-11 place-items-center rounded-full bg-blue-500 text-lg font-black text-white"
       >
-        Send
+        ›
       </button>
     </div>
+
+    <p className="mt-3 text-center text-xs font-bold text-slate-400">
+      Voice ready
+    </p>
   </div>
 )}
 
