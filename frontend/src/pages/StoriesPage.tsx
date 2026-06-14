@@ -491,21 +491,47 @@ const StoriesPage = () => {
               onClick={() => setSelectedStoryId(story.id)}
               className="group overflow-hidden rounded-[32px] border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"
             >
-              <div className="flex h-56 items-end rounded-[28px] bg-gradient-to-br from-blue-500 via-blue-700 to-slate-950 p-6 text-white shadow-inner transition group-hover:scale-[1.01]">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-100">
-                    {story.category}
-                  </p>
+              {story.image ? (
+  <div className="relative h-56 overflow-hidden rounded-[28px] shadow-inner">
+    <img
+      src={story.image}
+      alt={story.title}
+      className="h-full w-full object-cover transition group-hover:scale-[1.03]"
+    />
 
-                  <h2 className="mt-3 text-3xl font-black leading-tight">
-                    {story.title}
-                  </h2>
+    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
 
-                  <p className="mt-3 text-xs font-bold text-blue-100">
-                    English Story Book
-                  </p>
-                </div>
-              </div>
+    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+      <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-100">
+        {story.category}
+      </p>
+
+      <h2 className="mt-3 text-3xl font-black leading-tight">
+        {story.title}
+      </h2>
+
+      <p className="mt-3 text-xs font-bold text-blue-100">
+        English Story Book
+      </p>
+    </div>
+  </div>
+) : (
+  <div className="flex h-56 items-end rounded-[28px] bg-gradient-to-br from-blue-500 via-blue-700 to-slate-950 p-6 text-white shadow-inner transition group-hover:scale-[1.01]">
+    <div>
+      <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-100">
+        {story.category}
+      </p>
+
+      <h2 className="mt-3 text-3xl font-black leading-tight">
+        {story.title}
+      </h2>
+
+      <p className="mt-3 text-xs font-bold text-blue-100">
+        English Story Book
+      </p>
+    </div>
+  </div>
+)}
 
               <div className="mt-5 flex items-center justify-between gap-3">
                 <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-black text-blue-600">
