@@ -4,6 +4,7 @@ export const careerStories: StoryLesson[] = [
   {
     id: "story-english-a1-career-001",
     title: "My First Day At Work",
+    image: "/stories/covers/My-First-Day-At-Work.png",
     level: "A1-A2",
     category: "Career",
     description:
@@ -96,6 +97,7 @@ export const careerStories: StoryLesson[] = [
   {
     id: "story-english-b1-career-001",
     title: "Preparing For A Job Interview",
+    image: "/stories/covers/Preparing-For-A-Job-Interview.png",
     level: "B1-B2",
     category: "Career",
     description:
@@ -194,6 +196,7 @@ export const careerStories: StoryLesson[] = [
   {
     id: "story-english-c1-career-001",
     title: "Choosing The Right Career Path",
+    image: "/stories/covers/Choosing-The-Right-Career-Path.png",
     level: "C1-C2",
     category: "Career",
     description:

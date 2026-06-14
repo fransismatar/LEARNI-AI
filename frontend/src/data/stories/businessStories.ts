@@ -4,6 +4,7 @@ export const businessStories: StoryLesson[] = [
   {
     id: "story-english-a1-business-001",
     title: "My First Customer",
+    image: "/stories/covers/My-First-Customer.png",
     level: "A1-A2",
     category: "Business",
     description:

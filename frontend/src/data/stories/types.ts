@@ -15,6 +15,10 @@ export type StoryLesson = {
   category: StoryCategory;
   description: string;
 
+
+    image?: string;
+
+
   story: {
     English: string[];
     Arabic: string[];

@@ -4,6 +4,7 @@ export const socialStories: StoryLesson[] = [
   {
     id: "story-english-a1-social-001",
     title: "Meeting A New Friend",
+    image: "/stories/covers/Meeting-A-New-Friend.png",
     level: "A1-A2",
     category: "Social",
     description:
@@ -93,6 +94,7 @@ export const socialStories: StoryLesson[] = [
   {
     id: "story-english-b1-social-001",
     title: "The Birthday Invitation",
+    image: "/stories/covers/The-Birthday-Invitation.png",
     level: "B1-B2",
     category: "Social",
     description:
@@ -188,6 +190,7 @@ export const socialStories: StoryLesson[] = [
   {
     id: "story-english-c1-social-001",
     title: "The Art Of A Real Conversation",
+    image: "/stories/covers/The-Art-Of-A-Real-Conversation.png",
     level: "C1-C2",
     category: "Social",
     description:

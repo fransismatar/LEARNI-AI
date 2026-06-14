@@ -4,6 +4,7 @@ export const studyStories: StoryLesson[] = [
   {
   id: "story-english-a1-study-001",
   title: "My First English Class",
+  image: "/stories/covers/My-First-English-Class.png",
   level: "A1-A2",
   category: "Study",
   description:
@@ -117,6 +118,7 @@ export const studyStories: StoryLesson[] = [
 {
   id: "story-english-b1-study-001",
   title: "Preparing For Final Exams",
+  image: "/stories/covers/Preparing-For-Final-Exams.png",
   level: "B1-B2",
   category: "Study",
   description:
@@ -223,6 +225,7 @@ export const studyStories: StoryLesson[] = [
 {
   id: "story-english-c1-study-001",
   title: "Learning Beyond The Classroom",
+  image: "/stories/covers/Learning-Beyond-The-Classroom.png",
   level: "C1-C2",
   category: "Study",
   description:

@@ -4,6 +4,7 @@ export const travelStories: StoryLesson[] = [
   {
     id: "story-english-a1-travel-001",
     title: "My First Flight",
+    image: "/stories/covers/my-first-flight.png",
     level: "A1-A2",
     category: "Travel",
     description:
@@ -93,6 +94,7 @@ export const travelStories: StoryLesson[] = [
   {
     id: "story-english-b1-travel-001",
     title: "The Lost Hotel Reservation",
+    image: "/stories/covers/The-Lost-hotel-reservation.png",
     level: "B1-B2",
     category: "Travel",
     description:
@@ -188,6 +190,7 @@ export const travelStories: StoryLesson[] = [
   {
     id: "story-english-c1-travel-001",
     title: "A Journey That Changed My Perspective",
+    image: "/stories/covers/A-Journey-That-Changed-My-Perspective.png",
     level: "C1-C2",
     category: "Travel",
     description:

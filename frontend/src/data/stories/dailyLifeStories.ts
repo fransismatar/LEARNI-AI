@@ -4,6 +4,7 @@ export const dailyLifeStories: StoryLesson[] = [
   {
     id: "story-english-a1-daily-001",
     title: "My Busy Morning",
+    image: "/stories/covers/My-Busy-Morning.png",
     level: "A1-A2",
     category: "Daily life",
     description:
@@ -90,6 +91,7 @@ export const dailyLifeStories: StoryLesson[] = [
   {
     id: "story-english-b1-daily-001",
     title: "A Weekend With Friends",
+    image: "/stories/covers/A-Weekend-With-Friends.png",
     level: "B1-B2",
     category: "Daily life",
     description:
@@ -185,6 +187,7 @@ export const dailyLifeStories: StoryLesson[] = [
   {
     id: "story-english-c1-daily-001",
     title: "Finding Balance In Modern Life",
+    image: "/stories/covers/Finding-Balance-In-Modern-Life.png",
     level: "C1-C2",
     category: "Daily life",
     description:
