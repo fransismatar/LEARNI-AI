@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import {
+  FaArrowLeft,
   FaBookOpen,
   FaBriefcase,
   FaCheckCircle,
@@ -42,8 +43,8 @@ const normalizeText = (text: string) =>
 const getScore = (expected: string, said: string) => {
   const a = normalizeText(expected).split(" ");
   const b = normalizeText(said).split(" ");
-
   const matched = a.filter((word) => b.includes(word)).length;
+
   return Math.round((matched / Math.max(a.length, 1)) * 100);
 };
 
@@ -66,9 +67,9 @@ const StoriesPage = () => {
     );
   }, [selectedLevel, selectedCategory]);
 
-  const selectedStory =
-    storyLessons.find((story) => story.id === selectedStoryId) ||
-    filteredStories[0];
+  const selectedStory = storyLessons.find(
+    (story) => story.id === selectedStoryId
+  );
 
   const speakText = (sentences: string[]) => {
     window.speechSynthesis.cancel();
@@ -174,20 +175,245 @@ const StoriesPage = () => {
     }
   };
 
+  if (selectedStory) {
+    return (
+      <section className="space-y-6">
+        <button
+          onClick={() => {
+            window.speechSynthesis.cancel();
+            setSelectedStoryId(null);
+          }}
+          className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 transition hover:border-blue-300 hover:bg-blue-50"
+        >
+          <FaArrowLeft />
+          Back to books
+        </button>
+
+        <div className="overflow-hidden rounded-[36px] border border-slate-200 bg-white shadow-sm">
+          <div className="bg-gradient-to-br from-blue-500 via-blue-700 to-slate-950 p-8 text-white sm:p-10">
+            <p className="text-sm font-black uppercase tracking-[0.3em] text-blue-100">
+              {selectedStory.category} Story Book
+            </p>
+
+            <h1 className="mt-4 text-4xl font-black sm:text-5xl">
+              {selectedStory.title}
+            </h1>
+
+            <p className="mt-4 max-w-2xl text-sm font-bold leading-7 text-blue-100">
+              {selectedStory.description}
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <span className="rounded-full bg-white/15 px-4 py-2 text-xs font-black">
+                {selectedStory.level}
+              </span>
+
+              <span className="rounded-full bg-white/15 px-4 py-2 text-xs font-black">
+                {selectedStory.story.English.length} sentences
+              </span>
+
+              <span className="rounded-full bg-white/15 px-4 py-2 text-xs font-black">
+                Listening + Speaking
+              </span>
+            </div>
+          </div>
+
+          <div className="p-5 sm:p-7">
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => speakText(selectedStory.story.English)}
+                className="flex items-center gap-2 rounded-2xl bg-blue-500 px-5 py-3 text-sm font-black text-white transition hover:bg-blue-600"
+              >
+                <FaHeadphones />
+                Listen full story
+              </button>
+
+              <button
+                onClick={() => setShowTranslation((prev) => !prev)}
+                className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 transition hover:border-blue-300"
+              >
+                {showTranslation ? "Hide translation" : "Show translation"}
+              </button>
+            </div>
+
+            <div className="mt-6 rounded-[28px] bg-slate-950 p-5 text-white">
+              {selectedStory.videoUrl ? (
+                <video
+                  controls
+                  className="h-[260px] w-full rounded-2xl object-cover"
+                  src={selectedStory.videoUrl}
+                />
+              ) : (
+                <div className="grid h-[260px] place-items-center rounded-2xl border border-white/10 bg-gradient-to-br from-blue-500/30 via-slate-900 to-slate-950 text-center">
+                  <div>
+                    <FaVolumeUp className="mx-auto text-4xl text-blue-300" />
+                    <p className="mt-4 text-lg font-black">
+                      Read, Listen, Repeat
+                    </p>
+                    <p className="mt-2 text-sm text-slate-300">
+                      Practice this story without using the live teacher.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-7 space-y-4">
+              {selectedStory.story.English.map((sentence, index) => {
+                const sentenceId = `${selectedStory.id}-sentence-${index}`;
+                const result = results[sentenceId];
+
+                return (
+                  <div
+                    key={sentenceId}
+                    className="rounded-3xl border border-slate-200 bg-slate-50 p-5"
+                  >
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                      <p className="text-base font-black leading-8 text-slate-950">
+                        {index + 1}. {sentence}
+                      </p>
+
+                      <div className="flex shrink-0 gap-2">
+                        <button
+                          onClick={() => speakText([sentence])}
+                          className="rounded-2xl bg-blue-500 px-4 py-2 text-xs font-black text-white transition hover:bg-blue-600"
+                        >
+                          Listen
+                        </button>
+
+                        <button
+                          onMouseDown={() =>
+                            startRepeat({ id: sentenceId, sentence })
+                          }
+                          onMouseUp={stopRepeat}
+                          onMouseLeave={stopRepeat}
+                          onTouchStart={() =>
+                            startRepeat({ id: sentenceId, sentence })
+                          }
+                          onTouchEnd={stopRepeat}
+                          className={`flex items-center gap-2 rounded-2xl border px-4 py-2 text-xs font-black transition ${
+                            recordingId === sentenceId
+                              ? "border-red-200 bg-red-50 text-red-500"
+                              : "border-slate-200 bg-white text-slate-700 hover:border-blue-300"
+                          }`}
+                        >
+                          <FaMicrophone />
+                          {recordingId === sentenceId ? "Recording" : "Repeat"}
+                        </button>
+                      </div>
+                    </div>
+
+                    {showTranslation && (
+                      <div className="mt-4 grid gap-3 md:grid-cols-2">
+                        <p className="rounded-2xl bg-white p-4 text-sm font-bold leading-7 text-slate-600">
+                          Arabic: {selectedStory.story.Arabic[index]}
+                        </p>
+
+                        <p className="rounded-2xl bg-white p-4 text-sm font-bold leading-7 text-slate-600">
+                          Hebrew: {selectedStory.story.Hebrew[index]}
+                        </p>
+                      </div>
+                    )}
+
+                    {checkingId === sentenceId && (
+                      <p className="mt-4 text-center text-sm font-bold text-blue-500">
+                        AI is checking your voice...
+                      </p>
+                    )}
+
+                    {result && (
+                      <div className="mt-4 rounded-3xl bg-white p-4">
+                        <p className="text-sm font-black text-slate-700">
+                          Pronunciation score: {result.score}%
+                        </p>
+
+                        <p className="mt-2 text-sm text-slate-600">
+                          {result.message}
+                        </p>
+
+                        <p className="mt-2 text-xs text-slate-500">
+                          <strong>Expected:</strong> {result.expected}
+                        </p>
+
+                        <p className="mt-1 text-xs text-slate-500">
+                          <strong>You said:</strong>{" "}
+                          {result.said || "No clear speech detected"}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-7 rounded-[28px] border border-slate-200 bg-white p-5">
+              <h3 className="text-xl font-black text-slate-950">
+                Vocabulary
+              </h3>
+
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {selectedStory.vocabulary.map((item) => (
+                  <div
+                    key={item.word}
+                    className="rounded-2xl bg-slate-50 p-4"
+                  >
+                    <p className="font-black text-slate-950">{item.word}</p>
+
+                    <p className="mt-2 text-sm font-bold text-slate-500">
+                      Arabic: {item.Arabic}
+                    </p>
+
+                    <p className="mt-1 text-sm font-bold text-slate-500">
+                      Hebrew: {item.Hebrew}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-7 rounded-[28px] border border-slate-200 bg-white p-5">
+              <h3 className="text-xl font-black text-slate-950">Questions</h3>
+
+              <div className="mt-4 space-y-3">
+                {selectedStory.questions.map((item, index) => (
+                  <div
+                    key={item.question}
+                    className="rounded-2xl bg-slate-50 p-4"
+                  >
+                    <p className="font-black text-slate-950">
+                      {index + 1}. {item.question}
+                    </p>
+
+                    <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
+                      Answer: {item.answer}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button className="mt-7 flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white transition hover:bg-slate-800">
+              <FaCheckCircle />
+              Mark story as done
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="space-y-6">
       <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <p className="text-sm font-bold text-blue-500">
-          Stories & Listening
-        </p>
+        <p className="text-sm font-bold text-blue-500">Stories & Listening</p>
 
         <h1 className="mt-3 text-4xl font-black text-slate-950">
           Story Books
         </h1>
 
         <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500">
-          Read short English stories, listen to natural pronunciation, repeat
-          sentences, learn vocabulary, and answer questions.
+          Choose a short English story book. Read, listen, repeat sentences,
+          learn useful vocabulary, and answer questions.
         </p>
       </div>
 
@@ -251,267 +477,60 @@ const StoriesPage = () => {
           <h2 className="text-2xl font-black text-slate-950">
             No stories yet
           </h2>
+
           <p className="mt-3 text-sm text-slate-500">
             We will add stories for this level and category soon.
           </p>
         </div>
       ) : (
-        <div className="grid gap-6 xl:grid-cols-[380px_1fr]">
-          <div className="space-y-4">
-            {filteredStories.map((story) => {
-              const active = selectedStory?.id === story.id;
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          {filteredStories.map((story) => (
+            <button
+              key={story.id}
+              onClick={() => setSelectedStoryId(story.id)}
+              className="group overflow-hidden rounded-[32px] border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"
+            >
+              <div className="flex h-56 items-end rounded-[28px] bg-gradient-to-br from-blue-500 via-blue-700 to-slate-950 p-6 text-white shadow-inner transition group-hover:scale-[1.01]">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-100">
+                    {story.category}
+                  </p>
 
-              return (
-                <button
-                  key={story.id}
-                  onClick={() => setSelectedStoryId(story.id)}
-                  className={`w-full rounded-[28px] border p-5 text-left transition ${
-                    active
-                      ? "border-blue-200 bg-blue-50 shadow-md"
-                      : "border-slate-200 bg-white shadow-sm hover:-translate-y-1 hover:shadow-lg"
-                  }`}
-                >
-                  <div className="mb-4 flex h-36 items-end rounded-[24px] bg-gradient-to-br from-blue-500 via-blue-700 to-slate-950 p-5 text-white shadow-inner">
-                    <div>
-                      <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-100">
-                        {story.category}
-                      </p>
-
-                      <h3 className="mt-2 text-xl font-black leading-tight">
-                        {story.title}
-                      </h3>
-
-                      <p className="mt-2 text-xs font-bold text-blue-100">
-                        English Story Book
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-black text-blue-600">
-                      {story.level}
-                    </span>
-
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-500">
-                      {story.story.English.length} sentences
-                    </span>
-                  </div>
-
-                  <h2 className="mt-4 text-2xl font-black text-slate-950">
+                  <h2 className="mt-3 text-3xl font-black leading-tight">
                     {story.title}
                   </h2>
 
-                  <p className="mt-3 text-sm leading-7 text-slate-500">
-                    {story.description}
-                  </p>
-                </button>
-              );
-            })}
-          </div>
-
-          {selectedStory && (
-            <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <p className="text-sm font-bold text-blue-500">
-                    {selectedStory.category} Story
-                  </p>
-
-                  <h2 className="mt-2 text-3xl font-black text-slate-950">
-                    {selectedStory.title}
-                  </h2>
-
-                  <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
-                    {selectedStory.description}
+                  <p className="mt-3 text-xs font-bold text-blue-100">
+                    English Story Book
                   </p>
                 </div>
-
-                <button
-                  onClick={() => speakText(selectedStory.story.English)}
-                  className="flex items-center gap-2 rounded-2xl bg-blue-500 px-5 py-3 text-sm font-black text-white transition hover:bg-blue-600"
-                >
-                  <FaHeadphones />
-                  Listen
-                </button>
               </div>
 
-              <div className="mt-6 rounded-[28px] bg-slate-950 p-5 text-white">
-                {selectedStory.videoUrl ? (
-                  <video
-                    controls
-                    className="h-[260px] w-full rounded-2xl object-cover"
-                    src={selectedStory.videoUrl}
-                  />
-                ) : (
-                  <div className="grid h-[260px] place-items-center rounded-2xl border border-white/10 bg-gradient-to-br from-blue-500/30 via-slate-900 to-slate-950 text-center">
-                    <div>
-                      <FaVolumeUp className="mx-auto text-4xl text-blue-300" />
-                      <p className="mt-4 text-lg font-black">
-                        Listen, Read, Repeat
-                      </p>
-                      <p className="mt-2 text-sm text-slate-300">
-                        Practice this story without using the live teacher.
-                      </p>
-                    </div>
-                  </div>
-                )}
+              <div className="mt-5 flex items-center justify-between gap-3">
+                <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-black text-blue-600">
+                  {story.level}
+                </span>
+
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-500">
+                  {story.story.English.length} sentences
+                </span>
               </div>
 
-              <div className="mt-6 flex flex-wrap gap-3">
-                <button
-                  onClick={() => setShowTranslation((prev) => !prev)}
-                  className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 transition hover:border-blue-300"
-                >
-                  {showTranslation ? "Hide translation" : "Show translation"}
-                </button>
+              <p className="mt-4 text-sm font-bold leading-7 text-slate-500">
+                {story.description}
+              </p>
+
+              <div className="mt-5 flex items-center justify-between">
+                <span className="text-xs font-black text-blue-500">
+                  Open story
+                </span>
+
+                <span className="rounded-full bg-slate-950 px-4 py-2 text-xs font-black text-white">
+                  Start
+                </span>
               </div>
-
-              <div className="mt-6 space-y-4">
-                {selectedStory.story.English.map((sentence, index) => {
-                  const sentenceId = `${selectedStory.id}-sentence-${index}`;
-                  const result = results[sentenceId];
-
-                  return (
-                    <div
-                      key={sentenceId}
-                      className="rounded-3xl border border-slate-200 bg-slate-50 p-5"
-                    >
-                      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                        <p className="text-base font-black leading-8 text-slate-950">
-                          {index + 1}. {sentence}
-                        </p>
-
-                        <div className="flex shrink-0 gap-2">
-                          <button
-                            onClick={() => speakText([sentence])}
-                            className="rounded-2xl bg-blue-500 px-4 py-2 text-xs font-black text-white transition hover:bg-blue-600"
-                          >
-                            Listen
-                          </button>
-
-                          <button
-                            onMouseDown={() =>
-                              startRepeat({ id: sentenceId, sentence })
-                            }
-                            onMouseUp={stopRepeat}
-                            onMouseLeave={stopRepeat}
-                            onTouchStart={() =>
-                              startRepeat({ id: sentenceId, sentence })
-                            }
-                            onTouchEnd={stopRepeat}
-                            className={`flex items-center gap-2 rounded-2xl border px-4 py-2 text-xs font-black transition ${
-                              recordingId === sentenceId
-                                ? "border-red-200 bg-red-50 text-red-500"
-                                : "border-slate-200 bg-white text-slate-700 hover:border-blue-300"
-                            }`}
-                          >
-                            <FaMicrophone />
-                            {recordingId === sentenceId
-                              ? "Recording"
-                              : "Repeat"}
-                          </button>
-                        </div>
-                      </div>
-
-                      {showTranslation && (
-                        <div className="mt-4 grid gap-3 md:grid-cols-2">
-                          <p className="rounded-2xl bg-white p-4 text-sm font-bold leading-7 text-slate-600">
-                            Arabic: {selectedStory.story.Arabic[index]}
-                          </p>
-
-                          <p className="rounded-2xl bg-white p-4 text-sm font-bold leading-7 text-slate-600">
-                            Hebrew: {selectedStory.story.Hebrew[index]}
-                          </p>
-                        </div>
-                      )}
-
-                      {checkingId === sentenceId && (
-                        <p className="mt-4 text-center text-sm font-bold text-blue-500">
-                          AI is checking your voice...
-                        </p>
-                      )}
-
-                      {result && (
-                        <div className="mt-4 rounded-3xl bg-white p-4">
-                          <p className="text-sm font-black text-slate-700">
-                            Pronunciation score: {result.score}%
-                          </p>
-
-                          <p className="mt-2 text-sm text-slate-600">
-                            {result.message}
-                          </p>
-
-                          <p className="mt-2 text-xs text-slate-500">
-                            <strong>Expected:</strong> {result.expected}
-                          </p>
-
-                          <p className="mt-1 text-xs text-slate-500">
-                            <strong>You said:</strong>{" "}
-                            {result.said || "No clear speech detected"}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-
-                <div className="rounded-[28px] border border-slate-200 bg-white p-5">
-                  <h3 className="text-xl font-black text-slate-950">
-                    Vocabulary
-                  </h3>
-
-                  <div className="mt-4 grid gap-3 md:grid-cols-2">
-                    {selectedStory.vocabulary.map((item) => (
-                      <div
-                        key={item.word}
-                        className="rounded-2xl bg-slate-50 p-4"
-                      >
-                        <p className="font-black text-slate-950">
-                          {item.word}
-                        </p>
-
-                        <p className="mt-2 text-sm font-bold text-slate-500">
-                          Arabic: {item.Arabic}
-                        </p>
-
-                        <p className="mt-1 text-sm font-bold text-slate-500">
-                          Hebrew: {item.Hebrew}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="rounded-[28px] border border-slate-200 bg-white p-5">
-                  <h3 className="text-xl font-black text-slate-950">
-                    Questions
-                  </h3>
-
-                  <div className="mt-4 space-y-3">
-                    {selectedStory.questions.map((item, index) => (
-                      <div
-                        key={item.question}
-                        className="rounded-2xl bg-slate-50 p-4"
-                      >
-                        <p className="font-black text-slate-950">
-                          {index + 1}. {item.question}
-                        </p>
-
-                        <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
-                          Answer: {item.answer}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <button className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white transition hover:bg-slate-800">
-                <FaCheckCircle />
-                Mark story as done
-              </button>
-            </div>
-          )}
+            </button>
+          ))}
         </div>
       )}
     </section>
