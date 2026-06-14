@@ -5,11 +5,11 @@ import {
   FaCheckCircle,
   FaGraduationCap,
   FaHeadphones,
+  FaMicrophone,
   FaPlane,
   FaRegBuilding,
   FaUsers,
   FaVolumeUp,
-  FaMicrophone,
 } from "react-icons/fa";
 import { storyLessons } from "../data/stories";
 import api from "../services/api";
@@ -53,11 +53,11 @@ const StoriesPage = () => {
   const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
   const [showTranslation, setShowTranslation] = useState(true);
   const [recordingId, setRecordingId] = useState<string | null>(null);
-const [checkingId, setCheckingId] = useState<string | null>(null);
-const [results, setResults] = useState<Record<string, Result>>({});
+  const [checkingId, setCheckingId] = useState<string | null>(null);
+  const [results, setResults] = useState<Record<string, Result>>({});
 
-const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-const audioChunksRef = useRef<Blob[]>([]);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   const filteredStories = useMemo(() => {
     return storyLessons.filter(
@@ -82,108 +82,112 @@ const audioChunksRef = useRef<Blob[]>([]);
   };
 
   const startRepeat = async (item: { id: string; sentence: string }) => {
-  if (recordingId || checkingId) return;
+    if (recordingId || checkingId) return;
 
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    audioChunksRef.current = [];
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunksRef.current = [];
 
-    const mimeType = MediaRecorder.isTypeSupported("audio/webm")
-      ? "audio/webm"
-      : "";
+      const mimeType = MediaRecorder.isTypeSupported("audio/webm")
+        ? "audio/webm"
+        : "";
 
-    const recorder = mimeType
-      ? new MediaRecorder(stream, { mimeType })
-      : new MediaRecorder(stream);
+      const recorder = mimeType
+        ? new MediaRecorder(stream, { mimeType })
+        : new MediaRecorder(stream);
 
-    mediaRecorderRef.current = recorder;
+      mediaRecorderRef.current = recorder;
 
-    recorder.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        audioChunksRef.current.push(event.data);
-      }
-    };
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
 
-    recorder.onstart = () => {
-      setRecordingId(item.id);
-    };
+      recorder.onstart = () => {
+        setRecordingId(item.id);
+      };
 
-    recorder.onstop = async () => {
-      setRecordingId(null);
-      setCheckingId(item.id);
+      recorder.onstop = async () => {
+        setRecordingId(null);
+        setCheckingId(item.id);
 
-      const audioBlob = new Blob(audioChunksRef.current, {
-        type: recorder.mimeType || "audio/webm",
-      });
-
-      stream.getTracks().forEach((track) => track.stop());
-
-      const formData = new FormData();
-      formData.append("audio", audioBlob, "voice.webm");
-
-      try {
-        const token = localStorage.getItem("token");
-
-        const res = await api.post("/ai/transcribe-voice", formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: recorder.mimeType || "audio/webm",
         });
 
-        const said = res.data?.text?.trim() || "";
-        const score = getScore(item.sentence, said);
+        stream.getTracks().forEach((track) => track.stop());
 
-        setResults((prev) => ({
-          ...prev,
-          [item.id]: {
-            score,
-            expected: item.sentence,
-            said,
-            message:
-              score >= 85
-                ? "Excellent! Your sentence is clear."
-                : score >= 65
-                ? "Good try. Repeat it a little more clearly."
-                : "Try again slowly and focus on the full sentence.",
-          },
-        }));
-      } catch (error) {
-        console.log("STORY REPEAT ERROR:", error);
-      } finally {
-        setCheckingId(null);
-        mediaRecorderRef.current = null;
-        audioChunksRef.current = [];
-      }
-    };
+        const formData = new FormData();
+        formData.append("audio", audioBlob, "voice.webm");
 
-    recorder.start();
-  } catch (error) {
-    console.log("MIC ERROR:", error);
-    setRecordingId(null);
-    setCheckingId(null);
-  }
-};
+        try {
+          const token = localStorage.getItem("token");
 
-const stopRepeat = () => {
-  if (
-    mediaRecorderRef.current &&
-    mediaRecorderRef.current.state !== "inactive"
-  ) {
-    mediaRecorderRef.current.stop();
-  }
-};
+          const res = await api.post("/ai/transcribe-voice", formData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          });
+
+          const said = res.data?.text?.trim() || "";
+          const score = getScore(item.sentence, said);
+
+          setResults((prev) => ({
+            ...prev,
+            [item.id]: {
+              score,
+              expected: item.sentence,
+              said,
+              message:
+                score >= 85
+                  ? "Excellent! Your sentence is clear."
+                  : score >= 65
+                  ? "Good try. Repeat it a little more clearly."
+                  : "Try again slowly and focus on the full sentence.",
+            },
+          }));
+        } catch (error) {
+          console.log("STORY REPEAT ERROR:", error);
+        } finally {
+          setCheckingId(null);
+          mediaRecorderRef.current = null;
+          audioChunksRef.current = [];
+        }
+      };
+
+      recorder.start();
+    } catch (error) {
+      console.log("MIC ERROR:", error);
+      setRecordingId(null);
+      setCheckingId(null);
+    }
+  };
+
+  const stopRepeat = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      mediaRecorderRef.current.stop();
+    }
+  };
 
   return (
     <section className="space-y-6">
       <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <p className="text-sm font-bold text-blue-500">Stories & Listening</p>
+        <p className="text-sm font-bold text-blue-500">
+          Stories & Listening
+        </p>
 
-        <h1 className="mt-3 text-4xl font-black text-slate-950">Stories</h1>
+        <h1 className="mt-3 text-4xl font-black text-slate-950">
+          Story Books
+        </h1>
 
         <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500">
-          Read short stories, listen to natural English, learn useful words, and
-          test your understanding.
+          Read short English stories, listen to natural pronunciation, repeat
+          sentences, learn vocabulary, and answer questions.
         </p>
       </div>
 
@@ -267,13 +271,29 @@ const stopRepeat = () => {
                       : "border-slate-200 bg-white shadow-sm hover:-translate-y-1 hover:shadow-lg"
                   }`}
                 >
+                  <div className="mb-4 flex h-36 items-end rounded-[24px] bg-gradient-to-br from-blue-500 via-blue-700 to-slate-950 p-5 text-white shadow-inner">
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-100">
+                        {story.category}
+                      </p>
+
+                      <h3 className="mt-2 text-xl font-black leading-tight">
+                        {story.title}
+                      </h3>
+
+                      <p className="mt-2 text-xs font-bold text-blue-100">
+                        English Story Book
+                      </p>
+                    </div>
+                  </div>
+
                   <div className="flex items-center justify-between gap-3">
                     <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-black text-blue-600">
                       {story.level}
                     </span>
 
                     <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-500">
-                      {story.category}
+                      {story.story.English.length} sentences
                     </span>
                   </div>
 
@@ -283,10 +303,6 @@ const stopRepeat = () => {
 
                   <p className="mt-3 text-sm leading-7 text-slate-500">
                     {story.description}
-                  </p>
-
-                  <p className="mt-4 text-xs font-black text-blue-500">
-                    {story.story.English.length} sentences
                   </p>
                 </button>
               );
@@ -327,14 +343,14 @@ const stopRepeat = () => {
                     src={selectedStory.videoUrl}
                   />
                 ) : (
-                  <div className="grid h-[260px] place-items-center rounded-2xl border border-white/10 bg-white/5 text-center">
+                  <div className="grid h-[260px] place-items-center rounded-2xl border border-white/10 bg-gradient-to-br from-blue-500/30 via-slate-900 to-slate-950 text-center">
                     <div>
                       <FaVolumeUp className="mx-auto text-4xl text-blue-300" />
                       <p className="mt-4 text-lg font-black">
-                        HeyGen video will appear here
+                        Listen, Read, Repeat
                       </p>
                       <p className="mt-2 text-sm text-slate-300">
-                        For now, students can use Listen mode.
+                        Practice this story without using the live teacher.
                       </p>
                     </div>
                   </div>
@@ -351,85 +367,120 @@ const stopRepeat = () => {
               </div>
 
               <div className="mt-6 space-y-4">
-               {selectedStory.story.English.map((sentence, index) => {
-  const sentenceId = `${selectedStory.id}-sentence-${index}`;
-  const result = results[sentenceId];
+                {selectedStory.story.English.map((sentence, index) => {
+                  const sentenceId = `${selectedStory.id}-sentence-${index}`;
+                  const result = results[sentenceId];
 
-  return (
-    <div
-      key={sentenceId}
-      className="rounded-3xl border border-slate-200 bg-slate-50 p-5"
-    >
-      <div className="flex items-start justify-between gap-4">
-        <p className="text-base font-black leading-8 text-slate-950">
-          {index + 1}. {sentence}
-        </p>
+                  return (
+                    <div
+                      key={sentenceId}
+                      className="rounded-3xl border border-slate-200 bg-slate-50 p-5"
+                    >
+                      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                        <p className="text-base font-black leading-8 text-slate-950">
+                          {index + 1}. {sentence}
+                        </p>
 
-        <div className="flex shrink-0 gap-2">
-          <button
-            onClick={() => speakText([sentence])}
-            className="rounded-2xl bg-blue-500 px-4 py-2 text-xs font-black text-white transition hover:bg-blue-600"
-          >
-            Listen
-          </button>
+                        <div className="flex shrink-0 gap-2">
+                          <button
+                            onClick={() => speakText([sentence])}
+                            className="rounded-2xl bg-blue-500 px-4 py-2 text-xs font-black text-white transition hover:bg-blue-600"
+                          >
+                            Listen
+                          </button>
 
-          <button
-            onMouseDown={() => startRepeat({ id: sentenceId, sentence })}
-            onMouseUp={stopRepeat}
-            onMouseLeave={stopRepeat}
-            onTouchStart={() => startRepeat({ id: sentenceId, sentence })}
-            onTouchEnd={stopRepeat}
-            className={`flex items-center gap-2 rounded-2xl border px-4 py-2 text-xs font-black transition ${
-              recordingId === sentenceId
-                ? "border-red-200 bg-red-50 text-red-500"
-                : "border-slate-200 bg-white text-slate-700 hover:border-blue-300"
-            }`}
-          >
-            <FaMicrophone />
-            {recordingId === sentenceId ? "Recording" : "Repeat"}
-          </button>
-        </div>
-      </div>
+                          <button
+                            onMouseDown={() =>
+                              startRepeat({ id: sentenceId, sentence })
+                            }
+                            onMouseUp={stopRepeat}
+                            onMouseLeave={stopRepeat}
+                            onTouchStart={() =>
+                              startRepeat({ id: sentenceId, sentence })
+                            }
+                            onTouchEnd={stopRepeat}
+                            className={`flex items-center gap-2 rounded-2xl border px-4 py-2 text-xs font-black transition ${
+                              recordingId === sentenceId
+                                ? "border-red-200 bg-red-50 text-red-500"
+                                : "border-slate-200 bg-white text-slate-700 hover:border-blue-300"
+                            }`}
+                          >
+                            <FaMicrophone />
+                            {recordingId === sentenceId
+                              ? "Recording"
+                              : "Repeat"}
+                          </button>
+                        </div>
+                      </div>
 
-      {showTranslation && (
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
-          <p className="rounded-2xl bg-white p-4 text-sm font-bold leading-7 text-slate-600">
-            Arabic: {selectedStory.story.Arabic[index]}
-          </p>
+                      {showTranslation && (
+                        <div className="mt-4 grid gap-3 md:grid-cols-2">
+                          <p className="rounded-2xl bg-white p-4 text-sm font-bold leading-7 text-slate-600">
+                            Arabic: {selectedStory.story.Arabic[index]}
+                          </p>
 
-          <p className="rounded-2xl bg-white p-4 text-sm font-bold leading-7 text-slate-600">
-            Hebrew: {selectedStory.story.Hebrew[index]}
-          </p>
-        </div>
-      )}
+                          <p className="rounded-2xl bg-white p-4 text-sm font-bold leading-7 text-slate-600">
+                            Hebrew: {selectedStory.story.Hebrew[index]}
+                          </p>
+                        </div>
+                      )}
 
-      {checkingId === sentenceId && (
-        <p className="mt-4 text-center text-sm font-bold text-blue-500">
-          AI is checking your voice...
-        </p>
-      )}
+                      {checkingId === sentenceId && (
+                        <p className="mt-4 text-center text-sm font-bold text-blue-500">
+                          AI is checking your voice...
+                        </p>
+                      )}
 
-      {result && (
-        <div className="mt-4 rounded-3xl bg-white p-4">
-          <p className="text-sm font-black text-slate-700">
-            Pronunciation score: {result.score}%
-          </p>
+                      {result && (
+                        <div className="mt-4 rounded-3xl bg-white p-4">
+                          <p className="text-sm font-black text-slate-700">
+                            Pronunciation score: {result.score}%
+                          </p>
 
-          <p className="mt-2 text-sm text-slate-600">{result.message}</p>
+                          <p className="mt-2 text-sm text-slate-600">
+                            {result.message}
+                          </p>
 
-          <p className="mt-2 text-xs text-slate-500">
-            <strong>Expected:</strong> {result.expected}
-          </p>
+                          <p className="mt-2 text-xs text-slate-500">
+                            <strong>Expected:</strong> {result.expected}
+                          </p>
 
-          <p className="mt-1 text-xs text-slate-500">
-            <strong>You said:</strong>{" "}
-            {result.said || "No clear speech detected"}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-})}
+                          <p className="mt-1 text-xs text-slate-500">
+                            <strong>You said:</strong>{" "}
+                            {result.said || "No clear speech detected"}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+
+                <div className="rounded-[28px] border border-slate-200 bg-white p-5">
+                  <h3 className="text-xl font-black text-slate-950">
+                    Vocabulary
+                  </h3>
+
+                  <div className="mt-4 grid gap-3 md:grid-cols-2">
+                    {selectedStory.vocabulary.map((item) => (
+                      <div
+                        key={item.word}
+                        className="rounded-2xl bg-slate-50 p-4"
+                      >
+                        <p className="font-black text-slate-950">
+                          {item.word}
+                        </p>
+
+                        <p className="mt-2 text-sm font-bold text-slate-500">
+                          Arabic: {item.Arabic}
+                        </p>
+
+                        <p className="mt-1 text-sm font-bold text-slate-500">
+                          Hebrew: {item.Hebrew}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
                 <div className="rounded-[28px] border border-slate-200 bg-white p-5">
                   <h3 className="text-xl font-black text-slate-950">
