@@ -67,9 +67,8 @@ const StoriesPage = () => {
     );
   }, [selectedLevel, selectedCategory]);
 
-  const selectedStory = storyLessons.find(
-    (story) => story.id === selectedStoryId
-  );
+  const selectedStory =
+  storyLessons.find((story) => story.id === selectedStoryId) || null;
 
   const speakText = (sentences: string[]) => {
     window.speechSynthesis.cancel();
@@ -259,7 +258,7 @@ const StoriesPage = () => {
             </div>
 
             <div className="mt-7 space-y-4">
-              {selectedStory.story.English.map((sentence, index) => {
+              {selectedStory.story.English.map((sentence: string, index: number) => {
                 const sentenceId = `${selectedStory.id}-sentence-${index}`;
                 const result = results[sentenceId];
 
@@ -352,7 +351,8 @@ const StoriesPage = () => {
               </h3>
 
               <div className="mt-4 grid gap-3 md:grid-cols-2">
-                {selectedStory.vocabulary.map((item) => (
+                {selectedStory.vocabulary.map(
+                   (item: { word: string; Arabic: string; Hebrew: string }) => (
                   <div
                     key={item.word}
                     className="rounded-2xl bg-slate-50 p-4"
@@ -375,7 +375,8 @@ const StoriesPage = () => {
               <h3 className="text-xl font-black text-slate-950">Questions</h3>
 
               <div className="mt-4 space-y-3">
-                {selectedStory.questions.map((item, index) => (
+                {selectedStory.questions.map(
+                    (item: { question: string; answer: string }, index: number) => (
                   <div
                     key={item.question}
                     className="rounded-2xl bg-slate-50 p-4"

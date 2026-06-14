@@ -1,5 +1,24 @@
-import { englishStories } from "./englishStories";
+import { travelStories } from "./travelStories";
+import { dailyLifeStories } from "./dailyLifeStories";
+import { businessStories } from "./businessStories";
+import { careerStories } from "./careerStories";
+import { socialStories } from "./socialStories";
+import { studyStories } from "./studyStories";
 
-export const storyLessons = [...englishStories];
+export const storyLessons = [
+  ...travelStories,
+  ...dailyLifeStories,
+  ...businessStories,
+  ...careerStories,
+  ...socialStories,
+  ...studyStories,
+];
 
-export { englishStories };
+export {
+  travelStories,
+  dailyLifeStories,
+  businessStories,
+  careerStories,
+  socialStories,
+  studyStories,
+};
