@@ -183,7 +183,7 @@ export const travelStories: StoryLesson[] = [
         answer: "He gives a free breakfast voucher.",
       },
     ],
-    videoUrl: "",
+    videoUrl: "/stories/videos/The-Lost-hotel-reservation.mp4",
     audioUrl: "",
   },
 
@@ -285,7 +285,7 @@ export const travelStories: StoryLesson[] = [
         answer: "It showed another way to be present with people.",
       },
     ],
-    videoUrl: "",
+    videoUrl: "/stories/videos/A-Journey-That-Changed-My-Perspective.mp4",
     audioUrl: "",
   },
 ];

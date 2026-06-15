@@ -111,7 +111,7 @@ export const studyStories: StoryLesson[] = [
     },
   ],
 
-  videoUrl: "",
+  videoUrl: "/stories/videos/My-First-English-Class.mp4",
   audioUrl: "",
 },
 {
@@ -224,7 +224,7 @@ export const studyStories: StoryLesson[] = [
     },
   ],
 
-  videoUrl: "",
+  videoUrl: "/stories/videos/A-Busy-Day-At-School.mp4",
   audioUrl: "",
 },
 {
@@ -337,7 +337,7 @@ export const studyStories: StoryLesson[] = [
     },
   ],
 
-  videoUrl: "",
+  videoUrl: "/stories/videos/The-School-Science-Fair.mp4",
   audioUrl: "",
 },
  
@@ -445,7 +445,7 @@ export const studyStories: StoryLesson[] = [
     },
   ],
 
-  videoUrl: "",
+  videoUrl: "/stories/videos/Preparing-For-Final-Exams.mp4",
   audioUrl: "",
 },
 
@@ -574,7 +574,7 @@ export const studyStories: StoryLesson[] = [
     }
   ],
 
-  videoUrl: "",
+  videoUrl: "/stories/videos/Giving-My-First-Presentation.mp4",
   audioUrl: "",
 },
 
@@ -695,7 +695,7 @@ answer: "The student learned that teamwork can improve learning."
 }
 ],
 
-videoUrl: "",
+videoUrl: "/stories/videos/Joining-A-Study-Group.mp4",
 audioUrl: "",
 },
 
@@ -810,7 +810,7 @@ audioUrl: "",
     },
   ],
 
-  videoUrl: "",
+  videoUrl: "/stories/videos/Learning-Beyond-The-Classroom.mp4",
   audioUrl: "",
 },
 
