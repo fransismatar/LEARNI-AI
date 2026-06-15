@@ -50,7 +50,7 @@ const StoriesPage = () => {
   const [selectedLevel, setSelectedLevel] = useState("A1-A2");
   const [selectedCategory, setSelectedCategory] = useState("Travel");
   const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
-  const [showTranslation, setShowTranslation] = useState(true);
+  const [showTranslation, setShowTranslation] = useState(false);
   const [recordingId, setRecordingId] = useState<string | null>(null);
   const [checkingId, setCheckingId] = useState<string | null>(null);
   const [results, setResults] = useState<Record<string, Result>>({});
