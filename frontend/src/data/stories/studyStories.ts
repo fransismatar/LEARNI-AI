@@ -114,6 +114,232 @@ export const studyStories: StoryLesson[] = [
   videoUrl: "",
   audioUrl: "",
 },
+{
+  id: "story-english-a1-study-002",
+  title: "A Busy Day At School",
+  image: "/stories/covers/A-Busy-Day-At-School.png",
+  level: "A1-A2",
+  category: "Study",
+  description:
+    "A beginner story about a student’s busy school day, classes, homework, and learning responsibility.",
+
+  story: {
+    English: [
+      "Today is a very busy day at school.",
+      "I wake up early and pack my school bag.",
+      "I put my books, notebook, pencil, and lunch inside.",
+      "My first lesson is English.",
+      "The teacher gives us a short reading exercise.",
+      "I read slowly because I want to understand every word.",
+      "After English, we have mathematics.",
+      "The math lesson is not easy, but I try my best.",
+      "My friend helps me solve one problem.",
+      "At break time, we sit outside and eat lunch.",
+      "We talk about our homework and our favorite subjects.",
+      "After the break, we have science class.",
+      "The teacher shows us a simple experiment.",
+      "Everyone watches carefully and writes notes.",
+      "At the end of the day, I feel tired.",
+      "But I also feel proud because I learned many things.",
+      "When I get home, I rest for a short time.",
+      "Then I finish my homework before dinner.",
+      "A busy school day can be hard.",
+      "But every day at school helps me become better.",
+    ],
+
+    Arabic: [
+      "اليوم يوم مزدحم جدًا في المدرسة.",
+      "أستيقظ مبكرًا وأجهز حقيبتي المدرسية.",
+      "أضع كتبي ودفتري وقلمي وطعام الغداء داخلها.",
+      "درسي الأول هو اللغة الإنجليزية.",
+      "تعطينا المعلمة تمرين قراءة قصير.",
+      "أقرأ ببطء لأنني أريد أن أفهم كل كلمة.",
+      "بعد الإنجليزية، لدينا رياضيات.",
+      "درس الرياضيات ليس سهلًا، لكنني أبذل جهدي.",
+      "يساعدني صديقي في حل مسألة واحدة.",
+      "في وقت الاستراحة، نجلس في الخارج ونأكل الغداء.",
+      "نتحدث عن واجباتنا والمواد المفضلة لدينا.",
+      "بعد الاستراحة، لدينا درس علوم.",
+      "يرينا المعلم تجربة بسيطة.",
+      "يشاهد الجميع بعناية ويكتبون ملاحظات.",
+      "في نهاية اليوم، أشعر بالتعب.",
+      "لكنني أشعر أيضًا بالفخر لأنني تعلمت أشياء كثيرة.",
+      "عندما أعود إلى البيت، أرتاح قليلًا.",
+      "ثم أنهي واجباتي قبل العشاء.",
+      "اليوم المدرسي المزدحم قد يكون صعبًا.",
+      "لكن كل يوم في المدرسة يساعدني على أن أصبح أفضل.",
+    ],
+
+    Hebrew: [
+      "היום הוא יום מאוד עמוס בבית הספר.",
+      "אני מתעורר מוקדם ומכין את תיק בית הספר שלי.",
+      "אני שם בפנים את הספרים, המחברת, העיפרון והארוחה שלי.",
+      "השיעור הראשון שלי הוא אנגלית.",
+      "המורה נותנת לנו תרגיל קריאה קצר.",
+      "אני קורא לאט כי אני רוצה להבין כל מילה.",
+      "אחרי אנגלית יש לנו מתמטיקה.",
+      "שיעור המתמטיקה לא קל, אבל אני עושה כמיטב יכולתי.",
+      "החבר שלי עוזר לי לפתור תרגיל אחד.",
+      "בזמן ההפסקה אנחנו יושבים בחוץ ואוכלים ארוחת צהריים.",
+      "אנחנו מדברים על שיעורי הבית ועל המקצועות האהובים עלינו.",
+      "אחרי ההפסקה יש לנו שיעור מדעים.",
+      "המורה מראה לנו ניסוי פשוט.",
+      "כולם מסתכלים בזהירות וכותבים הערות.",
+      "בסוף היום אני מרגיש עייף.",
+      "אבל אני גם מרגיש גאה כי למדתי הרבה דברים.",
+      "כשאני חוזר הביתה, אני נח לזמן קצר.",
+      "אחר כך אני מסיים את שיעורי הבית לפני ארוחת הערב.",
+      "יום לימודים עמוס יכול להיות קשה.",
+      "אבל כל יום בבית הספר עוזר לי להשתפר.",
+    ],
+  },
+
+  vocabulary: [
+    { word: "Busy", Arabic: "مزدحم", Hebrew: "עמוס" },
+    { word: "School bag", Arabic: "حقيبة مدرسية", Hebrew: "תיק בית ספר" },
+    { word: "Lesson", Arabic: "درس", Hebrew: "שיעור" },
+    { word: "Exercise", Arabic: "تمرين", Hebrew: "תרגיל" },
+    { word: "Break time", Arabic: "وقت الاستراحة", Hebrew: "זמן הפסקה" },
+    { word: "Homework", Arabic: "واجبات", Hebrew: "שיעורי בית" },
+    { word: "Experiment", Arabic: "تجربة", Hebrew: "ניסוי" },
+    { word: "Proud", Arabic: "فخور", Hebrew: "גאה" },
+  ],
+
+  questions: [
+    {
+      question: "What does the student put in the school bag?",
+      answer: "The student puts books, a notebook, a pencil, and lunch in the school bag.",
+    },
+    {
+      question: "What is the first lesson?",
+      answer: "The first lesson is English.",
+    },
+    {
+      question: "Who helps the student in math?",
+      answer: "A friend helps the student solve one problem.",
+    },
+    {
+      question: "How does the student feel at the end of the day?",
+      answer: "The student feels tired but proud.",
+    },
+  ],
+
+  videoUrl: "",
+  audioUrl: "",
+},
+{
+  id: "story-english-a1-study-003",
+  title: "The School Science Fair",
+  image: "/stories/covers/The-School-Science-Fair.png",
+  level: "A1-A2",
+  category: "Study",
+  description:
+    "A beginner story about preparing a science project and presenting it at a school science fair.",
+
+  story: {
+    English: [
+      "Our school is having a science fair this week.",
+      "Every student must prepare a project.",
+      "I decide to work with my friend Adam.",
+      "We choose a project about plants and water.",
+      "First, we read information online.",
+      "Then we write our ideas in a notebook.",
+      "We buy small plants from a local store.",
+      "One plant gets water every day.",
+      "The second plant gets less water.",
+      "We watch the plants carefully for two weeks.",
+      "Every day we write our observations.",
+      "The first plant grows faster and looks healthier.",
+      "The second plant grows more slowly.",
+      "We create a colorful poster with pictures and notes.",
+      "On the day of the science fair, many parents visit the school.",
+      "I feel nervous before presenting our project.",
+      "When people ask questions, I answer politely.",
+      "They seem interested in our experiment.",
+      "At the end of the event, our teacher congratulates us.",
+      "I learn that science can be fun and interesting.",
+    ],
+
+    Arabic: [
+      "ستقيم مدرستنا معرضًا للعلوم هذا الأسبوع.",
+      "يجب على كل طالب إعداد مشروع.",
+      "أقرر العمل مع صديقي آدم.",
+      "نختار مشروعًا عن النباتات والماء.",
+      "أولًا نقرأ معلومات على الإنترنت.",
+      "ثم نكتب أفكارنا في دفتر.",
+      "نشتري نباتات صغيرة من متجر محلي.",
+      "يحصل أحد النباتات على الماء كل يوم.",
+      "أما النبات الثاني فيحصل على كمية أقل من الماء.",
+      "نراقب النباتات بعناية لمدة أسبوعين.",
+      "كل يوم نسجل ملاحظاتنا.",
+      "ينمو النبات الأول بشكل أسرع ويبدو أكثر صحة.",
+      "أما النبات الثاني فينمو ببطء أكبر.",
+      "نصنع لوحة ملونة تحتوي على صور وملاحظات.",
+      "في يوم معرض العلوم، يزور العديد من الأهالي المدرسة.",
+      "أشعر بالتوتر قبل عرض مشروعنا.",
+      "عندما يطرح الناس أسئلة، أجيب بأدب.",
+      "يبدو أنهم مهتمون بتجربتنا.",
+      "في نهاية الفعالية، يهنئنا المعلم.",
+      "أتعلم أن العلوم يمكن أن تكون ممتعة ومثيرة للاهتمام.",
+    ],
+
+    Hebrew: [
+      "בבית הספר שלנו מתקיים יריד מדע השבוע.",
+      "כל תלמיד צריך להכין פרויקט.",
+      "אני מחליט לעבוד עם חברי אדם.",
+      "אנחנו בוחרים פרויקט על צמחים ומים.",
+      "ראשית אנו קוראים מידע באינטרנט.",
+      "לאחר מכן אנו כותבים את הרעיונות שלנו במחברת.",
+      "אנחנו קונים צמחים קטנים מחנות מקומית.",
+      "צמח אחד מקבל מים בכל יום.",
+      "הצמח השני מקבל פחות מים.",
+      "אנחנו עוקבים אחרי הצמחים במשך שבועיים.",
+      "בכל יום אנו רושמים את התצפיות שלנו.",
+      "הצמח הראשון גדל מהר יותר ונראה בריא יותר.",
+      "הצמח השני גדל לאט יותר.",
+      "אנחנו מכינים פוסטר צבעוני עם תמונות והערות.",
+      "ביום יריד המדע הורים רבים מגיעים לבית הספר.",
+      "אני מרגיש לחוץ לפני הצגת הפרויקט שלנו.",
+      "כשאנשים שואלים שאלות, אני עונה בנימוס.",
+      "הם נראים מתעניינים בניסוי שלנו.",
+      "בסוף האירוע המורה מברך אותנו.",
+      "אני לומד שמדע יכול להיות מהנה ומעניין.",
+    ],
+  },
+
+  vocabulary: [
+    { word: "Science Fair", Arabic: "معرض العلوم", Hebrew: "יריד מדע" },
+    { word: "Project", Arabic: "مشروع", Hebrew: "פרויקט" },
+    { word: "Plant", Arabic: "نبات", Hebrew: "צמח" },
+    { word: "Water", Arabic: "ماء", Hebrew: "מים" },
+    { word: "Observation", Arabic: "ملاحظة", Hebrew: "תצפית" },
+    { word: "Experiment", Arabic: "تجربة", Hebrew: "ניסוי" },
+    { word: "Poster", Arabic: "لوحة", Hebrew: "פוסטר" },
+    { word: "Present", Arabic: "يعرض", Hebrew: "להציג" },
+  ],
+
+  questions: [
+    {
+      question: "Who does the student work with?",
+      answer: "The student works with a friend named Adam.",
+    },
+    {
+      question: "What is the project about?",
+      answer: "The project is about plants and water.",
+    },
+    {
+      question: "How long do they observe the plants?",
+      answer: "They observe the plants for two weeks.",
+    },
+    {
+      question: "What does the student learn?",
+      answer: "The student learns that science can be fun and interesting.",
+    },
+  ],
+
+  videoUrl: "",
+  audioUrl: "",
+},
  
 {
   id: "story-english-b1-study-001",
@@ -222,6 +448,258 @@ export const studyStories: StoryLesson[] = [
   videoUrl: "",
   audioUrl: "",
 },
+
+{
+  id: "story-english-b1-study-002",
+  title: "Giving My First Presentation",
+  image: "/stories/covers/Giving-My-First-Presentation.png",
+  level: "B1-B2",
+  category: "Study",
+  description:
+    "An intermediate story about preparing for a classroom presentation and gaining confidence.",
+
+  story: {
+    English: [
+      "Next week, our class must give individual presentations.",
+      "Each student can choose a topic that interests them.",
+      "After thinking for a few days, I decided to talk about renewable energy.",
+      "I have always been interested in technology and the environment.",
+      "At first, I felt excited about my topic.",
+      "However, I became nervous when I remembered that I would be speaking in front of the entire class.",
+      "Public speaking was never easy for me.",
+      "I started preparing early so I would feel more confident.",
+      "First, I researched the topic and collected information from several reliable sources.",
+      "Then I organized my ideas into a simple structure.",
+      "I created slides with images, statistics, and key points.",
+      "My goal was to make the presentation both informative and interesting.",
+      "A few days before the presentation, I practiced in front of a mirror.",
+      "Later, I presented it to my family and asked for feedback.",
+      "Their suggestions helped me improve my delivery.",
+      "On the day of the presentation, my hands were shaking slightly.",
+      "When I stood in front of the class, I took a deep breath and began speaking.",
+      "After the first few minutes, I started to relax.",
+      "The audience listened carefully and seemed interested in the topic.",
+      "Some students even asked thoughtful questions at the end.",
+      "I answered them confidently and felt proud of myself.",
+      "When the presentation was over, my teacher congratulated me on my preparation.",
+      "My classmates also gave positive comments.",
+      "That experience taught me that preparation reduces fear.",
+      "It also showed me that confidence grows with practice."
+    ],
+
+    Arabic: [
+      "في الأسبوع القادم، يجب على صفنا تقديم عروض فردية.",
+      "يمكن لكل طالب اختيار موضوع يثير اهتمامه.",
+      "بعد التفكير لعدة أيام، قررت التحدث عن الطاقة المتجددة.",
+      "لطالما كنت مهتمًا بالتكنولوجيا والبيئة.",
+      "في البداية، شعرت بالحماس تجاه موضوعي.",
+      "لكنني أصبحت متوترًا عندما تذكرت أنني سأتحدث أمام الصف بأكمله.",
+      "لم يكن التحدث أمام الجمهور أمرًا سهلًا بالنسبة لي.",
+      "بدأت التحضير مبكرًا لكي أشعر بثقة أكبر.",
+      "أولًا، أجريت بحثًا وجمعت معلومات من عدة مصادر موثوقة.",
+      "ثم رتبت أفكاري ضمن هيكل بسيط وواضح.",
+      "أنشأت شرائح تحتوي على صور وإحصائيات ونقاط رئيسية.",
+      "كان هدفي أن أجعل العرض مفيدًا وممتعًا في الوقت نفسه.",
+      "قبل العرض بعدة أيام، تدربت أمام المرآة.",
+      "لاحقًا، قدمت العرض لعائلتي وطلبت ملاحظاتهم.",
+      "ساعدتني اقتراحاتهم على تحسين طريقة الإلقاء.",
+      "في يوم العرض، كانت يداي ترتجفان قليلًا.",
+      "عندما وقفت أمام الصف، أخذت نفسًا عميقًا وبدأت الحديث.",
+      "بعد الدقائق الأولى، بدأت أشعر بالراحة.",
+      "استمع الجمهور باهتمام وبدا أنهم مهتمون بالموضوع.",
+      "حتى أن بعض الطلاب طرحوا أسئلة جيدة في النهاية.",
+      "أجبت عنها بثقة وشعرت بالفخر بنفسي.",
+      "عندما انتهى العرض، هنأني المعلم على تحضيري الجيد.",
+      "كما قدم زملائي تعليقات إيجابية.",
+      "علمتني هذه التجربة أن التحضير يقلل من الخوف.",
+      "وأظهرت لي أيضًا أن الثقة تنمو مع الممارسة."
+    ],
+
+    Hebrew: [
+      "בשבוע הבא הכיתה שלנו צריכה להציג מצגות אישיות.",
+      "כל תלמיד יכול לבחור נושא שמעניין אותו.",
+      "לאחר כמה ימים של מחשבה החלטתי לדבר על אנרגיה מתחדשת.",
+      "תמיד התעניינתי בטכנולוגיה ובסביבה.",
+      "בהתחלה התרגשתי מהנושא שבחרתי.",
+      "אבל נעשיתי לחוץ כשנזכרתי שאצטרך לדבר מול כל הכיתה.",
+      "דיבור מול קהל מעולם לא היה קל עבורי.",
+      "התחלתי להתכונן מוקדם כדי להרגיש בטוח יותר.",
+      "ראשית חקרתי את הנושא ואספתי מידע ממקורות אמינים.",
+      "לאחר מכן ארגנתי את הרעיונות שלי במבנה פשוט וברור.",
+      "יצרתי שקופיות עם תמונות, נתונים ונקודות מרכזיות.",
+      "המטרה שלי הייתה להפוך את המצגת למעניינת ומועילה.",
+      "כמה ימים לפני המצגת התאמנתי מול המראה.",
+      "לאחר מכן הצגתי אותה למשפחה שלי וביקשתי משוב.",
+      "ההצעות שלהם עזרו לי לשפר את ההצגה.",
+      "ביום המצגת הידיים שלי רעדו מעט.",
+      "כשעמדתי מול הכיתה נשמתי עמוק והתחלתי לדבר.",
+      "אחרי הדקות הראשונות התחלתי להירגע.",
+      "הקהל הקשיב בקשב ונראה מתעניין בנושא.",
+      "חלק מהתלמידים אפילו שאלו שאלות טובות בסיום.",
+      "עניתי עליהן בביטחון והרגשתי גאה בעצמי.",
+      "כשהמצגת הסתיימה, המורה בירך אותי על ההכנה הטובה.",
+      "גם חבריי לכיתה נתנו תגובות חיוביות.",
+      "החוויה הזו לימדה אותי שהכנה מפחיתה פחד.",
+      "היא גם הראתה לי שביטחון נבנה באמצעות תרגול."
+    ],
+  },
+
+  vocabulary: [
+    { word: "Presentation", Arabic: "عرض تقديمي", Hebrew: "מצגת" },
+    { word: "Audience", Arabic: "جمهور", Hebrew: "קהל" },
+    { word: "Confident", Arabic: "واثق", Hebrew: "בטוח" },
+    { word: "Nervous", Arabic: "متوتر", Hebrew: "לחוץ" },
+    { word: "Slide", Arabic: "شريحة عرض", Hebrew: "שקופית" },
+    { word: "Research", Arabic: "بحث", Hebrew: "מחקר" },
+    { word: "Practice", Arabic: "تدريب", Hebrew: "תרגול" },
+    { word: "Feedback", Arabic: "ملاحظات", Hebrew: "משוב" }
+  ],
+
+  questions: [
+    {
+      question: "What was the presentation about?",
+      answer: "The presentation was about renewable energy."
+    },
+    {
+      question: "Why was the student nervous?",
+      answer: "Because it was the first time speaking in front of the whole class."
+    },
+    {
+      question: "How did the student prepare?",
+      answer: "The student researched the topic, created slides, and practiced several times."
+    },
+    {
+      question: "What happened after the presentation?",
+      answer: "The teacher and classmates gave positive feedback."
+    }
+  ],
+
+  videoUrl: "",
+  audioUrl: "",
+},
+
+{
+id: "story-english-b1-study-003",
+title: "Joining A Study Group",
+image: "/stories/covers/Joining-A-Study-Group.png",
+level: "B1-B2",
+category: "Study",
+description:
+"An intermediate story about joining a study group, improving academic performance, and learning the value of teamwork.",
+
+story: {
+English: [
+"At the beginning of the semester, I struggled in my chemistry class.",
+"The lessons were becoming more difficult every week.",
+"Although I studied alone, my test scores were not improving.",
+"One day, a classmate invited me to join a study group.",
+"At first, I was unsure because I preferred studying by myself.",
+"However, I decided to give it a chance.",
+"The group met every Wednesday afternoon in the library.",
+"There were five students in the group.",
+"Each person had different strengths and weaknesses.",
+"During our meetings, we reviewed class notes and solved practice questions.",
+"Whenever someone did not understand a topic, another student explained it.",
+"I quickly realized that discussing ideas helped me learn faster.",
+"The study sessions were productive and well organized.",
+"We also shared useful resources and learning strategies.",
+"As the weeks passed, I became more confident in chemistry.",
+"My understanding of difficult concepts improved significantly.",
+"Before exams, the group helped me review important topics.",
+"My grades started to improve, and I felt more motivated.",
+"More importantly, I developed strong friendships with my classmates.",
+"The experience taught me that learning is often better when people work together.",
+"Today, I still participate in study groups whenever I can.",
+"They help me stay focused, motivated, and prepared for academic challenges."
+],
+
+Arabic: [
+  "في بداية الفصل الدراسي، كنت أواجه صعوبة في مادة الكيمياء.",
+  "كانت الدروس تصبح أكثر صعوبة كل أسبوع.",
+  "على الرغم من أنني كنت أدرس وحدي، إلا أن علاماتي لم تتحسن.",
+  "في أحد الأيام، دعاني أحد زملائي للانضمام إلى مجموعة دراسية.",
+  "في البداية، لم أكن متأكدًا لأنني كنت أفضل الدراسة بمفردي.",
+  "لكنني قررت أن أجرب.",
+  "كانت المجموعة تجتمع كل يوم أربعاء بعد الظهر في المكتبة.",
+  "كان هناك خمسة طلاب في المجموعة.",
+  "كان لكل شخص نقاط قوة ونقاط ضعف مختلفة.",
+  "خلال الاجتماعات، كنا نراجع الملاحظات ونحل أسئلة تدريبية.",
+  "عندما لا يفهم أحد موضوعًا معينًا، كان طالب آخر يشرحه.",
+  "أدركت بسرعة أن مناقشة الأفكار تساعدني على التعلم بشكل أسرع.",
+  "كانت جلسات الدراسة مثمرة ومنظمة جيدًا.",
+  "كما كنا نتبادل مصادر مفيدة واستراتيجيات تعلم.",
+  "مع مرور الأسابيع، أصبحت أكثر ثقة في الكيمياء.",
+  "تحسن فهمي للمفاهيم الصعبة بشكل ملحوظ.",
+  "قبل الامتحانات، ساعدتني المجموعة على مراجعة المواضيع المهمة.",
+  "بدأت علاماتي بالتحسن وشعرت بدافع أكبر.",
+  "والأهم من ذلك أنني كونت صداقات قوية مع زملائي.",
+  "علمتني هذه التجربة أن التعلم يكون أفضل غالبًا عندما يعمل الناس معًا.",
+  "واليوم ما زلت أشارك في مجموعات الدراسة كلما استطعت.",
+  "فهي تساعدني على البقاء مركزًا ومتحفزًا ومستعدًا للتحديات الأكاديمية."
+],
+
+Hebrew: [
+  "בתחילת הסמסטר התקשיתי בשיעורי הכימיה.",
+  "השיעורים הפכו לקשים יותר בכל שבוע.",
+  "למרות שלמדתי לבד, הציונים שלי לא השתפרו.",
+  "יום אחד חבר לכיתה הזמין אותי להצטרף לקבוצת לימוד.",
+  "בהתחלה לא הייתי בטוח כי העדפתי ללמוד לבד.",
+  "אבל החלטתי לנסות.",
+  "הקבוצה נפגשה בכל יום רביעי אחר הצהריים בספרייה.",
+  "היו חמישה תלמידים בקבוצה.",
+  "לכל אחד היו חוזקות וחולשות שונות.",
+  "במהלך המפגשים סקרנו את החומר ופתרנו שאלות תרגול.",
+  "כאשר מישהו לא הבין נושא מסוים, תלמיד אחר הסביר אותו.",
+  "הבנתי במהירות שדיון ברעיונות עוזר לי ללמוד מהר יותר.",
+  "מפגשי הלימוד היו יעילים ומאורגנים היטב.",
+  "שיתפנו גם מקורות מידע ואסטרטגיות למידה.",
+  "עם חלוף השבועות נעשיתי בטוח יותר בכימיה.",
+  "ההבנה שלי במושגים מורכבים השתפרה משמעותית.",
+  "לפני המבחנים הקבוצה עזרה לי לחזור על נושאים חשובים.",
+  "הציונים שלי התחילו להשתפר והרגשתי מוטיבציה גדולה יותר.",
+  "חשוב יותר, פיתחתי חברויות חזקות עם חבריי לכיתה.",
+  "החוויה לימדה אותי שלמידה טובה יותר כאשר עובדים יחד.",
+  "גם היום אני משתתף בקבוצות לימוד whenever possible.",
+  "הן עוזרות לי להישאר ממוקד, מלא מוטיבציה ומוכן לאתגרים אקדמיים."
+],
+
+},
+
+vocabulary: [
+{ word: "Study Group", Arabic: "مجموعة دراسية", Hebrew: "קבוצת לימוד" },
+{ word: "Chemistry", Arabic: "كيمياء", Hebrew: "כימיה" },
+{ word: "Library", Arabic: "مكتبة", Hebrew: "ספרייה" },
+{ word: "Resource", Arabic: "مصدر", Hebrew: "מקור" },
+{ word: "Strategy", Arabic: "استراتيجية", Hebrew: "אסטרטגיה" },
+{ word: "Concept", Arabic: "مفهوم", Hebrew: "מושג" },
+{ word: "Motivated", Arabic: "متحفز", Hebrew: "בעל מוטיבציה" },
+{ word: "Teamwork", Arabic: "العمل الجماعي", Hebrew: "עבודת צוות" }
+],
+
+questions: [
+{
+question: "Which subject was difficult for the student?",
+answer: "The student struggled with chemistry."
+},
+{
+question: "Where did the study group meet?",
+answer: "The study group met in the library."
+},
+{
+question: "How many students were in the group?",
+answer: "There were five students in the group."
+},
+{
+question: "What lesson did the student learn?",
+answer: "The student learned that teamwork can improve learning."
+}
+],
+
+videoUrl: "",
+audioUrl: "",
+},
+
+
 {
   id: "story-english-c1-study-001",
   title: "Learning Beyond The Classroom",
