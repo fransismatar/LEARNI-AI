@@ -6,11 +6,9 @@ import {
   FaCheckCircle,
   FaGraduationCap,
   FaHeadphones,
-  FaMicrophone,
   FaPlane,
   FaRegBuilding,
   FaUsers,
-  FaVolumeUp,
 } from "react-icons/fa";
 import { storyLessons } from "../data/stories";
 import api from "../services/api";
