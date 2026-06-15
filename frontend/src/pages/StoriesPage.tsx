@@ -68,7 +68,7 @@ const StoriesPage = () => {
   }, [selectedLevel, selectedCategory]);
 
   const selectedStory =
-  storyLessons.find((story) => story.id === selectedStoryId) || null;
+    storyLessons.find((story) => story.id === selectedStoryId) || null;
 
   const speakText = (sentences: string[]) => {
     window.speechSynthesis.cancel();
@@ -175,6 +175,13 @@ const StoriesPage = () => {
   };
 
   if (selectedStory) {
+    const progress = Math.round(
+      (Object.keys(results).filter((key) => key.startsWith(selectedStory.id))
+        .length /
+        Math.max(selectedStory.story.English.length, 1)) *
+        100
+    );
+
     return (
       <section className="space-y-6">
         <button
@@ -188,215 +195,282 @@ const StoriesPage = () => {
           Back to books
         </button>
 
-        <div className="overflow-hidden rounded-[36px] border border-slate-200 bg-white shadow-sm">
-          <div className="bg-gradient-to-br from-blue-500 via-blue-700 to-slate-950 p-8 text-white sm:p-10">
-            <p className="text-sm font-black uppercase tracking-[0.3em] text-blue-100">
-              {selectedStory.category} Story Book
-            </p>
+        <div className="overflow-hidden rounded-[40px] border border-slate-200 bg-white shadow-sm">
+          <div className="relative min-h-[360px] overflow-hidden bg-slate-950">
+            {selectedStory.image && (
+              <img
+                src={selectedStory.image}
+                alt={selectedStory.title}
+                className="absolute inset-0 h-full w-full object-cover opacity-70"
+              />
+            )}
 
-            <h1 className="mt-4 text-4xl font-black sm:text-5xl">
-              {selectedStory.title}
-            </h1>
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/75 to-slate-950/20" />
 
-            <p className="mt-4 max-w-2xl text-sm font-bold leading-7 text-blue-100">
-              {selectedStory.description}
-            </p>
+            <div className="relative z-10 flex min-h-[360px] flex-col justify-end p-7 text-white sm:p-10">
+              <p className="text-xs font-black uppercase tracking-[0.35em] text-blue-200">
+                {selectedStory.category} Interactive Story
+              </p>
 
-            <div className="mt-6 flex flex-wrap gap-3">
-              <span className="rounded-full bg-white/15 px-4 py-2 text-xs font-black">
-                {selectedStory.level}
-              </span>
+              <h1 className="mt-4 max-w-3xl text-4xl font-black leading-tight sm:text-6xl">
+                {selectedStory.title}
+              </h1>
 
-              <span className="rounded-full bg-white/15 px-4 py-2 text-xs font-black">
-                {selectedStory.story.English.length} sentences
-              </span>
+              <p className="mt-4 max-w-2xl text-sm font-bold leading-7 text-slate-200">
+                {selectedStory.description}
+              </p>
 
-              <span className="rounded-full bg-white/15 px-4 py-2 text-xs font-black">
-                Listening + Speaking
-              </span>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <span className="rounded-full bg-white/15 px-4 py-2 text-xs font-black">
+                  {selectedStory.level}
+                </span>
+                <span className="rounded-full bg-white/15 px-4 py-2 text-xs font-black">
+                  {selectedStory.story.English.length} lines
+                </span>
+                <span className="rounded-full bg-white/15 px-4 py-2 text-xs font-black">
+                  Listen + Repeat + AI Check
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="p-5 sm:p-7">
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => speakText(selectedStory.story.English)}
-                className="flex items-center gap-2 rounded-2xl bg-blue-500 px-5 py-3 text-sm font-black text-white transition hover:bg-blue-600"
-              >
-                <FaHeadphones />
-                Listen full story
-              </button>
-
-              <button
-                onClick={() => setShowTranslation((prev) => !prev)}
-                className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 transition hover:border-blue-300"
-              >
-                {showTranslation ? "Hide translation" : "Show translation"}
-              </button>
-            </div>
-
-            <div className="mt-6 rounded-[28px] bg-slate-950 p-5 text-white">
-              {selectedStory.videoUrl ? (
-                <video
-                  controls
-                  className="h-[260px] w-full rounded-2xl object-cover"
-                  src={selectedStory.videoUrl}
-                />
-              ) : (
-                <div className="grid h-[260px] place-items-center rounded-2xl border border-white/10 bg-gradient-to-br from-blue-500/30 via-slate-900 to-slate-950 text-center">
+          <div className="grid gap-7 p-5 sm:p-7 lg:grid-cols-[1fr_320px]">
+            <div>
+              <div className="sticky top-4 z-20 mb-6 rounded-[28px] border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur">
+                <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <FaVolumeUp className="mx-auto text-4xl text-blue-300" />
-                    <p className="mt-4 text-lg font-black">
-                      Read, Listen, Repeat
+                    <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-500">
+                      Reading Mode
                     </p>
-                    <p className="mt-2 text-sm text-slate-300">
-                      Practice this story without using the live teacher.
+                    <p className="mt-1 text-sm font-bold text-slate-500">
+                      Read like a real story. Practice any line.
                     </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => speakText(selectedStory.story.English)}
+                      className="flex items-center gap-2 rounded-2xl bg-blue-500 px-4 py-3 text-xs font-black text-white transition hover:bg-blue-600"
+                    >
+                      <FaHeadphones />
+                      Listen full story
+                    </button>
+
+                    <button
+                      onClick={() => setShowTranslation((prev) => !prev)}
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black text-slate-700 transition hover:border-blue-300"
+                    >
+                      {showTranslation ? "Hide translation" : "Show translation"}
+                    </button>
                   </div>
                 </div>
-              )}
-            </div>
 
-            <div className="mt-7 space-y-4">
-              {selectedStory.story.English.map((sentence: string, index: number) => {
-                const sentenceId = `${selectedStory.id}-sentence-${index}`;
-                const result = results[sentenceId];
-
-                return (
+                <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
                   <div
-                    key={sentenceId}
-                    className="rounded-3xl border border-slate-200 bg-slate-50 p-5"
-                  >
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                      <p className="text-base font-black leading-8 text-slate-950">
-                        {index + 1}. {sentence}
-                      </p>
-
-                      <div className="flex shrink-0 gap-2">
-                        <button
-                          onClick={() => speakText([sentence])}
-                          className="rounded-2xl bg-blue-500 px-4 py-2 text-xs font-black text-white transition hover:bg-blue-600"
-                        >
-                          Listen
-                        </button>
-
-                        <button
-                          onMouseDown={() =>
-                            startRepeat({ id: sentenceId, sentence })
-                          }
-                          onMouseUp={stopRepeat}
-                          onMouseLeave={stopRepeat}
-                          onTouchStart={() =>
-                            startRepeat({ id: sentenceId, sentence })
-                          }
-                          onTouchEnd={stopRepeat}
-                          className={`flex items-center gap-2 rounded-2xl border px-4 py-2 text-xs font-black transition ${
-                            recordingId === sentenceId
-                              ? "border-red-200 bg-red-50 text-red-500"
-                              : "border-slate-200 bg-white text-slate-700 hover:border-blue-300"
-                          }`}
-                        >
-                          <FaMicrophone />
-                          {recordingId === sentenceId ? "Recording" : "Repeat"}
-                        </button>
-                      </div>
-                    </div>
-
-                    {showTranslation && (
-                      <div className="mt-4 grid gap-3 md:grid-cols-2">
-                        <p className="rounded-2xl bg-white p-4 text-sm font-bold leading-7 text-slate-600">
-                          Arabic: {selectedStory.story.Arabic[index]}
-                        </p>
-
-                        <p className="rounded-2xl bg-white p-4 text-sm font-bold leading-7 text-slate-600">
-                          Hebrew: {selectedStory.story.Hebrew[index]}
-                        </p>
-                      </div>
-                    )}
-
-                    {checkingId === sentenceId && (
-                      <p className="mt-4 text-center text-sm font-bold text-blue-500">
-                        AI is checking your voice...
-                      </p>
-                    )}
-
-                    {result && (
-                      <div className="mt-4 rounded-3xl bg-white p-4">
-                        <p className="text-sm font-black text-slate-700">
-                          Pronunciation score: {result.score}%
-                        </p>
-
-                        <p className="mt-2 text-sm text-slate-600">
-                          {result.message}
-                        </p>
-
-                        <p className="mt-2 text-xs text-slate-500">
-                          <strong>Expected:</strong> {result.expected}
-                        </p>
-
-                        <p className="mt-1 text-xs text-slate-500">
-                          <strong>You said:</strong>{" "}
-                          {result.said || "No clear speech detected"}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-7 rounded-[28px] border border-slate-200 bg-white p-5">
-              <h3 className="text-xl font-black text-slate-950">
-                Vocabulary
-              </h3>
-
-              <div className="mt-4 grid gap-3 md:grid-cols-2">
-                {selectedStory.vocabulary.map(
-                   (item: { word: string; Arabic: string; Hebrew: string }) => (
-                  <div
-                    key={item.word}
-                    className="rounded-2xl bg-slate-50 p-4"
-                  >
-                    <p className="font-black text-slate-950">{item.word}</p>
-
-                    <p className="mt-2 text-sm font-bold text-slate-500">
-                      Arabic: {item.Arabic}
-                    </p>
-
-                    <p className="mt-1 text-sm font-bold text-slate-500">
-                      Hebrew: {item.Hebrew}
-                    </p>
-                  </div>
-                ))}
+                    className="h-full rounded-full bg-blue-500 transition-all"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="mt-7 rounded-[28px] border border-slate-200 bg-white p-5">
-              <h3 className="text-xl font-black text-slate-950">Questions</h3>
-
-              <div className="mt-4 space-y-3">
-                {selectedStory.questions.map(
-                    (item: { question: string; answer: string }, index: number) => (
-                  <div
-                    key={item.question}
-                    className="rounded-2xl bg-slate-50 p-4"
-                  >
-                    <p className="font-black text-slate-950">
-                      {index + 1}. {item.question}
+              <article className="rounded-[34px] border border-slate-200 bg-[#fffaf0] p-5 shadow-sm sm:p-8">
+                <div className="mx-auto max-w-3xl">
+                  <div className="mb-8 border-b border-amber-200 pb-6 text-center">
+                    <p className="text-xs font-black uppercase tracking-[0.3em] text-amber-700">
+                      Story Book
                     </p>
-
-                    <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
-                      Answer: {item.answer}
-                    </p>
+                    <h2 className="mt-3 text-3xl font-black text-slate-950">
+                      {selectedStory.title}
+                    </h2>
                   </div>
-                ))}
-              </div>
+
+                  <div className="space-y-6">
+                    {selectedStory.story.English.map(
+                      (sentence: string, index: number) => {
+                        const sentenceId = `${selectedStory.id}-sentence-${index}`;
+                        const result = results[sentenceId];
+
+                        return (
+                          <div
+                            key={sentenceId}
+                            className="group rounded-[28px] border border-amber-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                          >
+                            <div className="flex gap-4">
+                              <div className="hidden h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-950 text-sm font-black text-white sm:grid">
+                                {index + 1}
+                              </div>
+
+                              <div className="flex-1">
+                                <p className="font-serif text-xl font-bold leading-10 text-slate-900 sm:text-2xl">
+                                  {sentence}
+                                </p>
+
+                                {showTranslation && (
+                                  <div className="mt-4 grid gap-3">
+                                    <p className="rounded-2xl bg-blue-50 p-4 text-sm font-bold leading-7 text-slate-700">
+                                      <span className="font-black text-blue-600">
+                                        Arabic:
+                                      </span>{" "}
+                                      {selectedStory.story.Arabic[index]}
+                                    </p>
+
+                                    <p className="rounded-2xl bg-slate-50 p-4 text-sm font-bold leading-7 text-slate-700">
+                                      <span className="font-black text-slate-900">
+                                        Hebrew:
+                                      </span>{" "}
+                                      {selectedStory.story.Hebrew[index]}
+                                    </p>
+                                  </div>
+                                )}
+
+                                <div className="mt-4 flex flex-wrap gap-2">
+                                  <button
+                                    onClick={() => speakText([sentence])}
+                                    className="flex items-center gap-2 rounded-2xl bg-blue-500 px-4 py-2 text-xs font-black text-white transition hover:bg-blue-600"
+                                  >
+                                    <FaVolumeUp />
+                                    Listen
+                                  </button>
+
+                                  <button
+                                    onMouseDown={() =>
+                                      startRepeat({ id: sentenceId, sentence })
+                                    }
+                                    onMouseUp={stopRepeat}
+                                    onMouseLeave={stopRepeat}
+                                    onTouchStart={() =>
+                                      startRepeat({ id: sentenceId, sentence })
+                                    }
+                                    onTouchEnd={stopRepeat}
+                                    className={`flex items-center gap-2 rounded-2xl border px-4 py-2 text-xs font-black transition ${
+                                      recordingId === sentenceId
+                                        ? "border-red-200 bg-red-50 text-red-500"
+                                        : "border-slate-200 bg-white text-slate-700 hover:border-blue-300"
+                                    }`}
+                                  >
+                                    <FaMicrophone />
+                                    {recordingId === sentenceId
+                                      ? "Recording"
+                                      : "Repeat"}
+                                  </button>
+                                </div>
+
+                                {checkingId === sentenceId && (
+                                  <p className="mt-4 rounded-2xl bg-blue-50 p-3 text-center text-sm font-bold text-blue-600">
+                                    AI is checking your voice...
+                                  </p>
+                                )}
+
+                                {result && (
+                                  <div className="mt-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                                    <div className="flex items-center justify-between gap-3">
+                                      <p className="text-sm font-black text-slate-800">
+                                        Pronunciation score
+                                      </p>
+
+                                      <span
+                                        className={`rounded-full px-3 py-1 text-xs font-black ${
+                                          result.score >= 85
+                                            ? "bg-green-100 text-green-700"
+                                            : result.score >= 65
+                                            ? "bg-yellow-100 text-yellow-700"
+                                            : "bg-red-100 text-red-700"
+                                        }`}
+                                      >
+                                        {result.score}%
+                                      </span>
+                                    </div>
+
+                                    <p className="mt-3 text-sm font-bold text-slate-600">
+                                      {result.message}
+                                    </p>
+
+                                    <p className="mt-3 text-xs leading-6 text-slate-500">
+                                      <strong>Expected:</strong>{" "}
+                                      {result.expected}
+                                    </p>
+
+                                    <p className="mt-1 text-xs leading-6 text-slate-500">
+                                      <strong>You said:</strong>{" "}
+                                      {result.said || "No clear speech detected"}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                    )}
+                  </div>
+                </div>
+              </article>
             </div>
 
-            <button className="mt-7 flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white transition hover:bg-slate-800">
-              <FaCheckCircle />
-              Mark story as done
-            </button>
+            <aside className="space-y-5">
+              <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm">
+                <h3 className="text-xl font-black text-slate-950">
+                  Vocabulary
+                </h3>
+
+                <div className="mt-4 space-y-3">
+                  {selectedStory.vocabulary.map(
+                    (item: {
+                      word: string;
+                      Arabic: string;
+                      Hebrew: string;
+                    }) => (
+                      <div
+                        key={item.word}
+                        className="rounded-2xl bg-slate-50 p-4"
+                      >
+                        <p className="font-black text-slate-950">
+                          {item.word}
+                        </p>
+                        <p className="mt-2 text-sm font-bold text-slate-500">
+                          Arabic: {item.Arabic}
+                        </p>
+                        <p className="mt-1 text-sm font-bold text-slate-500">
+                          Hebrew: {item.Hebrew}
+                        </p>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm">
+                <h3 className="text-xl font-black text-slate-950">
+                  Questions
+                </h3>
+
+                <div className="mt-4 space-y-3">
+                  {selectedStory.questions.map(
+                    (
+                      item: { question: string; answer: string },
+                      index: number
+                    ) => (
+                      <div
+                        key={item.question}
+                        className="rounded-2xl bg-slate-50 p-4"
+                      >
+                        <p className="font-black leading-7 text-slate-950">
+                          {index + 1}. {item.question}
+                        </p>
+                        <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
+                          Answer: {item.answer}
+                        </p>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+
+              <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-4 text-sm font-black text-white transition hover:bg-slate-800">
+                <FaCheckCircle />
+                Mark story as done
+              </button>
+            </aside>
           </div>
         </div>
       </section>
@@ -406,15 +480,17 @@ const StoriesPage = () => {
   return (
     <section className="space-y-6">
       <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <p className="text-sm font-bold text-blue-500">Stories & Listening</p>
+        <p className="text-sm font-bold text-blue-500">
+          Stories & Listening
+        </p>
 
         <h1 className="mt-3 text-4xl font-black text-slate-950">
           Story Books
         </h1>
 
         <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500">
-          Choose a short English story book. Read, listen, repeat sentences,
-          learn useful vocabulary, and answer questions.
+          Choose an English story book. Read, listen, repeat sentences, learn
+          useful vocabulary, and answer questions.
         </p>
       </div>
 
@@ -492,46 +568,46 @@ const StoriesPage = () => {
               className="group overflow-hidden rounded-[32px] border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"
             >
               {story.image ? (
-  <div className="relative h-56 overflow-hidden rounded-[28px] shadow-inner">
-    <img
-      src={story.image}
-      alt={story.title}
-      className="h-full w-full object-cover transition group-hover:scale-[1.03]"
-    />
+                <div className="relative h-56 overflow-hidden rounded-[28px] shadow-inner">
+                  <img
+                    src={story.image}
+                    alt={story.title}
+                    className="h-full w-full object-cover transition group-hover:scale-[1.03]"
+                  />
 
-    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
 
-    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-      <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-100">
-        {story.category}
-      </p>
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                    <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-100">
+                      {story.category}
+                    </p>
 
-      <h2 className="mt-3 text-3xl font-black leading-tight">
-        {story.title}
-      </h2>
+                    <h2 className="mt-3 text-3xl font-black leading-tight">
+                      {story.title}
+                    </h2>
 
-      <p className="mt-3 text-xs font-bold text-blue-100">
-        English Story Book
-      </p>
-    </div>
-  </div>
-) : (
-  <div className="flex h-56 items-end rounded-[28px] bg-gradient-to-br from-blue-500 via-blue-700 to-slate-950 p-6 text-white shadow-inner transition group-hover:scale-[1.01]">
-    <div>
-      <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-100">
-        {story.category}
-      </p>
+                    <p className="mt-3 text-xs font-bold text-blue-100">
+                      English Story Book
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex h-56 items-end rounded-[28px] bg-gradient-to-br from-blue-500 via-blue-700 to-slate-950 p-6 text-white shadow-inner transition group-hover:scale-[1.01]">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-100">
+                      {story.category}
+                    </p>
 
-      <h2 className="mt-3 text-3xl font-black leading-tight">
-        {story.title}
-      </h2>
+                    <h2 className="mt-3 text-3xl font-black leading-tight">
+                      {story.title}
+                    </h2>
 
-      <p className="mt-3 text-xs font-bold text-blue-100">
-        English Story Book
-      </p>
-    </div>
-  </div>
-)}
+                    <p className="mt-3 text-xs font-bold text-blue-100">
+                      English Story Book
+                    </p>
+                  </div>
+                </div>
+              )}
 
               <div className="mt-5 flex items-center justify-between gap-3">
                 <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-black text-blue-600">
