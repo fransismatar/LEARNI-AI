@@ -87,7 +87,7 @@ export const travelStories: StoryLesson[] = [
         answer: "The person sits near the window.",
       },
     ],
-    videoUrl: "public/stories/videos/My-First-Flight.mp4",
+    videoUrl: "/stories/videos/My-First-Flight.mp4",
     audioUrl: "",
   },
 
