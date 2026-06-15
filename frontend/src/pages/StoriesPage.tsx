@@ -246,13 +246,13 @@ const StoriesPage = () => {
 
 {selectedStory.videoUrl && (
   <div className="p-5 sm:p-7">
-    <div className="rounded-[30px] bg-slate-950 p-4">
-      <video
-        controls
-        className="h-[300px] w-full rounded-2xl object-cover"
-        src={selectedStory.videoUrl}
-      />
-    </div>
+   <div className="rounded-[32px] overflow-hidden border border-slate-200 bg-black shadow-xl">
+  <video
+    controls
+    className="w-full max-h-[700px]"
+    src={selectedStory.videoUrl}
+  />
+</div>
   </div>
 )}
 
