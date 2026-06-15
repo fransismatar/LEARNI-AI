@@ -56,6 +56,9 @@ const StoriesPage = () => {
   const [recordingId, setRecordingId] = useState<string | null>(null);
   const [checkingId, setCheckingId] = useState<string | null>(null);
   const [results, setResults] = useState<Record<string, Result>>({});
+  const [completedStories, setCompletedStories] = useState<string[]>(() => {
+  return JSON.parse(localStorage.getItem("completedStories") || "[]");
+});
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -174,6 +177,14 @@ const StoriesPage = () => {
     }
   };
 
+  const markStoryDone = () => {
+  if (!selectedStory) return;
+
+  const updated = Array.from(new Set([...completedStories, selectedStory.id]));
+  setCompletedStories(updated);
+  localStorage.setItem("completedStories", JSON.stringify(updated));
+};
+
   if (selectedStory) {
     const progress = Math.round(
       (Object.keys(results).filter((key) => key.startsWith(selectedStory.id))
@@ -233,6 +244,21 @@ const StoriesPage = () => {
               </div>
             </div>
           </div>
+          </div> {/* نهاية Hero */}
+
+{selectedStory.videoUrl && (
+  <div className="p-5 sm:p-7">
+    <div className="rounded-[30px] bg-slate-950 p-4">
+      <video
+        controls
+        className="h-[300px] w-full rounded-2xl object-cover"
+        src={selectedStory.videoUrl}
+      />
+    </div>
+  </div>
+)}
+
+<div className="grid gap-7 p-5 sm:p-7 lg:grid-cols-[1fr_320px]">
 
           <div className="grid gap-7 p-5 sm:p-7 lg:grid-cols-[1fr_320px]">
             <div>
@@ -284,124 +310,70 @@ const StoriesPage = () => {
                     </h2>
                   </div>
 
-                  <div className="space-y-6">
-                    {selectedStory.story.English.map(
-                      (sentence: string, index: number) => {
-                        const sentenceId = `${selectedStory.id}-sentence-${index}`;
-                        const result = results[sentenceId];
+                                   <div className="space-y-8">
+                    {selectedStory.story.English.map((sentence: string, index: number) => {
+                      const sentenceId = `${selectedStory.id}-sentence-${index}`;
+                      const result = results[sentenceId];
 
-                        return (
-                          <div
-                            key={sentenceId}
-                            className="group rounded-[28px] border border-amber-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-                          >
-                            <div className="flex gap-4">
-                              <div className="hidden h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-950 text-sm font-black text-white sm:grid">
-                                {index + 1}
-                              </div>
+                      return (
+                        <div
+                          key={sentenceId}
+                          className="border-b border-amber-100 pb-6 last:border-0"
+                        >
+                          <p className="font-serif text-2xl font-semibold leading-[2.2] text-slate-900">
+                            {sentence}
+                          </p>
 
-                              <div className="flex-1">
-                                <p className="font-serif text-xl font-bold leading-10 text-slate-900 sm:text-2xl">
-                                  {sentence}
-                                </p>
-
-                                {showTranslation && (
-                                  <div className="mt-4 grid gap-3">
-                                    <p className="rounded-2xl bg-blue-50 p-4 text-sm font-bold leading-7 text-slate-700">
-                                      <span className="font-black text-blue-600">
-                                        Arabic:
-                                      </span>{" "}
-                                      {selectedStory.story.Arabic[index]}
-                                    </p>
-
-                                    <p className="rounded-2xl bg-slate-50 p-4 text-sm font-bold leading-7 text-slate-700">
-                                      <span className="font-black text-slate-900">
-                                        Hebrew:
-                                      </span>{" "}
-                                      {selectedStory.story.Hebrew[index]}
-                                    </p>
-                                  </div>
-                                )}
-
-                                <div className="mt-4 flex flex-wrap gap-2">
-                                  <button
-                                    onClick={() => speakText([sentence])}
-                                    className="flex items-center gap-2 rounded-2xl bg-blue-500 px-4 py-2 text-xs font-black text-white transition hover:bg-blue-600"
-                                  >
-                                    <FaVolumeUp />
-                                    Listen
-                                  </button>
-
-                                  <button
-                                    onMouseDown={() =>
-                                      startRepeat({ id: sentenceId, sentence })
-                                    }
-                                    onMouseUp={stopRepeat}
-                                    onMouseLeave={stopRepeat}
-                                    onTouchStart={() =>
-                                      startRepeat({ id: sentenceId, sentence })
-                                    }
-                                    onTouchEnd={stopRepeat}
-                                    className={`flex items-center gap-2 rounded-2xl border px-4 py-2 text-xs font-black transition ${
-                                      recordingId === sentenceId
-                                        ? "border-red-200 bg-red-50 text-red-500"
-                                        : "border-slate-200 bg-white text-slate-700 hover:border-blue-300"
-                                    }`}
-                                  >
-                                    <FaMicrophone />
-                                    {recordingId === sentenceId
-                                      ? "Recording"
-                                      : "Repeat"}
-                                  </button>
-                                </div>
-
-                                {checkingId === sentenceId && (
-                                  <p className="mt-4 rounded-2xl bg-blue-50 p-3 text-center text-sm font-bold text-blue-600">
-                                    AI is checking your voice...
-                                  </p>
-                                )}
-
-                                {result && (
-                                  <div className="mt-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                                    <div className="flex items-center justify-between gap-3">
-                                      <p className="text-sm font-black text-slate-800">
-                                        Pronunciation score
-                                      </p>
-
-                                      <span
-                                        className={`rounded-full px-3 py-1 text-xs font-black ${
-                                          result.score >= 85
-                                            ? "bg-green-100 text-green-700"
-                                            : result.score >= 65
-                                            ? "bg-yellow-100 text-yellow-700"
-                                            : "bg-red-100 text-red-700"
-                                        }`}
-                                      >
-                                        {result.score}%
-                                      </span>
-                                    </div>
-
-                                    <p className="mt-3 text-sm font-bold text-slate-600">
-                                      {result.message}
-                                    </p>
-
-                                    <p className="mt-3 text-xs leading-6 text-slate-500">
-                                      <strong>Expected:</strong>{" "}
-                                      {result.expected}
-                                    </p>
-
-                                    <p className="mt-1 text-xs leading-6 text-slate-500">
-                                      <strong>You said:</strong>{" "}
-                                      {result.said || "No clear speech detected"}
-                                    </p>
-                                  </div>
-                                )}
-                              </div>
+                          {showTranslation && (
+                            <div className="mt-3 rounded-2xl bg-white/70 p-4">
+                              <p className="text-sm font-bold leading-7 text-slate-600">
+                                Arabic: {selectedStory.story.Arabic[index]}
+                              </p>
+                              <p className="mt-2 text-sm font-bold leading-7 text-slate-600">
+                                Hebrew: {selectedStory.story.Hebrew[index]}
+                              </p>
                             </div>
+                          )}
+
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            <button
+                              onClick={() => speakText([sentence])}
+                              className="rounded-xl bg-blue-500 px-4 py-2 text-xs font-black text-white"
+                            >
+                              Listen
+                            </button>
+
+                            <button
+                              onMouseDown={() => startRepeat({ id: sentenceId, sentence })}
+                              onMouseUp={stopRepeat}
+                              onMouseLeave={stopRepeat}
+                              onTouchStart={() => startRepeat({ id: sentenceId, sentence })}
+                              onTouchEnd={stopRepeat}
+                              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-black text-slate-700"
+                            >
+                              {recordingId === sentenceId ? "Recording" : "Repeat"}
+                            </button>
                           </div>
-                        );
-                      }
-                    )}
+
+                          {checkingId === sentenceId && (
+                            <p className="mt-3 text-sm font-bold text-blue-500">
+                              AI is checking your voice...
+                            </p>
+                          )}
+
+                          {result && (
+                            <div className="mt-3 rounded-2xl bg-slate-50 p-4">
+                              <p className="text-sm font-black text-slate-700">
+                                Score: {result.score}%
+                              </p>
+                              <p className="mt-1 text-sm text-slate-600">
+                                {result.message}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </article>
@@ -466,10 +438,15 @@ const StoriesPage = () => {
                 </div>
               </div>
 
-              <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-4 text-sm font-black text-white transition hover:bg-slate-800">
-                <FaCheckCircle />
-                Mark story as done
-              </button>
+              <button
+  onClick={markStoryDone}
+  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-4 text-sm font-black text-white transition hover:bg-slate-800"
+>
+  <FaCheckCircle />
+  {completedStories.includes(selectedStory.id)
+    ? "Story completed"
+    : "Mark story as done"}
+</button>
             </aside>
           </div>
         </div>
