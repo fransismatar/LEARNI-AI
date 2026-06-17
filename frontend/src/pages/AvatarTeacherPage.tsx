@@ -12,7 +12,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { teachers } from "../data/teachers";
 import { LiveAvatarSession } from "@heygen/liveavatar-web-sdk";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
@@ -23,10 +24,21 @@ type ChatMessage = {
   text: string;
 };
 
-const TEACHER_NAME = "Zayed";
+
 
 const AvatarTeacherPage = () => {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+
+const teacherIdFromUrl = searchParams.get("teacher");
+
+const selectedTeacherId =
+  teacherIdFromUrl || localStorage.getItem("selectedTeacherId") || "zayed";
+
+const teacher =
+  teachers.find((item) => item.id === selectedTeacherId) || teachers[0];
+
+const TEACHER_NAME = teacher.name;
   const storedProfile = localStorage.getItem("learningProfile");
 
   const profile =
@@ -136,13 +148,13 @@ const [isTranscribing, setIsTranscribing] = useState(false);
 
       await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
 
-      setStatus("Requesting Zayed session...");
+      setStatus(`Requesting ${teacher.name} session...`);
 
       const authToken = localStorage.getItem("token");
 
       const res = await api.post(
         "/heygen/token",
-        { teacherId: TEACHER_NAME },
+       { teacherId: teacher.id },
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
 
@@ -206,7 +218,7 @@ const [isTranscribing, setIsTranscribing] = useState(false);
     } finally {
       setAvatarLoading(false);
     }
-  }, [user?.name]);
+  }, [user?.name, teacher.id, teacher.name]);
 
   const stopSession = async () => {
     try {
@@ -410,14 +422,14 @@ const cancelRecordedMessage = () => {
 
           <div className="flex items-center gap-3">
             <div className="hidden text-right sm:block">
-              <p className="text-sm font-black">Zayed</p>
+              <p className="text-sm font-black">{teacher.name}</p>
               <p className="text-xs text-slate-500">{status}</p>
             </div>
 
             <div className="h-11 w-11 overflow-hidden rounded-2xl bg-blue-500">
               <img
-                src="/teachers/Zayed.png"
-                alt="Zayed"
+                src={teacher.image}
+                alt={teacher.name}
                 className="h-full w-full object-cover"
               />
             </div>
@@ -440,7 +452,7 @@ const cancelRecordedMessage = () => {
             <div className="max-h-[420px] flex-1 space-y-5 overflow-y-auto px-5 py-6 lg:max-h-[calc(100vh-270px)]">
               {messages.length === 0 && (
                 <div className="mx-auto max-w-md rounded-3xl bg-slate-100 p-5 text-center text-sm leading-7 text-slate-500">
-                  Zayed is preparing your first lesson message...
+                  {teacher.name} is preparing your first lesson message...
                 </div>
               )}
 
@@ -553,7 +565,7 @@ const cancelRecordedMessage = () => {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") sendToTeacher(input);
                   }}
-                  placeholder="Write to Zayed..."
+                  placeholder={`Write to ${teacher.name}...`}
                   className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400"
                 />
 
@@ -599,8 +611,8 @@ const cancelRecordedMessage = () => {
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-950/90 p-8 text-center text-white">
                 <div className="h-32 w-32 overflow-hidden rounded-[28px] border border-white/20 bg-white/10">
                   <img
-                    src="/teachers/Zayed.png"
-                    alt="Zayed"
+                    src={teacher.image}
+                    alt={teacher.name}
                     className="h-full max-h-[320px] w-auto object-contain"
                   />
                 </div>
@@ -682,7 +694,7 @@ const cancelRecordedMessage = () => {
             </h2>
 
             <p className="mt-3 leading-7 text-slate-500">
-              Are you sure you want to finish this conversation with Zayed?
+              Are you sure you want to finish this conversation with {teacher.name}?
             </p>
 
             <div className="mt-7 flex gap-3">
