@@ -4,27 +4,6 @@ import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { teachers } from "../data/teachers";
 
-const practiceCards = [
-  {
-    title: "Live Teacher",
-    description: "Continue your speaking lesson with your AI teacher.",
-    action: "Start lesson",
-    to: "/avatar-teacher",
-  },
-  {
-    title: "Words Practice",
-    description: "Train important words with sound and examples.",
-    action: "Practice words",
-    to: "#",
-  },
-  {
-    title: "Stories",
-    description: "Read simple stories by level with translation and audio.",
-    action: "Open stories",
-    to: "/stories",
-  },
-];
-
 type DashboardData = {
   speakingScore: number;
   mistakesCount: number;
@@ -35,6 +14,26 @@ type DashboardData = {
   currentLesson?: any;
 };
 
+type DailyLesson = {
+  _id: string;
+  topic: string;
+  level: string;
+  speakingTask: string;
+  words: string[];
+  storyTask: string;
+  quiz: {
+    question: string;
+    options: string[];
+    answer: string;
+  };
+  completed: {
+    speaking: boolean;
+    words: boolean;
+    story: boolean;
+    quiz: boolean;
+  };
+};
+
 const DashboardPage = () => {
   const { user } = useAuth();
   const profile = user?.learningProfile || {};
@@ -42,6 +41,7 @@ const DashboardPage = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(
     null
   );
+  const [dailyLesson, setDailyLesson] = useState<DailyLesson | null>(null);
 
   const [selectedTeacherId, setSelectedTeacherId] = useState(
     localStorage.getItem("selectedTeacherId") || "zayed"
@@ -54,17 +54,62 @@ const DashboardPage = () => {
 
   const targetLanguage = profile.targetLanguage || "English";
   const level = profile.englishLevel || profile.level || "Beginner";
-  const mainGoal =
-    profile.mainGoal || profile.goal || "Speaking confidence";
+  const mainGoal = profile.mainGoal || profile.goal || "Speaking confidence";
 
   const speakingScore = dashboardData?.speakingScore || 0;
   const progressWidth = `${speakingScore}%`;
 
+  const dailyTasks = dailyLesson
+    ? [
+        {
+          key: "speaking",
+          title: "5 min Speaking",
+          description: dailyLesson.speakingTask,
+          action: "Start speaking",
+          to: `/avatar-teacher?teacher=${teacher.id}`,
+          done: dailyLesson.completed.speaking,
+        },
+        {
+          key: "words",
+          title: "10 min Words",
+          description:
+            dailyLesson.words?.length > 0
+              ? dailyLesson.words.join(", ")
+              : "Practice today's important words.",
+          action: "Practice words",
+          to: "/words",
+          done: dailyLesson.completed.words,
+        },
+        {
+          key: "story",
+          title: "15 min Story",
+          description: dailyLesson.storyTask,
+          action: "Read story",
+          to: "/stories",
+          done: dailyLesson.completed.story,
+        },
+        {
+          key: "quiz",
+          title: "Quick Quiz",
+          description:
+            dailyLesson.quiz?.question || "Answer a short daily question.",
+          action: "Answer quiz",
+          to: "/lessons",
+          done: dailyLesson.completed.quiz,
+        },
+      ]
+    : [];
+
+  const dailyCompletedCount = dailyTasks.filter((task) => task.done).length;
+  const dailyProgress = dailyTasks.length
+    ? Math.round((dailyCompletedCount / dailyTasks.length) * 100)
+    : 0;
+
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
     const loadDashboard = async () => {
       try {
-        const token = localStorage.getItem("token");
-
         const res = await api.get("/dashboard/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -75,15 +120,38 @@ const DashboardPage = () => {
       }
     };
 
+    const loadDailyLesson = async () => {
+      try {
+        const res = await api.get("/daily-lesson/today", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setDailyLesson(res.data.dailyLesson);
+      } catch (error) {
+        console.log("DAILY LESSON LOAD ERROR:", error);
+      }
+    };
+
     loadDashboard();
+    loadDailyLesson();
   }, []);
 
-  const getPracticeLink = (to: string) => {
-    if (to === "/avatar-teacher") {
-      return `/avatar-teacher?teacher=${teacher.id}`;
-    }
+  const completeTask = async (task: string) => {
+    try {
+      const token = localStorage.getItem("token");
 
-    return to;
+      const res = await api.put(
+        `/daily-lesson/complete/${task}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setDailyLesson(res.data.dailyLesson);
+    } catch (error) {
+      console.log("COMPLETE DAILY TASK ERROR:", error);
+    }
   };
 
   return (
@@ -120,8 +188,19 @@ const DashboardPage = () => {
           <div className="rounded-[28px] bg-slate-50 p-5">
             <p className="text-sm font-black text-slate-500">Today’s focus</p>
             <h2 className="mt-2 text-2xl font-black text-slate-950">
-              Speaking practice
+              {dailyLesson?.topic || "Daily practice"}
             </h2>
+
+            <div className="mt-4 h-3 rounded-full bg-white">
+              <div
+                className="h-3 rounded-full bg-blue-500"
+                style={{ width: `${dailyProgress}%` }}
+              />
+            </div>
+
+            <p className="mt-3 text-xs font-bold text-slate-500">
+              {dailyCompletedCount}/{dailyTasks.length || 4} tasks completed
+            </p>
 
             <Link
               to={`/avatar-teacher?teacher=${teacher.id}`}
@@ -160,10 +239,13 @@ const DashboardPage = () => {
         <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-sm font-bold text-slate-500">Current Topic</p>
           <h3 className="mt-2 text-2xl font-black text-slate-950">
-            {dashboardData?.currentTopic || "Start your first lesson"}
+            {dailyLesson?.topic ||
+              dashboardData?.currentTopic ||
+              "Start your first lesson"}
           </h3>
           <p className="mt-3 text-sm leading-7 text-slate-500">
-            {dashboardData?.currentDescription ||
+            {dailyLesson?.speakingTask ||
+              dashboardData?.currentDescription ||
               "Generate your first AI lesson."}
           </p>
         </div>
@@ -176,6 +258,72 @@ const DashboardPage = () => {
           <p className="mt-3 text-sm leading-7 text-slate-500">
             Review weak words and corrected sentences.
           </p>
+        </div>
+      </div>
+
+      <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-bold text-blue-500">Today’s AI Lesson</p>
+            <h2 className="mt-1 text-2xl font-black text-slate-950">
+              {dailyLesson?.topic || "Loading today’s lesson..."}
+            </h2>
+            <p className="mt-2 text-sm text-slate-500">
+              Complete all tasks to finish your daily plan.
+            </p>
+          </div>
+
+          <Link
+            to="/onboarding"
+            className="rounded-2xl bg-slate-100 px-6 py-4 text-center text-sm font-black text-slate-600 transition hover:bg-slate-200"
+          >
+            Change Plan
+          </Link>
+        </div>
+
+        <div className="mt-5 grid gap-4 md:grid-cols-4">
+          {dailyTasks.map((task) => (
+            <div
+              key={task.key}
+              className={`rounded-3xl border p-5 transition ${
+                task.done
+                  ? "border-green-200 bg-green-50"
+                  : "border-slate-200 bg-slate-50"
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="text-lg font-black text-slate-950">
+                  {task.done ? "✅ " : ""}
+                  {task.title}
+                </h3>
+              </div>
+
+              <p className="mt-3 line-clamp-3 text-sm leading-7 text-slate-500">
+                {task.description}
+              </p>
+
+              <div className="mt-5 flex flex-col gap-2">
+                <Link
+                  to={task.to}
+                  className="rounded-2xl bg-blue-500 px-4 py-3 text-center text-sm font-black text-white transition hover:bg-blue-600"
+                >
+                  {task.action}
+                </Link>
+
+                <button
+                  onClick={() => completeTask(task.key)}
+                  disabled={task.done}
+                  className={`rounded-2xl px-4 py-3 text-sm font-black transition ${
+                    task.done
+                      ? "cursor-not-allowed bg-green-100 text-green-600"
+                      : "bg-white text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  {task.done ? "Done" : "Mark Done"}
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -212,69 +360,21 @@ const DashboardPage = () => {
         </div>
 
         <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm font-bold text-blue-500">Today</p>
+          <p className="text-sm font-bold text-blue-500">Review</p>
           <h2 className="mt-1 text-2xl font-black text-slate-950">
-            What do you want to practice?
+            Review your mistakes
           </h2>
-
-          <div className="mt-5 grid gap-4 md:grid-cols-3">
-            {practiceCards.map((card) =>
-              card.to === "#" ? (
-                <button
-                  key={card.title}
-                  className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-left transition hover:border-blue-200 hover:bg-blue-50"
-                >
-                  <h3 className="text-lg font-black text-slate-950">
-                    {card.title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-7 text-slate-500">
-                    {card.description}
-                  </p>
-                  <p className="mt-5 text-sm font-black text-blue-500">
-                    {card.action} →
-                  </p>
-                </button>
-              ) : (
-                <Link
-                  key={card.title}
-                  to={getPracticeLink(card.to)}
-                  className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-left transition hover:border-blue-200 hover:bg-blue-50"
-                >
-                  <h3 className="text-lg font-black text-slate-950">
-                    {card.title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-7 text-slate-500">
-                    {card.description}
-                  </p>
-                  <p className="mt-5 text-sm font-black text-blue-500">
-                    {card.action} →
-                  </p>
-                </Link>
-              )
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-bold text-blue-500">Next improvement</p>
-            <h2 className="mt-1 text-2xl font-black text-slate-950">
-              Review your mistakes
-            </h2>
-            <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-500">
-              After each lesson, Lerni AI will save your weak words, grammar
-              mistakes, and pronunciation notes here.
-            </p>
-          </div>
+          <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-500">
+            Lerni AI saves your weak words, grammar mistakes, and pronunciation
+            notes here.
+          </p>
 
           <Link
-  to="/mistakes"
-  className="rounded-2xl bg-blue-500 px-6 py-4 text-sm font-black text-white transition hover:bg-blue-600"
->
-  Review Now
-</Link>
+            to="/mistakes"
+            className="mt-5 inline-block rounded-2xl bg-blue-500 px-6 py-4 text-sm font-black text-white transition hover:bg-blue-600"
+          >
+            Review Now
+          </Link>
         </div>
       </div>
 

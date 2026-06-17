@@ -181,16 +181,32 @@ You are checking a language learner's sentence.
 Target language: ${targetLanguage}
 Native language: ${nativeLanguage}
 Student level: ${level}
+Lesson goal/topic: ${mainGoal}
 
 Student sentence:
 "${message}"
 
 Task:
-Check if the student sentence has a real mistake in ${targetLanguage}.
+Find the real mistake and write what the student SHOULD have said.
 
-Do NOT mark very small casual chat like "hi", "hello", "thanks", "ok", "yes", "no" as a mistake.
+Rules:
+- If the sentence has grammar mistake, fix the full sentence.
+- If the student used the wrong word, replace it with the correct word.
+- If the student sentence sounds like they meant another common phrase, correct it.
+- If the student says "where is the good" in a travel or airport lesson, the correction is "Where is the gate?"
+- Explanation must be short and clear.
+- Do not mark simple words like "hi", "thanks", "ok", "yes", "no" as mistakes.
 
-Return ONLY valid JSON in this exact shape:
+Return ONLY valid JSON:
+{
+  "hasMistake": true,
+  "originalText": "student original sentence",
+  "correction": "the corrected full sentence the student should have said",
+  "explanation": "explain the mistake in simple words",
+  "type": "vocabulary"
+}
+
+If no mistake:
 {
   "hasMistake": false,
   "originalText": "",
@@ -199,14 +215,6 @@ Return ONLY valid JSON in this exact shape:
   "type": "none"
 }
 
-If there is a mistake, use:
-{
-  "hasMistake": true,
-  "originalText": "student original sentence",
-  "correction": "correct sentence",
-  "explanation": "short simple explanation",
-  "type": "grammar"
-}
         `,
       });
 
