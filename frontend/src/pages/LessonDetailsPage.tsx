@@ -66,7 +66,7 @@ const LessonDetailsPage = () => {
   };
 
   if (!lesson) {
-    return <p className="text-slate-300">Loading lesson...</p>;
+    return <p className="text-slate-600">Loading lesson...</p>;
   }
 
   return (
@@ -78,21 +78,21 @@ const LessonDetailsPage = () => {
         ← Back to lessons
       </button>
 
-      <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 p-8">
+     <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
         <p className="text-sm font-semibold text-cyan-300">{lesson.level}</p>
         <h1 className="mt-3 text-5xl font-black">{lesson.title}</h1>
-        <p className="mt-4 max-w-3xl text-slate-300">{lesson.description}</p>
+       <p className="mt-4 max-w-3xl text-slate-500">{lesson.description}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-8">
+       <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
           <h2 className="text-2xl font-bold">Vocabulary</h2>
 
           <div className="mt-5 flex flex-wrap gap-3">
             {lesson.vocabulary.map((word) => (
               <span
                 key={word}
-                className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-cyan-200"
+                className="rounded-full border border-blue-100 bg-blue-50 px-4 py-2 text-blue-600 font-bold"
               >
                 {word}
               </span>
@@ -100,13 +100,13 @@ const LessonDetailsPage = () => {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-8">
+        <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
           <h2 className="text-2xl font-bold">Grammar Focus</h2>
-          <p className="mt-4 text-slate-300">{lesson.grammarFocus}</p>
+         <p className="mt-4 text-slate-600">{lesson.grammarFocus}</p>
         </div>
       </div>
 
-      <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-8">
+      <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
         <h2 className="text-2xl font-bold">Example Conversation</h2>
 
         <div className="mt-6 space-y-4">
@@ -118,26 +118,26 @@ const LessonDetailsPage = () => {
               <p className="text-sm font-semibold text-cyan-300">
                 {line.speaker}
               </p>
-              <p className="mt-2 text-slate-200">{line.text}</p>
+             <p className="mt-2 text-slate-700">{line.text}</p>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-8">
+      <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
         <h2 className="text-2xl font-bold">Speaking Practice</h2>
 
-        <p className="mt-4 text-slate-300">{lesson.speakingPrompt}</p>
+       <p className="mt-4 text-slate-600">{lesson.speakingPrompt}</p>
 
         <textarea
           value={studentAnswer}
           onChange={(e) => setStudentAnswer(e.target.value)}
           placeholder="Write your answer here..."
-          className="mt-6 min-h-36 w-full rounded-2xl border border-white/10 bg-slate-900 px-5 py-4 text-white outline-none focus:border-cyan-400"
+          className="mt-6 min-h-36 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-slate-900 outline-none focus:border-blue-500"
         />
 
         {feedback && (
-          <div className="mt-6 rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-5 text-slate-200">
+          <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-5 text-slate-800">
             {feedback}
           </div>
         )}
@@ -146,14 +146,14 @@ const LessonDetailsPage = () => {
           <button
             onClick={() => setFeedback("AI feedback will be connected in the next step.")}
             disabled={!studentAnswer.trim()}
-            className="flex-1 rounded-2xl border border-cyan-400/40 px-6 py-4 font-bold text-cyan-300 transition hover:bg-cyan-400/10 disabled:opacity-40"
+            className="flex-1 rounded-2xl border border-blue-200 px-6 py-4 font-bold text-blue-600 transition hover:bg-blue-50 disabled:opacity-40"
           >
             Get AI Feedback
           </button>
 
           <button
             onClick={completeLesson}
-            className="flex-1 rounded-2xl bg-cyan-400 px-6 py-4 font-bold text-slate-950 transition hover:bg-cyan-300"
+            className="flex-1 rounded-2xl bg-blue-500 px-6 py-4 font-bold text-white transition hover:bg-blue-600"
           >
             Complete Lesson +{lesson.xpReward} XP
           </button>
