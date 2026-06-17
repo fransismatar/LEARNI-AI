@@ -28,15 +28,26 @@ const DashboardPage = () => {
   const { user } = useAuth();
   const profile = user?.learningProfile || {};
 
-  const [selectedTeacher, setSelectedTeacher] = useState("Zayed");
+  const [selectedTeacherId, setSelectedTeacherId] = useState(
+    localStorage.getItem("selectedTeacherId") || "zayed"
+  );
+
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
 
   const teacher =
-    teachers.find((item) => item.name === selectedTeacher) || teachers[0];
+    teachers.find((item) => item.id === selectedTeacherId) || teachers[0];
 
   const targetLanguage = profile.targetLanguage || "English";
   const level = profile.englishLevel || profile.level || "Beginner";
   const mainGoal = profile.mainGoal || "Speaking confidence";
+
+  const getPracticeLink = (to: string) => {
+    if (to === "/avatar-teacher") {
+      return `/avatar-teacher?teacher=${teacher.id}`;
+    }
+
+    return to;
+  };
 
   return (
     <section className="mx-auto max-w-6xl space-y-6 text-slate-950">
@@ -61,7 +72,7 @@ const DashboardPage = () => {
                 Level: {level}
               </span>
               <span className="rounded-full bg-slate-100 px-4 py-2 text-xs font-black text-slate-600">
-                Teacher: {selectedTeacher}
+                Teacher: {teacher.name}
               </span>
               <span className="rounded-full bg-slate-100 px-4 py-2 text-xs font-black text-slate-600">
                 Goal: {mainGoal}
@@ -76,7 +87,7 @@ const DashboardPage = () => {
             </h2>
 
             <Link
-              to={`/avatar-teacher?teacher=${selectedTeacher}`}
+              to={`/avatar-teacher?teacher=${teacher.id}`}
               className="mt-5 block rounded-2xl bg-blue-500 px-6 py-4 text-center text-sm font-black text-white transition hover:bg-blue-600"
             >
               Continue Lesson
@@ -116,9 +127,7 @@ const DashboardPage = () => {
 
         <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-sm font-bold text-slate-500">Mistakes Review</p>
-          <h3 className="mt-2 text-2xl font-black text-slate-950">
-            3 items
-          </h3>
+          <h3 className="mt-2 text-2xl font-black text-slate-950">3 items</h3>
           <p className="mt-3 text-sm leading-7 text-slate-500">
             Review weak words and corrected sentences.
           </p>
@@ -158,14 +167,10 @@ const DashboardPage = () => {
         </div>
 
         <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-bold text-blue-500">Today</p>
-              <h2 className="mt-1 text-2xl font-black text-slate-950">
-                What do you want to practice?
-              </h2>
-            </div>
-          </div>
+          <p className="text-sm font-bold text-blue-500">Today</p>
+          <h2 className="mt-1 text-2xl font-black text-slate-950">
+            What do you want to practice?
+          </h2>
 
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             {practiceCards.map((card) =>
@@ -187,7 +192,7 @@ const DashboardPage = () => {
               ) : (
                 <Link
                   key={card.title}
-                  to={`/avatar-teacher?teacher=${selectedTeacher}`}
+                  to={getPracticeLink(card.to)}
                   className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-left transition hover:border-blue-200 hover:bg-blue-50"
                 >
                   <h3 className="text-lg font-black text-slate-950">
@@ -258,13 +263,14 @@ const DashboardPage = () => {
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {teachers.map((item) => {
-                const selected = selectedTeacher === item.name;
+                const selected = selectedTeacherId === item.id;
 
                 return (
                   <button
-                    key={item.name}
+                    key={item.id}
                     onClick={() => {
-                      setSelectedTeacher(item.name);
+                      setSelectedTeacherId(item.id);
+                      localStorage.setItem("selectedTeacherId", item.id);
                       setIsTeacherModalOpen(false);
                     }}
                     className={`cursor-pointer overflow-hidden rounded-3xl border text-left transition ${
