@@ -30,13 +30,19 @@ const AvatarTeacherPage = () => {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
 
-const teacherIdFromUrl = searchParams.get("teacher");
-
-const selectedTeacherId =
-  teacherIdFromUrl || localStorage.getItem("selectedTeacherId") || "zayed";
+const teacherKey =
+  (
+    searchParams.get("teacher") ||
+    localStorage.getItem("selectedTeacherId") ||
+    "zayed"
+  ).toLowerCase();
 
 const teacher =
-  teachers.find((item) => item.id === selectedTeacherId) || teachers[0];
+  teachers.find(
+    (item) =>
+      item.id?.toLowerCase() === teacherKey ||
+      item.name.toLowerCase() === teacherKey
+  ) || teachers.find((item) => item.id === "zayed") || teachers[0];
 
 const TEACHER_NAME = teacher.name;
   const storedProfile = localStorage.getItem("learningProfile");
@@ -57,7 +63,7 @@ const TEACHER_NAME = teacher.name;
   const [avatarLoading, setAvatarLoading] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [status, setStatus] = useState("Preparing Zayed...");
+  const [status, setStatus] = useState(`Preparing ${teacher.name}...`);
   const [isMuted, setIsMuted] = useState(false);
   const [isChatVisible, setIsChatVisible] = useState(true);
   const [showExitModal, setShowExitModal] = useState(false);
@@ -617,7 +623,7 @@ const cancelRecordedMessage = () => {
                   />
                 </div>
 
-                <h2 className="mt-5 text-2xl font-black">Starting Zayed...</h2>
+                <h2 className="mt-5 text-2xl font-black">Starting {teacher.name}...</h2>
 
                 <p className="mt-3 max-w-md text-sm leading-6 text-white/70">
                   {status}
