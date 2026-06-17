@@ -3,7 +3,9 @@ import jwt from "jsonwebtoken";
 import User from "../models/User";
 
 interface JwtPayload {
-  userId: string;
+  userId?: string;
+  id?: string;
+  _id?: string;
 }
 
 export const protect = async (
@@ -27,7 +29,15 @@ export const protect = async (
       process.env.JWT_SECRET as string
     ) as JwtPayload;
 
-    const user = await User.findById(decoded.userId).select("-password");
+    const userId = decoded.userId || decoded.id || decoded._id;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "Not authorized, invalid token payload",
+      });
+    }
+
+    const user = await User.findById(userId).select("-password");
 
     if (!user) {
       return res.status(401).json({
@@ -39,6 +49,8 @@ export const protect = async (
 
     next();
   } catch (error) {
+    console.log("AUTH ERROR:", error);
+
     return res.status(401).json({
       message: "Not authorized, token failed",
     });

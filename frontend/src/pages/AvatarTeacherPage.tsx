@@ -152,7 +152,11 @@ const [isTranscribing, setIsTranscribing] = useState(false);
       setAvatarLoading(true);
       setStatus("Checking microphone permission...");
 
-      await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      try {
+  await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+} catch (micError) {
+  console.log("MIC NOT FOUND:", micError);
+}
 
       setStatus(`Requesting ${teacher.name} session...`);
 
