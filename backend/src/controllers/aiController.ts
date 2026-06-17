@@ -4,6 +4,7 @@ dotenv.config();
 import { Request, Response } from "express";
 import OpenAI from "openai";
 import User from "../models/User";
+import Mistake from "../models/Mistake";
 import { buildMasterTeacherPrompt } from "../prompts/masterTeacherPrompt";
 import { toFile } from "openai/uploads";
 
@@ -47,7 +48,7 @@ Return ONLY valid JSON.
       `,
     });
 
-    const text = response.output_text;
+    const text = response.output_text || "{}";
     const plan = JSON.parse(text);
 
     fullUser.aiLearningPlan = plan;
@@ -100,6 +101,7 @@ export const transcribeVoice = async (req: Request, res: Response) => {
 export const generateTeacherReply = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
+
     const {
       message,
       teacherName = "Zayed",
@@ -128,8 +130,9 @@ export const generateTeacherReply = async (req: Request, res: Response) => {
     const targetLanguage = profile.targetLanguage || "English";
     const nativeLanguage = profile.nativeLanguage || "Arabic";
     const level = profile.englishLevel || profile.level || "Beginner";
-    const mainGoal = profile.mainGoal || "General conversation";
-    const dailyGoal = profile.dailyGoal || "10 min/day";
+    const mainGoal =
+      profile.mainGoal || profile.goal || "General conversation";
+    const dailyGoal = profile.dailyGoal || `${profile.dailyMinutes || 10} min/day`;
 
     const systemPrompt = buildMasterTeacherPrompt({
       teacherName,
@@ -165,10 +168,70 @@ IMPORTANT RESPONSE RULES:
       `,
     });
 
+    const teacherReply =
+      response.output_text?.trim() ||
+      "Great, let's continue your lesson. Repeat after me: I am ready to learn.";
+
+    try {
+      const mistakeCheck = await openai.responses.create({
+        model: "gpt-5.5",
+        input: `
+You are checking a language learner's sentence.
+
+Target language: ${targetLanguage}
+Native language: ${nativeLanguage}
+Student level: ${level}
+
+Student sentence:
+"${message}"
+
+Task:
+Check if the student sentence has a real mistake in ${targetLanguage}.
+
+Do NOT mark very small casual chat like "hi", "hello", "thanks", "ok", "yes", "no" as a mistake.
+
+Return ONLY valid JSON in this exact shape:
+{
+  "hasMistake": false,
+  "originalText": "",
+  "correction": "",
+  "explanation": "",
+  "type": "none"
+}
+
+If there is a mistake, use:
+{
+  "hasMistake": true,
+  "originalText": "student original sentence",
+  "correction": "correct sentence",
+  "explanation": "short simple explanation",
+  "type": "grammar"
+}
+        `,
+      });
+
+      const mistakeText = mistakeCheck.output_text || "{}";
+      const mistakeData = JSON.parse(mistakeText);
+
+      if (
+        mistakeData.hasMistake === true &&
+        mistakeData.correction &&
+        mistakeData.correction.trim()
+      ) {
+        await Mistake.create({
+          userId: user._id,
+          originalText: mistakeData.originalText || message,
+          correction: mistakeData.correction,
+          explanation: mistakeData.explanation || "",
+          type: mistakeData.type || "general",
+        });
+      }
+    } catch (mistakeError) {
+      console.log("MISTAKE CHECK ERROR:", mistakeError);
+    }
+
     return res.status(200).json({
-      reply:
-        response.output_text?.trim() ||
-        "Great, let's continue your lesson. Repeat after me: I am ready to learn.",
+      reply: teacherReply,
     });
   } catch (error) {
     console.log("TEACHER REPLY ERROR:", error);

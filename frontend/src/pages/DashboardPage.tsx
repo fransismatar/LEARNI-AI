@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { teachers } from "../data/teachers";
 
@@ -24,9 +25,23 @@ const practiceCards = [
   },
 ];
 
+type DashboardData = {
+  speakingScore: number;
+  mistakesCount: number;
+  currentTopic: string;
+  currentDescription: string;
+  completedLessons: number;
+  totalLessons: number;
+  currentLesson?: any;
+};
+
 const DashboardPage = () => {
   const { user } = useAuth();
   const profile = user?.learningProfile || {};
+
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null
+  );
 
   const [selectedTeacherId, setSelectedTeacherId] = useState(
     localStorage.getItem("selectedTeacherId") || "zayed"
@@ -39,7 +54,29 @@ const DashboardPage = () => {
 
   const targetLanguage = profile.targetLanguage || "English";
   const level = profile.englishLevel || profile.level || "Beginner";
-  const mainGoal = profile.mainGoal || "Speaking confidence";
+  const mainGoal =
+    profile.mainGoal || profile.goal || "Speaking confidence";
+
+  const speakingScore = dashboardData?.speakingScore || 0;
+  const progressWidth = `${speakingScore}%`;
+
+  useEffect(() => {
+    const loadDashboard = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await api.get("/dashboard/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setDashboardData(res.data);
+      } catch (error) {
+        console.log("DASHBOARD LOAD ERROR:", error);
+      }
+    };
+
+    loadDashboard();
+  }, []);
 
   const getPracticeLink = (to: string) => {
     if (to === "/avatar-teacher") {
@@ -106,28 +143,36 @@ const DashboardPage = () => {
       <div className="grid gap-5 md:grid-cols-3">
         <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-sm font-bold text-slate-500">Speaking Score</p>
-          <h3 className="mt-2 text-3xl font-black text-slate-950">85%</h3>
+          <h3 className="mt-2 text-3xl font-black text-slate-950">
+            {speakingScore}%
+          </h3>
           <div className="mt-4 h-3 rounded-full bg-slate-100">
-            <div className="h-3 w-[85%] rounded-full bg-blue-500" />
+            <div
+              className="h-3 rounded-full bg-blue-500"
+              style={{ width: progressWidth }}
+            />
           </div>
           <p className="mt-3 text-xs leading-6 text-slate-500">
-            Based on your latest speaking practice.
+            Based on your completed lessons and practice progress.
           </p>
         </div>
 
         <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-sm font-bold text-slate-500">Current Topic</p>
           <h3 className="mt-2 text-2xl font-black text-slate-950">
-            Travel English
+            {dashboardData?.currentTopic || "Start your first lesson"}
           </h3>
           <p className="mt-3 text-sm leading-7 text-slate-500">
-            Airport, hotel, restaurant, and directions.
+            {dashboardData?.currentDescription ||
+              "Generate your first AI lesson."}
           </p>
         </div>
 
         <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-sm font-bold text-slate-500">Mistakes Review</p>
-          <h3 className="mt-2 text-2xl font-black text-slate-950">3 items</h3>
+          <h3 className="mt-2 text-2xl font-black text-slate-950">
+            {dashboardData?.mistakesCount || 0} items
+          </h3>
           <p className="mt-3 text-sm leading-7 text-slate-500">
             Review weak words and corrected sentences.
           </p>
@@ -224,9 +269,12 @@ const DashboardPage = () => {
             </p>
           </div>
 
-          <button className="rounded-2xl bg-slate-100 px-6 py-4 text-sm font-black text-slate-600">
-            Coming soon
-          </button>
+          <Link
+  to="/mistakes"
+  className="rounded-2xl bg-blue-500 px-6 py-4 text-sm font-black text-white transition hover:bg-blue-600"
+>
+  Review Now
+</Link>
         </div>
       </div>
 

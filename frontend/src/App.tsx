@@ -20,6 +20,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import WordsPracticePage from "./pages/WordsPracticePage";
 import StoriesPage from "./pages/StoriesPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import MistakesPage from "./pages/MistakesPage";
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
           <Route path="/avatar-teacher" element={<AvatarTeacherPage />} />
           <Route path="/progress" element={<ProgressPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/mistakes" element={<MistakesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
