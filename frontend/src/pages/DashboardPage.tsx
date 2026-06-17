@@ -59,17 +59,10 @@ const DashboardPage = () => {
   const speakingScore = dashboardData?.speakingScore || 0;
   const progressWidth = `${speakingScore}%`;
 
-  const completedLessons = dashboardData?.completedLessons || 0;
-  const totalLessons = dashboardData?.totalLessons || 0;
-
-  const lessonProgress =
-    totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
-
   const dailyTasks = dailyLesson
     ? [
         {
           key: "speaking",
-          icon: "🎤",
           title: "5 min Speaking",
           description: dailyLesson.speakingTask,
           action: "Start speaking",
@@ -78,7 +71,6 @@ const DashboardPage = () => {
         },
         {
           key: "words",
-          icon: "Aa",
           title: "10 min Words",
           description:
             dailyLesson.words?.length > 0
@@ -90,7 +82,6 @@ const DashboardPage = () => {
         },
         {
           key: "story",
-          icon: "📖",
           title: "15 min Story",
           description: dailyLesson.storyTask,
           action: "Read story",
@@ -99,7 +90,6 @@ const DashboardPage = () => {
         },
         {
           key: "quiz",
-          icon: "✅",
           title: "Quick Quiz",
           description:
             dailyLesson.quiz?.question || "Answer a short daily question.",
@@ -111,7 +101,6 @@ const DashboardPage = () => {
     : [];
 
   const dailyCompletedCount = dailyTasks.filter((task) => task.done).length;
-
   const dailyProgress = dailyTasks.length
     ? Math.round((dailyCompletedCount / dailyTasks.length) * 100)
     : 0;
@@ -166,200 +155,121 @@ const DashboardPage = () => {
   };
 
   return (
-    <section className="space-y-6 text-slate-950">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm font-bold text-slate-500">
-            Your learning dashboard
-          </p>
-          <h1 className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">
-            Welcome back, {user?.name || "Student"} 👋
-          </h1>
-        </div>
+    <section className="mx-auto max-w-6xl space-y-6 text-slate-950">
+      <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr] lg:items-center">
+          <div>
+            <p className="text-sm font-bold text-blue-500">
+              Welcome back, {user?.name || "Student"}
+            </p>
 
-        <button
-          onClick={() => setIsTeacherModalOpen(true)}
-          className="w-full rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white transition hover:bg-slate-800 sm:w-auto"
-        >
-          Change Teacher
-        </button>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <div className="relative overflow-hidden rounded-[34px] bg-gradient-to-br from-blue-600 via-blue-600 to-indigo-700 p-6 text-white shadow-[0_30px_90px_rgba(37,99,235,0.25)] sm:p-8">
-          <div className="relative z-10 max-w-xl">
-            <p className="text-sm font-black uppercase tracking-[0.25em] text-blue-100">
+            <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
               Continue learning {targetLanguage}
+            </h1>
+
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
+              Your goal is {mainGoal}. Keep practicing with live speaking,
+              words, stories, and AI corrections.
             </p>
 
-            <h2 className="mt-4 text-3xl font-black leading-tight sm:text-5xl">
-              {dailyLesson?.topic ||
-                dashboardData?.currentTopic ||
-                "Start your AI lesson"}
-            </h2>
-
-            <p className="mt-4 max-w-lg text-sm leading-7 text-blue-100">
-              Your goal is {mainGoal}. Practice with your selected teacher,
-              complete today’s tasks, and review your weak points.
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-2">
-              <span className="rounded-full bg-white/15 px-4 py-2 text-xs font-black text-white">
+            <div className="mt-5 flex flex-wrap gap-2">
+              <span className="rounded-full bg-blue-50 px-4 py-2 text-xs font-black text-blue-600">
                 Level: {level}
               </span>
-              <span className="rounded-full bg-white/15 px-4 py-2 text-xs font-black text-white">
+              <span className="rounded-full bg-slate-100 px-4 py-2 text-xs font-black text-slate-600">
                 Teacher: {teacher.name}
               </span>
-              <span className="rounded-full bg-white/15 px-4 py-2 text-xs font-black text-white">
+              <span className="rounded-full bg-slate-100 px-4 py-2 text-xs font-black text-slate-600">
                 Goal: {mainGoal}
               </span>
             </div>
+          </div>
 
-            <div className="mt-7">
-              <div className="flex justify-between text-xs font-bold text-blue-100">
-                <span>Today’s progress</span>
-                <span>{dailyProgress}%</span>
-              </div>
-              <div className="mt-2 h-2.5 rounded-full bg-white/20">
-                <div
-                  className="h-2.5 rounded-full bg-white"
-                  style={{ width: `${dailyProgress}%` }}
-                />
-              </div>
-              <p className="mt-2 text-xs font-bold text-blue-100">
-                {dailyCompletedCount}/{dailyTasks.length || 0} tasks completed
-              </p>
+          <div className="rounded-[28px] bg-slate-50 p-5">
+            <p className="text-sm font-black text-slate-500">Today’s focus</p>
+            <h2 className="mt-2 text-2xl font-black text-slate-950">
+              {dailyLesson?.topic || "Daily practice"}
+            </h2>
+
+            <div className="mt-4 h-3 rounded-full bg-white">
+              <div
+                className="h-3 rounded-full bg-blue-500"
+                style={{ width: `${dailyProgress}%` }}
+              />
             </div>
+
+            <p className="mt-3 text-xs font-bold text-slate-500">
+              {dailyCompletedCount}/{dailyTasks.length || 4} tasks completed
+            </p>
 
             <Link
               to={`/avatar-teacher?teacher=${teacher.id}`}
-              className="mt-7 inline-flex rounded-2xl bg-white px-6 py-4 text-sm font-black text-blue-700 transition hover:bg-blue-50"
+              className="mt-5 block rounded-2xl bg-blue-500 px-6 py-4 text-center text-sm font-black text-white transition hover:bg-blue-600"
             >
-              ▶ Continue Lesson
+              Continue Lesson
             </Link>
+
+            <button
+              onClick={() => setIsTeacherModalOpen(true)}
+              className="mt-3 w-full cursor-pointer rounded-2xl bg-white px-6 py-4 text-sm font-black text-slate-700 transition hover:bg-slate-100"
+            >
+              Change Teacher
+            </button>
           </div>
-
-          <img
-            src={teacher.image}
-            alt={teacher.name}
-            className="absolute bottom-0 right-3 hidden h-[85%] object-contain opacity-95 md:block"
-          />
-
-          <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
-        </div>
-
-        <div className="rounded-[34px] border border-slate-200/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.06)] sm:p-6">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-bold text-blue-600">
-                Selected teacher
-              </p>
-              <h2 className="mt-1 text-2xl font-black">{teacher.name}</h2>
-            </div>
-
-            <div className="h-16 w-16 overflow-hidden rounded-3xl bg-blue-100">
-              <img
-                src={teacher.image}
-                alt={teacher.name}
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </div>
-
-          <p className="mt-3 text-sm leading-7 text-slate-500">
-            {teacher.role}
-          </p>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            <span className="rounded-full bg-blue-50 px-3 py-2 text-xs font-black text-blue-600">
-              {teacher.accent}
-            </span>
-            <span className="rounded-full bg-slate-100 px-3 py-2 text-xs font-black text-slate-500">
-              Live avatar
-            </span>
-          </div>
-
-          <button
-            onClick={() => setIsTeacherModalOpen(true)}
-            className="mt-6 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm font-black text-slate-700 transition hover:bg-slate-100"
-          >
-            Choose another teacher
-          </button>
-
-          <Link
-            to={`/avatar-teacher?teacher=${teacher.id}`}
-            className="mt-3 block w-full rounded-2xl bg-blue-600 px-5 py-4 text-center text-sm font-black text-white transition hover:bg-blue-700"
-          >
-            Start with {teacher.name}
-          </Link>
         </div>
       </div>
 
       <div className="grid gap-5 md:grid-cols-3">
-        <div className="rounded-[30px] border border-slate-200/80 bg-white p-5 shadow-sm">
+        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-sm font-bold text-slate-500">Speaking Score</p>
-          <h3 className="mt-2 text-4xl font-black">{speakingScore}%</h3>
-
-          <div className="mt-5 h-3 rounded-full bg-slate-100">
+          <h3 className="mt-2 text-3xl font-black text-slate-950">
+            {speakingScore}%
+          </h3>
+          <div className="mt-4 h-3 rounded-full bg-slate-100">
             <div
-              className="h-3 rounded-full bg-blue-600"
+              className="h-3 rounded-full bg-blue-500"
               style={{ width: progressWidth }}
             />
           </div>
-
           <p className="mt-3 text-xs leading-6 text-slate-500">
-            Based on your real dashboard progress.
+            Based on your completed lessons and practice progress.
           </p>
         </div>
 
-        <div className="rounded-[30px] border border-slate-200/80 bg-white p-5 shadow-sm">
-          <p className="text-sm font-bold text-slate-500">Lessons Progress</p>
-          <h3 className="mt-2 text-4xl font-black">
-            {completedLessons}/{totalLessons || 0}
+        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-sm font-bold text-slate-500">Current Topic</p>
+          <h3 className="mt-2 text-2xl font-black text-slate-950">
+            {dailyLesson?.topic ||
+              dashboardData?.currentTopic ||
+              "Start your first lesson"}
           </h3>
-
-          <div className="mt-5 h-3 rounded-full bg-slate-100">
-            <div
-              className="h-3 rounded-full bg-indigo-600"
-              style={{ width: `${lessonProgress}%` }}
-            />
-          </div>
-
-          <p className="mt-3 text-xs leading-6 text-slate-500">
-            {lessonProgress}% of your assigned lessons completed.
-          </p>
-        </div>
-
-        <div className="rounded-[30px] border border-slate-200/80 bg-white p-5 shadow-sm">
-          <p className="text-sm font-bold text-slate-500">Mistakes Review</p>
-          <h3 className="mt-2 text-4xl font-black">
-            {dashboardData?.mistakesCount || 0}
-          </h3>
-
           <p className="mt-3 text-sm leading-7 text-slate-500">
-            Saved weak words, grammar mistakes, and corrected sentences.
+            {dailyLesson?.speakingTask ||
+              dashboardData?.currentDescription ||
+              "Generate your first AI lesson."}
           </p>
+        </div>
 
-          <Link
-            to="/mistakes"
-            className="mt-4 inline-flex rounded-2xl bg-slate-50 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-100"
-          >
-            Review mistakes
-          </Link>
+        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-sm font-bold text-slate-500">Mistakes Review</p>
+          <h3 className="mt-2 text-2xl font-black text-slate-950">
+            {dashboardData?.mistakesCount || 0} items
+          </h3>
+          <p className="mt-3 text-sm leading-7 text-slate-500">
+            Review weak words and corrected sentences.
+          </p>
         </div>
       </div>
 
-      <div className="rounded-[34px] border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+      <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-bold text-blue-500">
-              Today’s AI Lesson
-            </p>
-            <h2 className="mt-1 text-2xl font-black">
+            <p className="text-sm font-bold text-blue-500">Today’s AI Lesson</p>
+            <h2 className="mt-1 text-2xl font-black text-slate-950">
               {dailyLesson?.topic || "Loading today’s lesson..."}
             </h2>
             <p className="mt-2 text-sm text-slate-500">
-              Complete your real daily tasks from the backend.
+              Complete all tasks to finish your daily plan.
             </p>
           </div>
 
@@ -371,33 +281,22 @@ const DashboardPage = () => {
           </Link>
         </div>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-5 grid gap-4 md:grid-cols-4">
           {dailyTasks.map((task) => (
             <div
               key={task.key}
-              className={`rounded-[28px] border p-5 transition ${
+              className={`rounded-3xl border p-5 transition ${
                 task.done
                   ? "border-green-200 bg-green-50"
                   : "border-slate-200 bg-slate-50"
               }`}
             >
               <div className="flex items-start justify-between gap-3">
-                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-white text-lg shadow-sm">
-                  {task.icon}
-                </div>
-
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-black ${
-                    task.done
-                      ? "bg-green-100 text-green-700"
-                      : "bg-white text-slate-500"
-                  }`}
-                >
-                  {task.done ? "Done" : "Pending"}
-                </span>
+                <h3 className="text-lg font-black text-slate-950">
+                  {task.done ? "✅ " : ""}
+                  {task.title}
+                </h3>
               </div>
-
-              <h3 className="mt-4 text-lg font-black">{task.title}</h3>
 
               <p className="mt-3 line-clamp-3 text-sm leading-7 text-slate-500">
                 {task.description}
@@ -406,7 +305,7 @@ const DashboardPage = () => {
               <div className="mt-5 flex flex-col gap-2">
                 <Link
                   to={task.to}
-                  className="rounded-2xl bg-blue-600 px-4 py-3 text-center text-sm font-black text-white transition hover:bg-blue-700"
+                  className="rounded-2xl bg-blue-500 px-4 py-3 text-center text-sm font-black text-white transition hover:bg-blue-600"
                 >
                   {task.action}
                 </Link>
@@ -425,90 +324,57 @@ const DashboardPage = () => {
               </div>
             </div>
           ))}
-
-          {!dailyTasks.length && (
-            <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-5 sm:col-span-2 xl:col-span-4">
-              <h3 className="text-lg font-black">No daily lesson yet</h3>
-              <p className="mt-2 text-sm leading-7 text-slate-500">
-                When your daily lesson loads from the backend, your tasks will
-                appear here.
-              </p>
-            </div>
-          )}
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-        <div className="rounded-[34px] border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
-          <p className="text-sm font-bold text-blue-500">Smart AI lesson</p>
+      <div className="grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-sm font-bold text-blue-500">Your teacher</p>
 
-          <h2 className="mt-2 text-2xl font-black">
-            Learn based on your goal
-          </h2>
+          <div className="mt-5 flex items-center gap-4 rounded-3xl bg-slate-50 p-4">
+            <div className="h-16 w-16 overflow-hidden rounded-2xl bg-blue-100">
+              <img
+                src={teacher.image}
+                alt={teacher.name}
+                className="h-full w-full object-cover"
+              />
+            </div>
 
-          <p className="mt-3 text-sm leading-7 text-slate-500">
-            Your current goal is{" "}
-            <span className="font-black text-slate-700">{mainGoal}</span>.
-            Continue with AI lessons, stories, words, and speaking practice.
-          </p>
-
-          <div className="mt-5 flex flex-wrap gap-2">
-            <span className="rounded-full bg-blue-50 px-4 py-2 text-xs font-black text-blue-600">
-              {targetLanguage}
-            </span>
-            <span className="rounded-full bg-slate-100 px-4 py-2 text-xs font-black text-slate-600">
-              {level}
-            </span>
-            <span className="rounded-full bg-slate-100 px-4 py-2 text-xs font-black text-slate-600">
-              {mainGoal}
-            </span>
+            <div>
+              <h2 className="text-xl font-black text-slate-950">
+                {teacher.name}
+              </h2>
+              <p className="mt-1 text-sm text-slate-500">{teacher.role}</p>
+              <p className="mt-2 w-fit rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-600">
+                {teacher.accent}
+              </p>
+            </div>
           </div>
 
-          <Link
-            to="/lessons"
-            className="mt-6 block rounded-2xl bg-blue-600 px-5 py-4 text-center text-sm font-black text-white transition hover:bg-blue-700"
+          <button
+            onClick={() => setIsTeacherModalOpen(true)}
+            className="mt-4 w-full cursor-pointer rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
           >
-            Open Lessons
-          </Link>
+            Choose another teacher
+          </button>
         </div>
 
-        <div className="rounded-[34px] border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
-          <p className="text-sm font-bold text-blue-500">Current Topic</p>
-
-          <h2 className="mt-2 text-2xl font-black">
-            {dailyLesson?.topic ||
-              dashboardData?.currentTopic ||
-              "Start your first lesson"}
+        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-sm font-bold text-blue-500">Review</p>
+          <h2 className="mt-1 text-2xl font-black text-slate-950">
+            Review your mistakes
           </h2>
-
-          <p className="mt-3 text-sm leading-7 text-slate-500">
-            {dailyLesson?.speakingTask ||
-              dashboardData?.currentDescription ||
-              "Generate your first AI lesson and start practicing."}
+          <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-500">
+            Lerni AI saves your weak words, grammar mistakes, and pronunciation
+            notes here.
           </p>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            <Link
-              to={`/avatar-teacher?teacher=${teacher.id}`}
-              className="rounded-2xl bg-blue-600 px-5 py-4 text-center text-sm font-black text-white transition hover:bg-blue-700"
-            >
-              Speaking
-            </Link>
-
-            <Link
-              to="/words"
-              className="rounded-2xl bg-slate-100 px-5 py-4 text-center text-sm font-black text-slate-700 transition hover:bg-slate-200"
-            >
-              Words
-            </Link>
-
-            <Link
-              to="/stories"
-              className="rounded-2xl bg-slate-100 px-5 py-4 text-center text-sm font-black text-slate-700 transition hover:bg-slate-200"
-            >
-              Stories
-            </Link>
-          </div>
+          <Link
+            to="/mistakes"
+            className="mt-5 inline-block rounded-2xl bg-blue-500 px-6 py-4 text-sm font-black text-white transition hover:bg-blue-600"
+          >
+            Review Now
+          </Link>
         </div>
       </div>
 
@@ -524,7 +390,7 @@ const DashboardPage = () => {
 
       {isTeacherModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-end bg-black/50 p-4 backdrop-blur-sm sm:items-center sm:justify-center">
-          <div className="max-h-[88vh] w-full max-w-5xl overflow-y-auto rounded-[32px] bg-white p-5 shadow-2xl sm:p-7">
+          <div className="max-h-[88vh] w-full max-w-4xl overflow-y-auto rounded-[32px] bg-white p-5 shadow-2xl sm:p-7">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-bold text-blue-500">
