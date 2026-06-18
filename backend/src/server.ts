@@ -14,6 +14,7 @@ import heygenRoutes from "./routes/heygenRoutes";
 import dashboardRoutes from "./routes/dashboardRoutes";
 import mistakeRoutes from "./routes/mistakeRoutes";
 import dailyLessonRoutes from "./routes/dailyLessonRoutes";
+import examRoutes from "./routes/examRoutes";
 dotenv.config();
 
 
@@ -42,6 +43,7 @@ app.use("/api/heygen", heygenRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/mistakes", mistakeRoutes);
 app.use("/api/daily-lesson", dailyLessonRoutes);
+app.use("/api/exams", examRoutes);
 
 app.get("/", (req, res) => {
   res.send("Learni AI API Running");

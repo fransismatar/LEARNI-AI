@@ -21,6 +21,7 @@ import WordsPracticePage from "./pages/WordsPracticePage";
 import StoriesPage from "./pages/StoriesPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MistakesPage from "./pages/MistakesPage";
+import ExamsPage from "./pages/ExamsPage";
 
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
           <Route path="/progress" element={<ProgressPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/mistakes" element={<MistakesPage />} />
+          <Route path="/exams" element={<ExamsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -20,7 +20,7 @@ const AppLayout = () => {
     { label: "AI Teachers", path: "/avatar-teacher?teacher=Zayed", icon: "◉" },
     { label: "Stories", path: "/stories", icon: "◇" },
     { label: "Vocabulary", path: "/words", icon: "✦" },
-    { label: "Speaking Practice", path: "/avatar-teacher?teacher=Zayed", icon: "◌" },
+    { label: "Speaking Practice", path: "/teacher", icon: "◌" },
     { label: "Mistakes", path: "/mistakes", icon: "!" },
     { label: "Exams", path: "/exams", icon: "✓" },
     { label: "Learning Plan", path: "/onboarding", icon: "▤" },
