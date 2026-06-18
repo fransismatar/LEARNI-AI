@@ -159,128 +159,131 @@ const DashboardPage = () => {
   return (
     <section className="mx-auto max-w-7xl space-y-4 overflow-x-hidden px-3 pb-8 text-slate-950 sm:space-y-6 sm:px-6 lg:px-8">
       <div className="grid gap-4 xl:grid-cols-[1fr_1.15fr]">
-        <div className="overflow-hidden rounded-[30px] bg-blue-600 shadow-[0_16px_45px_rgba(37,99,235,0.2)] sm:rounded-[32px]">
-          <div className="grid gap-5 p-5 text-white sm:p-6 md:min-h-[300px] md:grid-cols-[1.05fr_0.95fr] md:items-center md:p-7">
-            <div className="min-w-0">
-              <p className="text-sm font-black text-blue-100">
-                Welcome back, {user?.name || "Student"} 👋
-              </p>
+       <div className="overflow-hidden rounded-[30px] bg-blue-600 shadow-[0_16px_45px_rgba(37,99,235,0.2)] sm:rounded-[32px]">
+  <div className="grid gap-5 p-5 text-white sm:p-6 md:min-h-[300px] md:grid-cols-[1.05fr_0.95fr] md:items-center md:p-7">
+    <div className="min-w-0">
+      <p className="text-sm font-black text-blue-100">
+        Welcome back, {user?.name || "Student"} 👋
+      </p>
 
-              <h1 className="mt-3 text-3xl font-black leading-tight tracking-tight sm:text-3xl lg:text-4xl">
-                Continue your journey
-              </h1>
+      <h1 className="mt-3 text-3xl font-black leading-tight tracking-tight sm:text-3xl lg:text-4xl">
+        Continue your journey
+      </h1>
 
-              <p className="mt-2 text-base font-black text-blue-100">
-                with Teacher {teacher.name}
-              </p>
+      <p className="mt-2 text-base font-black text-blue-100">
+        with Teacher {teacher.name}
+      </p>
 
-              <div className="mt-6 sm:mt-7">
-                <p className="text-sm font-black text-blue-100">
-                  Resume Lesson
-                </p>
-                <h2 className="mt-2 text-2xl font-black leading-tight sm:text-3xl">
-                  {dailyLesson?.topic ||
-                    dashboardData?.currentTopic ||
-                    "Daily practice"}
-                </h2>
-              </div>
+      <div className="mt-6 sm:mt-7">
+        <p className="text-sm font-black text-blue-100">Resume Lesson</p>
 
-              <div className="mt-5 flex items-center gap-3">
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/25">
-                  <div
-                    className="h-full rounded-full bg-white"
-                    style={{ width: `${dailyProgress}%` }}
-                  />
-                </div>
-                <span className="shrink-0 text-xs font-black text-blue-100">
-                  {dailyProgress}% Complete
-                </span>
-              </div>
+        <h2 className="mt-2 break-words text-2xl font-black leading-tight sm:text-3xl">
+          {dailyLesson?.topic ||
+            dashboardData?.currentTopic ||
+            "Daily practice"}
+        </h2>
+      </div>
 
-              <p className="mt-4 text-sm font-bold text-blue-100">
-                Next: {dailyTasks.find((task) => !task.done)?.title || "Done"}
-              </p>
-
-              <Link
-                to={`/avatar-teacher?teacher=${teacher.id}`}
-                className="mt-6 flex w-full items-center justify-center rounded-2xl bg-white px-6 py-4 text-center text-sm font-black text-blue-700 transition hover:bg-blue-50 sm:w-fit"
-              >
-                Continue Lesson
-              </Link>
-            </div>
-
-            <div className="flex justify-center md:justify-end">
-              <img
-                src={teacher.image}
-                alt={teacher.name}
-                className="h-72 w-full max-w-[270px] rounded-[28px] object-cover object-top shadow-2xl sm:h-72 md:h-72 md:max-w-[300px] lg:max-w-[340px]"
-              />
-            </div>
-          </div>
+      <div className="mt-5 flex items-center gap-3">
+        <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/25">
+          <div
+            className="h-full rounded-full bg-white"
+            style={{ width: `${dailyProgress}%` }}
+          />
         </div>
 
-        <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:rounded-[32px] sm:p-6">
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-base font-black text-slate-950 sm:text-sm">
-                Choose your AI teacher
-              </p>
-              <p className="mt-1 text-xs font-bold text-slate-400">
-                Select teacher for today’s lesson
-              </p>
-            </div>
+        <span className="shrink-0 text-xs font-black text-blue-100">
+          {dailyProgress}% Complete
+        </span>
+      </div>
 
-            <button
-              type="button"
-              onClick={() => setIsTeacherModalOpen(true)}
-              className="shrink-0 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-[11px] font-black text-blue-600 transition hover:bg-blue-100 sm:text-xs"
-            >
-              More
-            </button>
+      <p className="mt-4 text-sm font-bold text-blue-100">
+        Next: {dailyTasks.find((task) => !task.done)?.title || "Done"}
+      </p>
+
+      <Link
+        to={`/avatar-teacher?teacher=${teacher.id}`}
+        className="mt-6 flex w-full items-center justify-center rounded-2xl bg-white px-6 py-4 text-center text-sm font-black text-blue-700 transition hover:bg-blue-50 sm:w-fit"
+      >
+        Continue Lesson
+      </Link>
+    </div>
+
+    <div className="flex justify-center md:justify-end">
+      <img
+        src={teacher.image}
+        alt={teacher.name}
+        className="h-[300px] w-full max-w-[280px] rounded-[28px] object-cover object-top shadow-2xl sm:h-72 md:h-72 md:max-w-[300px] lg:max-w-[340px]"
+      />
+    </div>
+  </div>
+</div>
+
+        <div className="min-w-0 rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:rounded-[32px] sm:p-6">
+  <div className="flex w-full items-start justify-between gap-3">
+    <div className="min-w-0 flex-1">
+      <p className="text-sm font-black leading-tight text-slate-950 sm:text-sm">
+        Choose your AI teacher
+      </p>
+
+      <p className="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-400">
+        Select teacher for today’s lesson
+      </p>
+    </div>
+
+    <button
+      type="button"
+      onClick={() => setIsTeacherModalOpen(true)}
+      className="grid h-11 min-w-[72px] shrink-0 place-items-center rounded-2xl border border-blue-100 bg-blue-50 px-4 text-xs font-black text-blue-600 transition hover:bg-blue-100"
+    >
+      More
+    </button>
+  </div>
+
+  <div className="-mx-4 mt-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-3 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden">
+    {featuredTeachers.map((item) => {
+      const selected = selectedTeacherId === item.id;
+
+      return (
+        <button
+          type="button"
+          key={item.id}
+          onClick={() => {
+            setSelectedTeacherId(item.id);
+            localStorage.setItem("selectedTeacherId", item.id);
+          }}
+          className={`w-[72vw] max-w-[220px] shrink-0 snap-start overflow-hidden rounded-[24px] border text-left transition hover:-translate-y-1 hover:shadow-lg sm:w-auto sm:max-w-none sm:shrink ${
+            selected
+              ? "border-blue-300 bg-blue-50"
+              : "border-slate-200 bg-slate-50 hover:bg-white"
+          }`}
+        >
+          <div className="h-40 overflow-hidden bg-white sm:h-32">
+            <img
+              src={item.image}
+              alt={item.name}
+              className="h-full w-full object-cover object-top"
+            />
           </div>
 
-          <div className="-mx-4 mt-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-3 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden">
-            {featuredTeachers.map((item) => {
-              const selected = selectedTeacherId === item.id;
+          <div className="p-4">
+            <h3 className="truncate text-lg font-black text-slate-950 sm:text-base">
+              {item.name}
+            </h3>
 
-              return (
-                <button
-                  type="button"
-                  key={item.id}
-                  onClick={() => {
-                    setSelectedTeacherId(item.id);
-                    localStorage.setItem("selectedTeacherId", item.id);
-                  }}
-                  className={`w-[76vw] max-w-[220px] shrink-0 snap-start overflow-hidden rounded-[24px] border text-left transition hover:-translate-y-1 hover:shadow-lg sm:w-auto sm:max-w-none sm:shrink ${
-                    selected
-                      ? "border-blue-300 bg-blue-50"
-                      : "border-slate-200 bg-slate-50 hover:bg-white"
-                  }`}
-                >
-                  <div className="h-40 overflow-hidden bg-white sm:h-32">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="h-full w-full object-cover object-top"
-                    />
-                  </div>
+            <p className="mt-1 line-clamp-1 text-xs font-bold text-slate-500">
+              {item.role}
+            </p>
 
-                  <div className="p-4">
-                    <h3 className="truncate text-lg font-black text-slate-950 sm:text-base">
-                      {item.name}
-                    </h3>
-                    <p className="mt-1 line-clamp-1 text-xs font-bold text-slate-500">
-                      {item.role}
-                    </p>
-                    <p className="mt-3 inline-flex max-w-full rounded-full bg-white px-3 py-1 text-[11px] font-black text-blue-600">
-                      <span className="truncate">{item.accent}</span>
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
+            <p className="mt-3 inline-flex max-w-full rounded-full bg-white px-3 py-1 text-[11px] font-black text-blue-600">
+              <span className="truncate">{item.accent}</span>
+            </p>
           </div>
-        </div>
+        </button>
+      );
+    })}
+  </div>
+</div>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
