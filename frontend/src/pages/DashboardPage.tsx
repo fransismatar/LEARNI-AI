@@ -158,102 +158,106 @@ const DashboardPage = () => {
 
   return (
     <section className="mx-auto max-w-7xl space-y-4 overflow-x-hidden px-3 pb-8 text-slate-950 sm:space-y-6 sm:px-6 lg:px-8">
-      <div className="grid gap-4 xl:grid-cols-[1fr_1.15fr]">
-        <div className="overflow-hidden rounded-[30px] bg-blue-600 shadow-[0_16px_45px_rgba(37,99,235,0.2)] sm:rounded-[32px]">
-  <div className="grid gap-5 p-5 text-white sm:p-6 md:min-h-[300px] md:grid-cols-[1.05fr_0.95fr] md:items-center md:p-7">
-    <div className="min-w-0">
-      <p className="text-sm font-black text-blue-100">
-        Welcome back, {user?.name || "Student"} 👋
-      </p>
+  <div className="grid gap-4 xl:grid-cols-[1fr_1.15fr]">
+    <div className="overflow-hidden rounded-[30px] bg-blue-600 shadow-[0_16px_45px_rgba(37,99,235,0.2)] sm:rounded-[32px]">
+      <div className="grid gap-6 p-5 text-white sm:p-6 md:min-h-[300px] md:grid-cols-[1.05fr_0.95fr] md:items-center md:p-7">
+        <div className="min-w-0 text-center md:text-left">
+          <p className="truncate text-sm font-black text-blue-100">
+            Welcome back, {user?.name || "Student"} 👋
+          </p>
 
-      <h1 className="mt-3 max-w-full text-3xl font-black leading-tight tracking-tight sm:text-3xl lg:text-4xl">
-        Continue your journey
-      </h1>
+          <h1 className="mt-3 text-3xl font-black leading-[1.05] tracking-tight sm:text-4xl lg:text-5xl">
+            Continue your journey
+          </h1>
 
-      <p className="mt-2 text-base font-black text-blue-100">
-        with Teacher {teacher.name}
-      </p>
+          <p className="mt-3 text-base font-black text-blue-100 sm:text-lg">
+            with Teacher {teacher.name}
+          </p>
 
-      <div className="mt-7">
-        <p className="text-sm font-black text-blue-100">Resume Lesson</p>
-        <h2 className="mt-2 max-w-full text-3xl font-black leading-tight">
-          {dailyLesson?.topic ||
-            dashboardData?.currentTopic ||
-            "Daily practice"}
-        </h2>
-      </div>
+          <div className="mt-6 sm:mt-7">
+            <p className="text-sm font-black text-blue-100">Resume Lesson</p>
 
-      <div className="mt-5 flex items-center gap-3">
-        <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/25">
-          <div
-            className="h-full rounded-full bg-white"
-            style={{ width: `${dailyProgress}%` }}
+            <h2 className="mx-auto mt-2 max-w-[320px] text-2xl font-black leading-tight sm:max-w-none sm:text-3xl lg:text-4xl md:mx-0">
+              {dailyLesson?.topic ||
+                dashboardData?.currentTopic ||
+                "Daily practice"}
+            </h2>
+          </div>
+
+          <div className="mx-auto mt-5 flex max-w-[360px] items-center gap-3 md:mx-0 md:max-w-none">
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/25">
+              <div
+                className="h-full rounded-full bg-white"
+                style={{ width: `${dailyProgress}%` }}
+              />
+            </div>
+
+            <span className="shrink-0 text-xs font-black text-blue-100">
+              {dailyProgress}% Complete
+            </span>
+          </div>
+
+          <p className="mt-4 text-sm font-bold text-blue-100">
+            Next: {dailyTasks.find((task) => !task.done)?.title || "Done"}
+          </p>
+
+          <Link
+            to={`/avatar-teacher?teacher=${teacher.id}`}
+            className="mx-auto mt-6 flex w-full max-w-[320px] items-center justify-center rounded-2xl bg-white px-6 py-4 text-center text-sm font-black text-blue-700 transition hover:bg-blue-50 active:scale-95 md:mx-0 md:w-fit md:max-w-none"
+          >
+            Continue Lesson
+          </Link>
+        </div>
+
+        <div className="flex justify-center md:justify-end">
+          <img
+            src={teacher.image}
+            alt={teacher.name}
+            className="h-[300px] w-full max-w-[260px] rounded-[28px] object-cover object-top shadow-2xl sm:h-[340px] sm:max-w-[300px] md:h-72 md:max-w-[300px] lg:max-w-[340px]"
           />
         </div>
-        <span className="shrink-0 text-xs font-black text-blue-100">
-          {dailyProgress}% Complete
-        </span>
       </div>
-
-      <p className="mt-4 text-sm font-bold text-blue-100">
-        Next: {dailyTasks.find((task) => !task.done)?.title || "Done"}
-      </p>
-
-      <Link
-        to={`/avatar-teacher?teacher=${teacher.id}`}
-        className="mt-6 flex w-full items-center justify-center rounded-2xl bg-white px-6 py-4 text-center text-sm font-black text-blue-700 transition hover:bg-blue-50 sm:w-fit"
-      >
-        Continue Lesson
-      </Link>
     </div>
 
-    <div className="flex justify-center md:justify-end">
-      <img
-        src={teacher.image}
-        alt={teacher.name}
-        className="h-64 w-full max-w-[270px] rounded-[28px] object-cover object-top shadow-2xl sm:h-72 md:h-72 md:max-w-[300px] lg:max-w-[340px]"
-      />
-    </div>
-  </div>
-</div>
-
-        <div className="rounded-[30px] border border-slate-200 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:rounded-[32px] sm:p-6">
+       <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:rounded-[32px] sm:p-6">
   <div className="flex items-center justify-between gap-3">
-    <div className="min-w-0">
-      <p className="text-base font-black text-slate-950 sm:text-sm">
+    <div className="min-w-0 flex-1">
+      <p className="truncate text-base font-black text-slate-950 sm:text-sm">
         Choose your AI teacher
       </p>
-      <p className="mt-1 text-xs font-bold text-slate-400">
+      <p className="mt-1 truncate text-xs font-bold text-slate-400">
         Select teacher for today’s lesson
       </p>
     </div>
 
     <button
+      type="button"
       onClick={() => setIsTeacherModalOpen(true)}
-      className="shrink-0 rounded-2xl border border-blue-100 bg-blue-50 px-3 py-3 text-[11px] font-black text-blue-600 transition hover:bg-blue-100 sm:px-4 sm:text-xs"
+      className="flex-shrink-0 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-[11px] font-black text-blue-600 shadow-sm transition hover:bg-blue-100 active:scale-95 sm:text-xs"
     >
       More
     </button>
   </div>
 
-  <div className="-mx-4 mt-5 flex snap-x gap-3 overflow-x-auto px-4 pb-3 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
+  <div className="-mx-4 mt-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-4 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden">
     {featuredTeachers.map((item) => {
       const selected = selectedTeacherId === item.id;
 
       return (
         <button
+          type="button"
           key={item.id}
           onClick={() => {
             setSelectedTeacherId(item.id);
             localStorage.setItem("selectedTeacherId", item.id);
           }}
-          className={`min-w-[175px] snap-start overflow-hidden rounded-[24px] border text-left transition hover:-translate-y-1 hover:shadow-lg sm:min-w-0 ${
+          className={`w-[78vw] max-w-[230px] flex-shrink-0 snap-start overflow-hidden rounded-[24px] border text-left transition active:scale-[0.98] sm:w-auto sm:max-w-none sm:flex-shrink sm:hover:-translate-y-1 sm:hover:shadow-lg ${
             selected
-              ? "border-blue-300 bg-blue-50"
+              ? "border-blue-300 bg-blue-50 shadow-md"
               : "border-slate-200 bg-slate-50 hover:bg-white"
           }`}
         >
-          <div className="h-36 overflow-hidden bg-white sm:h-32">
+          <div className="h-40 overflow-hidden bg-white sm:h-32">
             <img
               src={item.image}
               alt={item.name}
@@ -265,9 +269,11 @@ const DashboardPage = () => {
             <h3 className="truncate text-lg font-black text-slate-950 sm:text-base">
               {item.name}
             </h3>
+
             <p className="mt-1 line-clamp-1 text-xs font-bold text-slate-500">
               {item.role}
             </p>
+
             <p className="mt-3 inline-flex max-w-full rounded-full bg-white px-3 py-1 text-[11px] font-black text-blue-600">
               <span className="truncate">{item.accent}</span>
             </p>
