@@ -157,19 +157,19 @@ const DashboardPage = () => {
   };
 
   return (
-    <section className="mx-auto max-w-7xl space-y-6 px-4 pb-8 text-slate-950 sm:px-6 lg:px-8">
-      <div className="grid gap-5 xl:grid-cols-[1fr_1.15fr]">
-        <div className="overflow-hidden rounded-[32px] bg-blue-600 shadow-[0_22px_70px_rgba(37,99,235,0.25)]">
-          <div className="grid min-h-[300px] gap-5 p-6 text-white md:grid-cols-[1.1fr_0.9fr] md:p-7">
+    <section className="mx-auto max-w-7xl space-y-4 px-3 pb-8 text-slate-950 sm:space-y-6 sm:px-6 lg:px-8">
+      <div className="grid gap-4 xl:grid-cols-[1fr_1.15fr]">
+        <div className="overflow-hidden rounded-[28px] bg-blue-600 shadow-[0_16px_45px_rgba(37,99,235,0.2)] sm:rounded-[32px]">
+          <div className="grid min-h-[260px] gap-4 p-5 text-white sm:p-6 md:grid-cols-[1.1fr_0.9fr] md:p-7">
             <div className="flex flex-col justify-between">
               <div>
                 <p className="text-sm font-black text-blue-100">
                   Welcome back, {user?.name || "Student"}
                 </p>
 
-                <h1 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
-                  Continue your journey
-                </h1>
+                <h1 className="mt-3 text-2xl font-black tracking-tight sm:text-3xl lg:text-4xl">
+                    Continue your journey
+                  </h1>
 
                 <p className="mt-2 text-sm font-medium text-blue-100">
                   with Teacher {teacher.name}
@@ -211,13 +211,13 @@ const DashboardPage = () => {
               </Link>
             </div>
 
-            <div className="hidden items-end justify-center md:flex">
-              <img
-                src={teacher.image}
-                alt={teacher.name}
-                className="h-64 w-full max-w-[240px] rounded-[28px] object-cover shadow-2xl"
-              />
-            </div>
+            <div className="flex items-end justify-center md:flex">
+                <img
+                  src={teacher.image}
+                  alt={teacher.name}
+                  className="h-44 w-full max-w-[210px] rounded-[24px] object-cover shadow-2xl sm:h-56 md:h-64"
+                />
+              </div>
           </div>
         </div>
 
@@ -240,7 +240,7 @@ const DashboardPage = () => {
             </button>
           </div>
 
-          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-5 flex gap-3 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-4">
             {featuredTeachers.map((item) => {
               const selected = selectedTeacherId === item.id;
 
@@ -251,19 +251,19 @@ const DashboardPage = () => {
                     setSelectedTeacherId(item.id);
                     localStorage.setItem("selectedTeacherId", item.id);
                   }}
-                  className={`overflow-hidden rounded-[24px] border text-left transition hover:-translate-y-1 hover:shadow-lg ${
-                    selected
-                      ? "border-blue-300 bg-blue-50"
-                      : "border-slate-200 bg-slate-50 hover:bg-white"
-                  }`}
+                      className={`min-w-[150px] overflow-hidden rounded-[24px] border text-left transition hover:-translate-y-1 hover:shadow-lg sm:min-w-0 ${
+                  selected
+                    ? "border-blue-300 bg-blue-50"
+                    : "border-slate-200 bg-slate-50 hover:bg-white"
+                }`}
                 >
-                  <div className="h-32 overflow-hidden bg-white">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
+                  <div className="h-28 overflow-hidden bg-white sm:h-32">
+  <img
+    src={item.image}
+    alt={item.name}
+    className="h-full w-full object-cover"
+  />
+</div>
 
                   <div className="p-4">
                     <h3 className="truncate text-base font-black text-slate-950">
@@ -283,7 +283,7 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
         <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-sm font-bold text-slate-500">Speaking Score</p>
           <h3 className="mt-3 text-4xl font-black text-slate-950">
@@ -340,11 +340,11 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-5 flex gap-3 overflow-x-auto pb-2 md:grid md:grid-cols-2 md:overflow-visible xl:grid-cols-4">
           {dailyTasks.map((task) => (
-            <div
-              key={task.key}
-              className={`rounded-[28px] border p-5 transition ${
+  <div
+    key={task.key}
+    className={`min-w-[260px] rounded-[26px] border p-4 transition sm:p-5 md:min-w-0 ${
                 task.done
                   ? "border-green-200 bg-green-50"
                   : "border-slate-200 bg-slate-50 hover:bg-white hover:shadow-md"
