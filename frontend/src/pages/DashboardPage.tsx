@@ -59,6 +59,8 @@ const DashboardPage = () => {
   const speakingScore = dashboardData?.speakingScore || 0;
   const progressWidth = `${speakingScore}%`;
 
+  const featuredTeachers = teachers.slice(0, 4);
+
   const dailyTasks = dailyLesson
     ? [
         {
@@ -156,200 +158,169 @@ const DashboardPage = () => {
 
   return (
     <section className="mx-auto max-w-7xl space-y-6 px-4 pb-8 text-slate-950 sm:px-6 lg:px-8">
-      {/* Hero */}
-      <div className="overflow-hidden rounded-[34px] border border-blue-100 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-        <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[1.25fr_0.75fr] lg:p-8">
-          <div className="flex flex-col justify-between">
-            <div>
-              <p className="text-sm font-black text-blue-600">
-                Welcome back, {user?.name || "Student"}
-              </p>
+      <div className="grid gap-5 xl:grid-cols-[1fr_1.15fr]">
+        <div className="overflow-hidden rounded-[32px] bg-blue-600 shadow-[0_22px_70px_rgba(37,99,235,0.25)]">
+          <div className="grid min-h-[300px] gap-5 p-6 text-white md:grid-cols-[1.1fr_0.9fr] md:p-7">
+            <div className="flex flex-col justify-between">
+              <div>
+                <p className="text-sm font-black text-blue-100">
+                  Welcome back, {user?.name || "Student"}
+                </p>
 
-              <h1 className="mt-4 max-w-3xl text-3xl font-black tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
-                Continue learning {targetLanguage} with Lerni AI
-              </h1>
+                <h1 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
+                  Continue your journey
+                </h1>
 
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500 sm:text-base">
-                Goal: {mainGoal}. Today you can practice speaking, words,
-                stories, and quiz tasks with your selected AI teacher.
-              </p>
+                <p className="mt-2 text-sm font-medium text-blue-100">
+                  with Teacher {teacher.name}
+                </p>
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <div className="rounded-3xl bg-blue-50 p-4">
-                  <p className="text-xs font-black uppercase text-blue-500">
-                    Language
+                <div className="mt-6">
+                  <p className="text-sm font-black text-blue-100">
+                    Resume Lesson
                   </p>
-                  <p className="mt-1 font-black text-slate-950">
-                    {targetLanguage}
-                  </p>
-                </div>
-
-                <div className="rounded-3xl bg-slate-50 p-4">
-                  <p className="text-xs font-black uppercase text-slate-400">
-                    Goal
-                  </p>
-                  <p className="mt-1 font-black text-slate-950">{mainGoal}</p>
-                </div>
-
-                <div className="rounded-3xl bg-slate-50 p-4">
-                  <p className="text-xs font-black uppercase text-slate-400">
-                    Topic
-                  </p>
-                  <p className="mt-1 font-black text-slate-950">
+                  <h2 className="mt-2 text-2xl font-black">
                     {dailyLesson?.topic ||
                       dashboardData?.currentTopic ||
                       "Daily practice"}
-                  </p>
-                </div>
-
-                <div className="rounded-3xl bg-slate-50 p-4">
-                  <p className="text-xs font-black uppercase text-slate-400">
-                    Teacher
-                  </p>
-                  <p className="mt-1 font-black text-slate-950">
-                    {teacher.name}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Link
-                to={`/avatar-teacher?teacher=${teacher.id}`}
-                className="rounded-2xl bg-blue-600 px-6 py-4 text-center text-sm font-black text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700"
-              >
-                Continue Lesson
-              </Link>
-
-              <Link
-                to="/onboarding"
-                className="rounded-2xl border border-slate-200 bg-white px-6 py-4 text-center text-sm font-black text-slate-700 transition hover:bg-slate-50"
-              >
-                Change Plan
-              </Link>
-            </div>
-          </div>
-
-          <div className="rounded-[30px] bg-gradient-to-br from-blue-50 via-white to-slate-50 p-4">
-            <div className="overflow-hidden rounded-[26px] bg-white shadow-inner">
-              <img
-                src={teacher.image}
-                alt={teacher.name}
-                className="h-72 w-full object-cover sm:h-80 lg:h-96"
-              />
-            </div>
-
-            <div className="mt-4 rounded-[26px] bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs font-black uppercase text-slate-400">
-                    Daily progress
-                  </p>
-                  <h2 className="mt-1 text-2xl font-black text-slate-950">
-                    {dailyProgress}%
                   </h2>
                 </div>
 
-                <p className="rounded-full bg-blue-50 px-4 py-2 text-xs font-black text-blue-600">
-                  {dailyCompletedCount}/{dailyTasks.length || 4} tasks
+                <div className="mt-5 flex items-center gap-3">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/25">
+                    <div
+                      className="h-full rounded-full bg-white"
+                      style={{ width: `${dailyProgress}%` }}
+                    />
+                  </div>
+                  <span className="text-xs font-black text-blue-100">
+                    {dailyProgress}% Complete
+                  </span>
+                </div>
+
+                <p className="mt-4 text-xs font-bold text-blue-100">
+                  Next: {dailyTasks.find((task) => !task.done)?.title || "Done"}
                 </p>
               </div>
 
-              <div className="mt-4 h-3 overflow-hidden rounded-full bg-slate-100">
-                <div
-                  className="h-full rounded-full bg-blue-600 transition-all"
-                  style={{ width: `${dailyProgress}%` }}
-                />
-              </div>
+              <Link
+                to={`/avatar-teacher?teacher=${teacher.id}`}
+                className="mt-6 w-fit rounded-2xl bg-white px-6 py-3 text-sm font-black text-blue-700 transition hover:bg-blue-50"
+              >
+                Resume Lesson
+              </Link>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Teacher + Stats */}
-      <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6">
-          <p className="text-sm font-black text-blue-600">Your AI Teacher</p>
-
-          <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
-            <div className="h-28 w-28 overflow-hidden rounded-[28px] bg-blue-50">
+            <div className="hidden items-end justify-center md:flex">
               <img
                 src={teacher.image}
                 alt={teacher.name}
-                className="h-full w-full object-cover"
+                className="h-64 w-full max-w-[240px] rounded-[28px] object-cover shadow-2xl"
               />
             </div>
-
-            <div className="flex-1">
-              <h2 className="text-3xl font-black text-slate-950">
-                {teacher.name}
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                {teacher.role}
-              </p>
-              <p className="mt-3 inline-flex rounded-full bg-blue-50 px-4 py-2 text-xs font-black text-blue-600">
-                {teacher.accent}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <button
-              onClick={() => setIsTeacherModalOpen(true)}
-              className="cursor-pointer rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
-            >
-              Change Teacher
-            </button>
-
-            <Link
-              to={`/avatar-teacher?teacher=${teacher.id}`}
-              className="rounded-2xl bg-blue-600 px-5 py-4 text-center text-sm font-black text-white transition hover:bg-blue-700"
-            >
-              Start Lesson
-            </Link>
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-sm font-bold text-slate-500">Speaking Score</p>
-            <h3 className="mt-3 text-4xl font-black text-slate-950">
-              {speakingScore}%
-            </h3>
-            <div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-100">
-              <div
-                className="h-full rounded-full bg-blue-600"
-                style={{ width: progressWidth }}
-              />
+        <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-black text-slate-950">
+                Choose your AI teacher
+              </p>
+              <p className="mt-1 text-xs font-bold text-slate-400">
+                Select teacher for today’s lesson
+              </p>
             </div>
+
+            <button
+              onClick={() => setIsTeacherModalOpen(true)}
+              className="rounded-2xl bg-blue-50 px-4 py-3 text-xs font-black text-blue-600 transition hover:bg-blue-100"
+            >
+              More
+            </button>
           </div>
 
-          <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-sm font-bold text-slate-500">Lessons</p>
-            <h3 className="mt-3 text-4xl font-black text-slate-950">
-              {dashboardData?.completedLessons || 0}
-              <span className="text-xl text-slate-400">
-                /{dashboardData?.totalLessons || 0}
-              </span>
-            </h3>
-            <p className="mt-5 text-sm font-bold text-slate-400">
-              Completed / Total
-            </p>
-          </div>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {featuredTeachers.map((item) => {
+              const selected = selectedTeacherId === item.id;
 
-          <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-sm font-bold text-slate-500">Mistakes Count</p>
-            <h3 className="mt-3 text-4xl font-black text-slate-950">
-              {dashboardData?.mistakesCount || 0}
-            </h3>
-            <p className="mt-5 text-sm font-bold text-slate-400">
-              Saved for review
-            </p>
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setSelectedTeacherId(item.id);
+                    localStorage.setItem("selectedTeacherId", item.id);
+                  }}
+                  className={`overflow-hidden rounded-[24px] border text-left transition hover:-translate-y-1 hover:shadow-lg ${
+                    selected
+                      ? "border-blue-300 bg-blue-50"
+                      : "border-slate-200 bg-slate-50 hover:bg-white"
+                  }`}
+                >
+                  <div className="h-32 overflow-hidden bg-white">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+
+                  <div className="p-4">
+                    <h3 className="truncate text-base font-black text-slate-950">
+                      {item.name}
+                    </h3>
+                    <p className="mt-1 line-clamp-1 text-xs font-bold text-slate-500">
+                      {item.role}
+                    </p>
+                    <p className="mt-3 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-black text-blue-600">
+                      {item.accent}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Today's Lesson */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-sm font-bold text-slate-500">Speaking Score</p>
+          <h3 className="mt-3 text-4xl font-black text-slate-950">
+            {speakingScore}%
+          </h3>
+          <div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-100">
+            <div
+              className="h-full rounded-full bg-blue-600"
+              style={{ width: progressWidth }}
+            />
+          </div>
+        </div>
+
+        <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-sm font-bold text-slate-500">Lessons</p>
+          <h3 className="mt-3 text-4xl font-black text-slate-950">
+            {dashboardData?.completedLessons || 0}
+            <span className="text-xl text-slate-400">
+              /{dashboardData?.totalLessons || 0}
+            </span>
+          </h3>
+          <p className="mt-5 text-sm font-bold text-slate-400">
+            Completed / Total
+          </p>
+        </div>
+
+        <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-sm font-bold text-slate-500">Mistakes Count</p>
+          <h3 className="mt-3 text-4xl font-black text-slate-950">
+            {dashboardData?.mistakesCount || 0}
+          </h3>
+          <p className="mt-5 text-sm font-bold text-slate-400">
+            Saved for review
+          </p>
+        </div>
+      </div>
+
       <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -424,7 +395,6 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      {/* Topic + Goal */}
       <div className="grid gap-5 lg:grid-cols-2">
         <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
           <p className="text-sm font-black text-blue-600">Current Topic</p>
