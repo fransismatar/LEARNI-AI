@@ -36,17 +36,18 @@ const ExamsPage = () => {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const generateExam = async () => {
+  const generateExam = async (mode: "daily" | "custom") => {
     try {
       setLoading(true);
       setResult(null);
       setAnswers({});
+      setExam(null);
 
       const token = localStorage.getItem("token");
 
       const res = await api.post(
         "/exams/generate",
-        { topic },
+        { topic, mode },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -107,30 +108,49 @@ const ExamsPage = () => {
             </h1>
 
             <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500 sm:text-base">
-              Generate a short exam based on your level, goal, and learning
-              profile. Answer the questions and get your score instantly.
+              Start an exam from today’s lesson, or create a custom exam by
+              topic. The daily exam uses what the student learned today.
             </p>
           </div>
 
           <div className="rounded-[28px] bg-slate-50 p-4 sm:p-5">
-            <label className="text-sm font-black text-slate-700">
-              Exam topic
-            </label>
+            <p className="text-sm font-black text-slate-700">
+              Today’s Lesson Exam
+            </p>
 
-            <input
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="Example: travel, work, school, grammar..."
-              className="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-bold outline-none transition focus:border-blue-400"
-            />
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Test yourself on today’s speaking task, vocabulary, story, and
+              quiz.
+            </p>
 
             <button
-              onClick={generateExam}
+              onClick={() => generateExam("daily")}
               disabled={loading}
               className="mt-4 w-full rounded-2xl bg-blue-600 px-6 py-4 text-sm font-black text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700 disabled:opacity-50"
             >
-              {loading ? "Generating exam..." : "Generate Exam"}
+              {loading ? "Generating exam..." : "Start Today’s Lesson Exam"}
             </button>
+
+            <div className="mt-5 border-t border-slate-200 pt-5">
+              <label className="text-sm font-black text-slate-700">
+                Custom exam topic
+              </label>
+
+              <input
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                placeholder="Example: travel, work, school, grammar..."
+                className="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-bold outline-none transition focus:border-blue-400"
+              />
+
+              <button
+                onClick={() => generateExam("custom")}
+                disabled={loading}
+                className="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-6 py-4 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+              >
+                Generate Custom Exam
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -142,9 +162,11 @@ const ExamsPage = () => {
               <p className="text-sm font-black text-blue-600">
                 {exam.level} Exam
               </p>
+
               <h2 className="mt-2 text-3xl font-black text-slate-950">
                 {exam.title}
               </h2>
+
               <p className="mt-2 text-sm font-bold text-slate-400">
                 Topic: {exam.topic}
               </p>
@@ -236,10 +258,10 @@ const ExamsPage = () => {
           </p>
 
           <button
-            onClick={generateExam}
+            onClick={() => generateExam("daily")}
             className="mt-6 rounded-2xl bg-blue-600 px-6 py-4 text-sm font-black text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700"
           >
-            Generate New Exam
+            Generate New Daily Exam
           </button>
         </div>
       )}
