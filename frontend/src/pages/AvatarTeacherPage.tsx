@@ -24,6 +24,9 @@ type ChatMessage = {
   text: string;
 };
 
+const LIVE_LIMIT_SECONDS = 5 * 60;
+let globalAvatarSessionLock = false;
+
 
 
 const AvatarTeacherPage = () => {
@@ -70,6 +73,8 @@ const TEACHER_NAME = teacher.name;
   const [isRecording, setIsRecording] = useState(false);
   const [recordedTranscript, setRecordedTranscript] = useState("");
 const [isTranscribing, setIsTranscribing] = useState(false);
+const [timeLeft, setTimeLeft] = useState(LIVE_LIMIT_SECONDS);
+const timerRef = useRef<number | null>(null);
 
   const addMessage = (role: "user" | "teacher", text: string) => {
     setMessages((prev) => [
@@ -144,8 +149,10 @@ const [isTranscribing, setIsTranscribing] = useState(false);
     }
   };
 
-  const startAvatarSession = useCallback(async () => {
-    if (hasStartedRef.current) return;
+ const startAvatarSession = useCallback(async () => {
+  if (hasStartedRef.current || globalAvatarSessionLock) return;
+
+  globalAvatarSessionLock = true;
 
     try {
       hasStartedRef.current = true;
@@ -200,6 +207,23 @@ const [isTranscribing, setIsTranscribing] = useState(false);
       sessionRef.current = liveSession;
       setSession(liveSession);
       setStatus("Lesson started");
+      setTimeLeft(LIVE_LIMIT_SECONDS);
+
+if (timerRef.current) {
+  window.clearInterval(timerRef.current);
+}
+
+timerRef.current = window.setInterval(() => {
+  setTimeLeft((prev) => {
+    if (prev <= 1) {
+      stopSession();
+      setShowExitModal(true);
+      return 0;
+    }
+
+    return prev - 1;
+  });
+}, 1000);
 
       const studentName =
         user?.name && user.name !== TEACHER_NAME ? user.name : "student";
@@ -215,35 +239,63 @@ const [isTranscribing, setIsTranscribing] = useState(false);
       addMessage("teacher", welcomeText);
       await speakText(liveSession, welcomeText);
     } catch (error: any) {
-      console.log("HEYGEN START ERROR:", error);
-      console.log("HEYGEN RESPONSE:", error?.response?.data);
+  console.log("HEYGEN START ERROR:", error);
+  console.log("HEYGEN RESPONSE:", error?.response?.data);
 
-      setStatus(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Failed to start teacher"
-      );
+  setStatus(
+    error?.response?.data?.message ||
+      error?.message ||
+      "Failed to start teacher"
+  );
 
-      hasStartedRef.current = false;
-    } finally {
-      setAvatarLoading(false);
-    }
+  hasStartedRef.current = false;
+  globalAvatarSessionLock = false;
+} finally {
+  setAvatarLoading(false);
+}
   }, [user?.name, teacher.id, teacher.name]);
 
   const stopSession = async () => {
-    try {
-      if (sessionRef.current) await sessionRef.current.stop();
-
-      if (videoRef.current) videoRef.current.srcObject = null;
-
-      sessionRef.current = null;
-      setSession(null);
-      hasStartedRef.current = false;
-      setStatus("Lesson stopped");
-    } catch (error) {
-      console.log("STOP ERROR:", error);
+  try {
+    if (timerRef.current) {
+      window.clearInterval(timerRef.current);
+      timerRef.current = null;
     }
-  };
+
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      mediaRecorderRef.current.stop();
+    }
+
+    if (currentStreamRef.current) {
+      currentStreamRef.current.getTracks().forEach((track) => track.stop());
+      currentStreamRef.current = null;
+    }
+
+    if (sessionRef.current) {
+      await sessionRef.current.stop();
+    }
+
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.srcObject = null;
+    }
+
+    sessionRef.current = null;
+    setSession(null);
+    hasStartedRef.current = false;
+    globalAvatarSessionLock = false;
+    setStatus("Lesson stopped");
+  } catch (error) {
+    console.log("STOP ERROR:", error);
+    sessionRef.current = null;
+    setSession(null);
+    hasStartedRef.current = false;
+    globalAvatarSessionLock = false;
+  }
+};
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -368,21 +420,12 @@ const cancelRecordedMessage = () => {
   useEffect(() => {
     startAvatarSession();
 
-    return () => {
-      if (sessionRef.current) sessionRef.current.stop();
+  return () => {
+  stopSession();
+};
 
-      if (
-        mediaRecorderRef.current &&
-        mediaRecorderRef.current.state !== "inactive"
-      ) {
-        mediaRecorderRef.current.stop();
-      }
-
-      if (currentStreamRef.current) {
-        currentStreamRef.current.getTracks().forEach((track) => track.stop());
-      }
-    };
   }, [startAvatarSession]);
+
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -425,10 +468,17 @@ const cancelRecordedMessage = () => {
             </button>
           </div>
 
-          <div className="hidden items-center gap-2 text-sm font-bold text-slate-600 sm:flex">
-            <span>{isRecording ? "Recording" : "04:28"}</span>
-            <FontAwesomeIcon icon={faClock} />
-          </div>
+          <div className="flex items-center gap-2 rounded-full bg-slate-100 px-3 py-2 text-xs font-black text-slate-700 sm:text-sm">
+  <FontAwesomeIcon icon={faClock} />
+
+  <span>
+    {isRecording
+      ? "Recording"
+      : `${String(Math.floor(timeLeft / 60)).padStart(2, "0")}:${String(
+          timeLeft % 60
+        ).padStart(2, "0")}`}
+  </span>
+</div>
 
           <div className="flex items-center gap-3">
             <div className="hidden text-right sm:block">
