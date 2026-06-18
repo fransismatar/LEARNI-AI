@@ -157,10 +157,10 @@ const DashboardPage = () => {
   };
 
   return (
-    <section className="mx-auto max-w-7xl space-y-4 px-3 pb-8 text-slate-950 sm:space-y-6 sm:px-6 lg:px-8">
+    <section className="mx-auto max-w-7xl space-y-4 overflow-x-hidden px-3 pb-8 text-slate-950 sm:space-y-6 sm:px-6 lg:px-8">
       <div className="grid gap-4 xl:grid-cols-[1fr_1.15fr]">
         <div className="overflow-hidden rounded-[28px] bg-blue-600 shadow-[0_16px_45px_rgba(37,99,235,0.2)] sm:rounded-[32px]">
-          <div className="grid min-h-[260px] gap-4 p-5 text-white sm:p-6 md:grid-cols-[1.1fr_0.9fr] md:p-7">
+          <div className="grid gap-4 p-5 text-white sm:p-6 md:min-h-[260px] md:grid-cols-[1.1fr_0.9fr] md:p-7">
             <div className="flex flex-col justify-between">
               <div>
                 <p className="text-sm font-black text-blue-100">
@@ -204,43 +204,43 @@ const DashboardPage = () => {
               </div>
 
               <Link
-                to={`/avatar-teacher?teacher=${teacher.id}`}
-                className="mt-6 w-fit rounded-2xl bg-white px-6 py-3 text-sm font-black text-blue-700 transition hover:bg-blue-50"
-              >
-                Resume Lesson
-              </Link>
+  to={`/avatar-teacher?teacher=${teacher.id}`}
+  className="mt-6 block w-full rounded-2xl bg-white px-6 py-3 text-center text-sm font-black text-blue-700 transition hover:bg-blue-50 sm:w-fit"
+>
+  Resume Lesson
+</Link>
             </div>
 
-            <div className="flex items-end justify-center md:flex">
-                <img
-                  src={teacher.image}
-                  alt={teacher.name}
-                  className="h-52 w-full max-w-[240px] rounded-[24px] object-cover shadow-2xl sm:h-56 md:h-64"
-                />
-              </div>
+            <div className="mt-5 flex items-end justify-center md:mt-0">
+  <img
+    src={teacher.image}
+    alt={teacher.name}
+    className="h-44 w-full max-w-[210px] rounded-[24px] object-cover shadow-2xl sm:h-56 md:h-64"
+  />
+</div>
           </div>
         </div>
 
-        <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6">
+        <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:rounded-[32px] sm:p-6">
           <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-sm font-black text-slate-950">
-                Choose your AI teacher
-              </p>
-              <p className="mt-1 text-xs font-bold text-slate-400">
-                Select teacher for today’s lesson
-              </p>
-            </div>
+  <div className="min-w-0">
+    <p className="text-sm font-black text-slate-950">
+      Choose your AI teacher
+    </p>
+    <p className="mt-1 text-xs font-bold text-slate-400">
+      Select teacher for today’s lesson
+    </p>
+  </div>
 
-            <button
-  onClick={() => setIsTeacherModalOpen(true)}
-  className="shrink-0 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-xs font-black text-blue-600 transition hover:bg-blue-100"
->
-  More teachers
-</button>
-          </div>
+  <button
+    onClick={() => setIsTeacherModalOpen(true)}
+    className="shrink-0 rounded-2xl border border-blue-100 bg-blue-50 px-3 py-3 text-[11px] font-black text-blue-600 transition hover:bg-blue-100 sm:px-4 sm:text-xs"
+  >
+    More
+  </button>
+</div>
 
-          <div className="-mx-5 mt-5 flex gap-3 overflow-x-auto px-5 pb-3 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
+          <div className="-mx-4 mt-5 flex snap-x gap-3 overflow-x-auto px-4 pb-3 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
             {featuredTeachers.map((item) => {
               const selected = selectedTeacherId === item.id;
 
@@ -251,7 +251,7 @@ const DashboardPage = () => {
                     setSelectedTeacherId(item.id);
                     localStorage.setItem("selectedTeacherId", item.id);
                   }}
-                      className={`min-w-[150px] overflow-hidden rounded-[24px] border text-left transition hover:-translate-y-1 hover:shadow-lg sm:min-w-0 ${
+                      className={`min-w-[145px] snap-start overflow-hidden rounded-[22px] border text-left transition hover:-translate-y-1 hover:shadow-lg sm:min-w-0 sm:rounded-[24px] ${
                   selected
                     ? "border-blue-300 bg-blue-50"
                     : "border-slate-200 bg-slate-50 hover:bg-white"
@@ -326,13 +326,13 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6">
+      <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:rounded-[32px] sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm font-black text-blue-600">
               Today’s AI Lesson
             </p>
-            <h2 className="mt-2 text-3xl font-black text-slate-950">
+            <h2 className="mt-3 text-2xl font-black text-slate-950 sm:text-3xl">
               {dailyLesson?.topic || "Loading today’s lesson..."}
             </h2>
             <p className="mt-2 text-sm leading-7 text-slate-500">
@@ -345,11 +345,11 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        <div className="-mx-5 mt-5 flex gap-3 overflow-x-auto px-5 pb-3 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 xl:grid-cols-4">
+        <div className="-mx-4 mt-5 flex snap-x gap-3 overflow-x-auto px-4 pb-3 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 xl:grid-cols-4">
           {dailyTasks.map((task) => (
   <div
     key={task.key}
-    className={`min-w-[260px] rounded-[26px] border p-4 transition sm:p-5 md:min-w-0 ${
+    className={`min-w-[250px] snap-start rounded-[24px] border p-4 transition sm:p-5 md:min-w-0 md:rounded-[26px] ${
                 task.done
                   ? "border-green-200 bg-green-50"
                   : "border-slate-200 bg-slate-50 hover:bg-white hover:shadow-md"
@@ -401,8 +401,8 @@ const DashboardPage = () => {
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-sm font-black text-blue-600">Current Topic</p>
+        <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm sm:rounded-[32px] sm:p-6">
+          <p className="mt-3 text-2xl font-black text-slate-950 sm:text-3xl">Current Topic</p>
           <h2 className="mt-3 text-3xl font-black text-slate-950">
             {dashboardData?.currentTopic ||
               dailyLesson?.topic ||
@@ -415,8 +415,8 @@ const DashboardPage = () => {
           </p>
         </div>
 
-        <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-sm font-black text-blue-600">Learning Goal</p>
+        <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm sm:rounded-[32px] sm:p-6">
+          <p className="mt-3 text-2xl font-black text-slate-950 sm:text-3xl">Learning Goal</p>
 
           <div className="mt-5 grid gap-3">
             <div className="rounded-3xl bg-slate-50 p-4">
