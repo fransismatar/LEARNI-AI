@@ -215,14 +215,14 @@ const DashboardPage = () => {
                 <img
                   src={teacher.image}
                   alt={teacher.name}
-                  className="h-44 w-full max-w-[210px] rounded-[24px] object-cover shadow-2xl sm:h-56 md:h-64"
+                  className="h-52 w-full max-w-[240px] rounded-[24px] object-cover shadow-2xl sm:h-56 md:h-64"
                 />
               </div>
           </div>
         </div>
 
         <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-sm font-black text-slate-950">
                 Choose your AI teacher
@@ -233,14 +233,14 @@ const DashboardPage = () => {
             </div>
 
             <button
-              onClick={() => setIsTeacherModalOpen(true)}
-              className="rounded-2xl bg-blue-50 px-4 py-3 text-xs font-black text-blue-600 transition hover:bg-blue-100"
-            >
-              More
-            </button>
+  onClick={() => setIsTeacherModalOpen(true)}
+  className="shrink-0 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-xs font-black text-blue-600 transition hover:bg-blue-100"
+>
+  More teachers
+</button>
           </div>
 
-          <div className="mt-5 flex gap-3 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-4">
+          <div className="-mx-5 mt-5 flex gap-3 overflow-x-auto px-5 pb-3 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
             {featuredTeachers.map((item) => {
               const selected = selectedTeacherId === item.id;
 
@@ -284,20 +284,25 @@ const DashboardPage = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-        <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm font-bold text-slate-500">Speaking Score</p>
-          <h3 className="mt-3 text-4xl font-black text-slate-950">
-            {speakingScore}%
-          </h3>
-          <div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-100">
-            <div
-              className="h-full rounded-full bg-blue-600"
-              style={{ width: progressWidth }}
-            />
-          </div>
-        </div>
 
-        <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm">
+  <div className="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm sm:rounded-[30px] sm:p-5">
+    <p className="text-sm font-bold text-slate-500">
+      Speaking Score
+    </p>
+
+    <h3 className="mt-3 text-4xl font-black text-slate-950">
+      {speakingScore}%
+    </h3>
+
+    <div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-100">
+      <div
+        className="h-full rounded-full bg-blue-600"
+        style={{ width: progressWidth }}
+      />
+    </div>
+  </div>
+
+        <div className="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm sm:rounded-[30px] sm:p-5">
           <p className="text-sm font-bold text-slate-500">Lessons</p>
           <h3 className="mt-3 text-4xl font-black text-slate-950">
             {dashboardData?.completedLessons || 0}
@@ -310,7 +315,7 @@ const DashboardPage = () => {
           </p>
         </div>
 
-        <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm sm:rounded-[30px] sm:p-5">
           <p className="text-sm font-bold text-slate-500">Mistakes Count</p>
           <h3 className="mt-3 text-4xl font-black text-slate-950">
             {dashboardData?.mistakesCount || 0}
@@ -340,7 +345,7 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        <div className="mt-5 flex gap-3 overflow-x-auto pb-2 md:grid md:grid-cols-2 md:overflow-visible xl:grid-cols-4">
+        <div className="-mx-5 mt-5 flex gap-3 overflow-x-auto px-5 pb-3 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 xl:grid-cols-4">
           {dailyTasks.map((task) => (
   <div
     key={task.key}
