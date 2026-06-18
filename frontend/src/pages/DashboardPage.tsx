@@ -500,13 +500,13 @@ const DashboardPage = () => {
                         : "border-slate-200 bg-white hover:border-blue-200 hover:bg-slate-50"
                     }`}
                   >
-                    <div className="h-52 overflow-hidden bg-slate-100">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
+                    <div className="h-64 overflow-hidden bg-slate-100 sm:h-52">
+  <img
+    src={item.image}
+    alt={item.name}
+    className="h-full w-full object-cover object-top"
+  />
+</div>
 
                     <div className="p-5">
                       <h3 className="text-2xl font-black text-slate-950">
