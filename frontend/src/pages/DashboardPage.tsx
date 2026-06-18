@@ -159,84 +159,82 @@ const DashboardPage = () => {
   return (
     <section className="mx-auto max-w-7xl space-y-4 overflow-x-hidden px-3 pb-8 text-slate-950 sm:space-y-6 sm:px-6 lg:px-8">
       <div className="grid gap-4 xl:grid-cols-[1fr_1.15fr]">
-        <div className="overflow-hidden rounded-[28px] bg-blue-600 shadow-[0_16px_45px_rgba(37,99,235,0.2)] sm:rounded-[32px]">
-          <div className="grid gap-4 p-5 text-white sm:p-6 md:min-h-[260px] md:grid-cols-[1.1fr_0.9fr] md:p-7">
-            <div className="flex flex-col justify-between">
-              <div>
-                <p className="text-sm font-black text-blue-100">
-                  Welcome back, {user?.name || "Student"}
-                </p>
+        <div className="overflow-hidden rounded-[30px] bg-blue-600 shadow-[0_16px_45px_rgba(37,99,235,0.2)] sm:rounded-[32px]">
+  <div className="relative min-h-[430px] overflow-hidden p-5 text-white sm:p-6 md:grid md:min-h-[260px] md:grid-cols-[1.1fr_0.9fr] md:gap-4 md:p-7">
+    <div className="relative z-10 flex h-full flex-col justify-between">
+      <div>
+        <p className="text-sm font-black text-blue-100">
+          Welcome back, {user?.name || "Student"} 👋
+        </p>
 
-                <h1 className="mt-3 text-2xl font-black tracking-tight sm:text-3xl lg:text-4xl">
-                    Continue your journey
-                  </h1>
+        <h1 className="mt-3 max-w-[260px] text-3xl font-black tracking-tight sm:max-w-none sm:text-3xl lg:text-4xl">
+          Continue your journey
+        </h1>
 
-                <p className="mt-2 text-sm font-medium text-blue-100">
-                  with Teacher {teacher.name}
-                </p>
+        <p className="mt-2 text-base font-black text-blue-100">
+          with Teacher {teacher.name}
+        </p>
 
-                <div className="mt-6">
-                  <p className="text-sm font-black text-blue-100">
-                    Resume Lesson
-                  </p>
-                  <h2 className="mt-2 text-2xl font-black">
-                    {dailyLesson?.topic ||
-                      dashboardData?.currentTopic ||
-                      "Daily practice"}
-                  </h2>
-                </div>
-
-                <div className="mt-5 flex items-center gap-3">
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/25">
-                    <div
-                      className="h-full rounded-full bg-white"
-                      style={{ width: `${dailyProgress}%` }}
-                    />
-                  </div>
-                  <span className="text-xs font-black text-blue-100">
-                    {dailyProgress}% Complete
-                  </span>
-                </div>
-
-                <p className="mt-4 text-xs font-bold text-blue-100">
-                  Next: {dailyTasks.find((task) => !task.done)?.title || "Done"}
-                </p>
-              </div>
-
-              <Link
-  to={`/avatar-teacher?teacher=${teacher.id}`}
-  className="mt-6 block w-full rounded-2xl bg-white px-6 py-3 text-center text-sm font-black text-blue-700 transition hover:bg-blue-50 sm:w-fit"
->
-  Resume Lesson
-</Link>
-            </div>
-
-            <div className="mt-5 flex items-end justify-center md:mt-0">
-  <img
-    src={teacher.image}
-    alt={teacher.name}
-    className="h-44 w-full max-w-[210px] rounded-[24px] object-cover shadow-2xl sm:h-56 md:h-64"
-  />
-</div>
-          </div>
+        <div className="mt-8">
+          <p className="text-sm font-black text-blue-100">Resume Lesson</p>
+          <h2 className="mt-2 max-w-[260px] text-3xl font-black">
+            {dailyLesson?.topic ||
+              dashboardData?.currentTopic ||
+              "Daily practice"}
+          </h2>
         </div>
+
+        <div className="mt-5 flex max-w-[270px] items-center gap-3">
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/25">
+            <div
+              className="h-full rounded-full bg-white"
+              style={{ width: `${dailyProgress}%` }}
+            />
+          </div>
+          <span className="text-xs font-black text-blue-100">
+            {dailyProgress}% Complete
+          </span>
+        </div>
+
+        <p className="mt-4 text-sm font-bold text-blue-100">
+          Next: {dailyTasks.find((task) => !task.done)?.title || "Done"}
+        </p>
+      </div>
+
+      <Link
+        to={`/avatar-teacher?teacher=${teacher.id}`}
+        className="mt-6 flex w-full max-w-[230px] items-center justify-center rounded-2xl bg-white px-6 py-4 text-center text-sm font-black text-blue-700 transition hover:bg-blue-50 sm:w-fit"
+      >
+        Continue Lesson
+      </Link>
+    </div>
+
+    <div className="pointer-events-none absolute bottom-0 right-0 flex justify-end md:relative md:bottom-auto md:right-auto md:items-end md:justify-center">
+      <img
+        src={teacher.image}
+        alt={teacher.name}
+        className="h-[270px] w-[235px] rounded-tl-[34px] object-cover object-top shadow-2xl sm:h-56 sm:w-auto sm:max-w-[240px] sm:rounded-[24px] md:h-64"
+      />
+    </div>
+  </div>
+</div>
 
         <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:rounded-[32px] sm:p-6">
           <div className="flex items-start justify-between gap-3">
   <div className="min-w-0">
-    <p className="text-sm font-black text-slate-950">
+    <p className="text-lg font-black text-slate-950 sm:text-sm">
       Choose your AI teacher
     </p>
-    <p className="mt-1 text-xs font-bold text-slate-400">
+    <p className="mt-1 text-sm font-bold text-slate-400 sm:text-xs">
       Select teacher for today’s lesson
     </p>
   </div>
 
   <button
     onClick={() => setIsTeacherModalOpen(true)}
-    className="shrink-0 rounded-2xl border border-blue-100 bg-blue-50 px-3 py-3 text-[11px] font-black text-blue-600 transition hover:bg-blue-100 sm:px-4 sm:text-xs"
+    className="shrink-0 rounded-2xl border border-blue-100 bg-white px-4 py-3 text-xs font-black text-blue-600 shadow-sm transition hover:bg-blue-50"
   >
-    More
+    More teachers
   </button>
 </div>
 
@@ -251,7 +249,7 @@ const DashboardPage = () => {
                     setSelectedTeacherId(item.id);
                     localStorage.setItem("selectedTeacherId", item.id);
                   }}
-                      className={`min-w-[145px] snap-start overflow-hidden rounded-[22px] border text-left transition hover:-translate-y-1 hover:shadow-lg sm:min-w-0 sm:rounded-[24px] ${
+                     className={`min-w-[190px] snap-start overflow-hidden rounded-[26px] border text-left transition hover:-translate-y-1 hover:shadow-lg sm:min-w-0 sm:rounded-[24px] ${
                   selected
                     ? "border-blue-300 bg-blue-50"
                     : "border-slate-200 bg-slate-50 hover:bg-white"
