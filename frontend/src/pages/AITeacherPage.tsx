@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   FaMicrophone,
   FaPaperPlane,
   FaVolumeUp,
-  FaRobot,
   FaUser,
+  FaCircle,
 } from "react-icons/fa";
 import api from "../services/api";
+import { teachers } from "../data/teachers";
 
 interface Message {
   _id?: string;
@@ -21,10 +23,28 @@ declare global {
 }
 
 const AITeacherPage = () => {
+  const [searchParams] = useSearchParams();
+
+  const teacherKey = (
+    searchParams.get("teacher") ||
+    localStorage.getItem("selectedTeacherId") ||
+    "zayed"
+  ).toLowerCase();
+
+  const teacher =
+    teachers.find(
+      (item) =>
+        item.id?.toLowerCase() === teacherKey ||
+        item.name.toLowerCase() === teacherKey
+    ) ||
+    teachers.find((item) => item.id === "zayed") ||
+    teachers[0];
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -63,6 +83,10 @@ const AITeacherPage = () => {
     utterance.lang = "en-US";
     utterance.rate = 0.9;
     utterance.pitch = 1;
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
 
     window.speechSynthesis.speak(utterance);
   };
@@ -135,7 +159,6 @@ const AITeacherPage = () => {
       };
 
       setMessages((prev) => [...prev, aiMessage]);
-
       speakText(res.data.reply);
     } catch (error) {
       console.log(error);
@@ -146,225 +169,214 @@ const AITeacherPage = () => {
   };
 
   return (
-    <section className="mx-auto flex h-[calc(100vh-150px)] min-h-[680px] max-w-7xl flex-col overflow-hidden rounded-[32px] border border-slate-200 bg-white text-slate-950 shadow-[0_24px_80px_rgba(15,23,42,0.08)] lg:h-[calc(100vh-90px)]">
-      <div className="border-b border-slate-200 bg-gradient-to-r from-blue-600 via-blue-600 to-blue-500 px-4 py-5 text-white sm:px-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-black text-blue-100">
-              AI Speaking Practice
-            </p>
+    <section className="mx-auto grid min-h-[calc(100vh-130px)] max-w-7xl overflow-hidden rounded-[34px] border border-slate-200 bg-white text-slate-950 shadow-[0_24px_80px_rgba(15,23,42,0.08)] lg:grid-cols-[0.9fr_1.1fr]">
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-blue-950 p-5 text-white sm:p-7">
+        <div className="relative z-10">
+          <p className="text-sm font-black text-blue-100">
+            AI Live Teacher · No HeyGen Credits
+          </p>
 
-            <h1 className="mt-2 text-2xl font-black tracking-tight sm:text-3xl">
-              Talk, type, listen, and improve your English
-            </h1>
+          <h1 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+            Talk with {teacher.name}
+          </h1>
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-blue-100">
-              Practice naturally with your AI teacher. Speak or type a sentence,
-              then listen to the answer and continue the conversation.
-            </p>
+          <p className="mt-3 max-w-md text-sm leading-7 text-blue-100">
+            Practice naturally with your selected teacher. Speak, type, listen,
+            and improve without live avatar cost.
+          </p>
+        </div>
+
+        <div className="relative z-10 mt-8 rounded-[34px] border border-white/15 bg-white/10 p-4 shadow-2xl backdrop-blur">
+          <div
+            className={`relative mx-auto h-[360px] max-w-[320px] overflow-hidden rounded-[32px] bg-blue-950 transition duration-500 ${
+              isSpeaking ? "scale-[1.02] shadow-[0_0_60px_rgba(96,165,250,0.7)]" : ""
+            }`}
+          >
+            <img
+              src={teacher.image}
+              alt={teacher.name}
+              className={`h-full w-full object-cover object-top transition duration-500 ${
+                isSpeaking ? "scale-105 brightness-110" : ""
+              }`}
+            />
+
+            <div className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-black/35 px-4 py-2 text-xs font-black backdrop-blur">
+              <FaCircle className={isSpeaking ? "text-green-400" : "text-blue-300"} />
+              {isSpeaking ? "Speaking now" : "Ready"}
+            </div>
+
+            <div className="absolute bottom-4 left-4 right-4 rounded-3xl bg-black/35 p-4 backdrop-blur">
+              <p className="text-lg font-black">{teacher.name}</p>
+              <p className="mt-1 text-xs font-bold text-white/70">
+                {teacher.role} · {teacher.accent}
+              </p>
+
+              <div className="mt-4 flex h-8 items-center gap-1">
+                {[12, 22, 16, 28, 18, 34, 14, 25, 19, 30, 15, 24].map(
+                  (height, index) => (
+                    <span
+                      key={index}
+                      style={{ height: `${isSpeaking ? height : 8}px` }}
+                      className="w-1 flex-1 rounded-full bg-blue-300 transition-all duration-200"
+                    />
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative z-10 mt-5 grid grid-cols-3 gap-3">
+          <div className="rounded-2xl bg-white/10 p-4 text-center backdrop-blur">
+            <p className="text-xl font-black">{messages.length}</p>
+            <p className="text-[11px] font-bold text-blue-100">Messages</p>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 sm:min-w-[280px]">
-            <div className="rounded-2xl bg-white/15 p-3 text-center backdrop-blur">
-              <p className="text-lg font-black">{messages.length}</p>
-              <p className="text-[11px] font-bold text-blue-100">Messages</p>
-            </div>
+          <div className="rounded-2xl bg-white/10 p-4 text-center backdrop-blur">
+            <p className="text-xl font-black">{listening ? "On" : "Off"}</p>
+            <p className="text-[11px] font-bold text-blue-100">Mic</p>
+          </div>
 
-            <div className="rounded-2xl bg-white/15 p-3 text-center backdrop-blur">
-              <p className="text-lg font-black">EN</p>
-              <p className="text-[11px] font-bold text-blue-100">Language</p>
-            </div>
-
-            <div className="rounded-2xl bg-white/15 p-3 text-center backdrop-blur">
-              <p className="text-lg font-black">{listening ? "On" : "Off"}</p>
-              <p className="text-[11px] font-bold text-blue-100">Mic</p>
-            </div>
+          <div className="rounded-2xl bg-white/10 p-4 text-center backdrop-blur">
+            <p className="text-xl font-black">{isSpeaking ? "Live" : "AI"}</p>
+            <p className="text-[11px] font-bold text-blue-100">Mode</p>
           </div>
         </div>
       </div>
 
-      <div className="grid min-h-0 flex-1 lg:grid-cols-[0.7fr_1.3fr]">
-        <aside className="hidden border-r border-slate-200 bg-slate-50/70 p-5 lg:block">
-          <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="grid h-16 w-16 place-items-center rounded-3xl bg-blue-50 text-2xl text-blue-600">
-              <FaRobot />
+      <div className="flex min-h-0 flex-col bg-slate-50">
+        <div className="border-b border-slate-200 bg-white px-4 py-4 sm:px-6">
+          <p className="text-sm font-black text-blue-600">
+            Speaking Practice
+          </p>
+          <h2 className="mt-1 text-2xl font-black text-slate-950">
+            Ask, answer, repeat
+          </h2>
+        </div>
+
+        <div className="flex-1 space-y-5 overflow-y-auto px-3 py-4 sm:px-5 sm:py-6">
+          {messages.length === 0 && (
+            <div className="rounded-[28px] border border-blue-100 bg-white p-5 shadow-sm sm:p-6">
+              <h2 className="text-xl font-black text-slate-950">
+                Hello! I’m {teacher.name}.
+              </h2>
+              <p className="mt-2 text-sm leading-7 text-slate-500">
+                Start with: “I want to practice English for travel.” You can
+                speak or type.
+              </p>
             </div>
+          )}
 
-            <h2 className="mt-5 text-2xl font-black text-slate-950">
-              Speaking Coach
-            </h2>
-
-            <p className="mt-3 text-sm leading-7 text-slate-500">
-              Use this page for normal OpenAI speaking practice without live
-              avatar credits.
-            </p>
-          </div>
-
-          <div className="mt-5 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-sm font-black text-slate-950">
-              Practice ideas
-            </p>
-
-            <div className="mt-4 space-y-3">
-              {[
-                "Introduce yourself in English.",
-                "Talk about your day.",
-                "Practice ordering food.",
-                "Prepare for a job interview.",
-              ].map((idea) => (
-                <button
-                  key={idea}
-                  onClick={() => setInput(idea)}
-                  className="w-full rounded-2xl bg-slate-50 px-4 py-3 text-left text-sm font-bold text-slate-600 transition hover:bg-blue-50 hover:text-blue-700"
-                >
-                  {idea}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-5 rounded-[28px] border border-blue-100 bg-blue-50 p-5">
-            <p className="text-sm font-black text-blue-700">Tip</p>
-            <p className="mt-2 text-sm leading-6 text-blue-700">
-              Try speaking one full sentence. The AI teacher can correct your
-              grammar and continue the conversation.
-            </p>
-          </div>
-        </aside>
-
-        <div className="flex min-h-0 flex-col">
-          <div className="flex-1 space-y-5 overflow-y-auto bg-slate-50/60 px-3 py-4 sm:px-5 sm:py-6">
-            {messages.length === 0 && (
-              <div className="rounded-[28px] border border-blue-100 bg-white p-5 shadow-sm sm:p-6">
-                <div className="flex gap-4">
-                  <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-600">
-                    <FaRobot />
-                  </div>
-
-                  <div>
-                    <h2 className="text-xl font-black text-slate-950">
-                      Hello! I’m your AI English teacher.
-                    </h2>
-                    <p className="mt-2 text-sm leading-7 text-slate-500">
-                      Type or use the microphone to practice. Start with a simple
-                      sentence like: “I want to practice travel English.”
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {messages.map((message, index) => (
+          {messages.map((message, index) => (
+            <div
+              key={message._id || index}
+              className={`flex ${
+                message.role === "user" ? "justify-end" : "justify-start"
+              }`}
+            >
               <div
-                key={message._id || index}
-                className={`flex ${
-                  message.role === "user" ? "justify-end" : "justify-start"
+                className={`flex max-w-[92%] gap-3 sm:max-w-[80%] ${
+                  message.role === "user" ? "flex-row-reverse" : "flex-row"
                 }`}
               >
                 <div
-                  className={`flex max-w-[92%] gap-3 sm:max-w-[80%] ${
-                    message.role === "user" ? "flex-row-reverse" : "flex-row"
+                  className={`mt-1 grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-2xl ${
+                    message.role === "user"
+                      ? "bg-blue-600 text-white"
+                      : "bg-white text-blue-600 shadow-sm"
                   }`}
                 >
-                  <div
-                    className={`mt-1 grid h-9 w-9 shrink-0 place-items-center rounded-2xl ${
-                      message.role === "user"
-                        ? "bg-blue-600 text-white"
-                        : "bg-white text-blue-600 shadow-sm"
-                    }`}
-                  >
-                    {message.role === "user" ? <FaUser /> : <FaRobot />}
-                  </div>
+                  {message.role === "user" ? (
+                    <FaUser />
+                  ) : (
+                    <img
+                      src={teacher.image}
+                      alt={teacher.name}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </div>
 
-                  <div
-                    className={`rounded-[26px] px-4 py-3 text-sm leading-7 shadow-sm sm:px-5 sm:py-4 sm:text-base ${
-                      message.role === "user"
-                        ? "rounded-tr-md bg-blue-600 text-white"
-                        : "rounded-tl-md border border-slate-200 bg-white text-slate-700"
-                    }`}
-                  >
-                    <p className="whitespace-pre-wrap">{message.content}</p>
+                <div
+                  className={`rounded-[26px] px-4 py-3 text-sm leading-7 shadow-sm sm:px-5 sm:py-4 sm:text-base ${
+                    message.role === "user"
+                      ? "rounded-tr-md bg-blue-600 text-white"
+                      : "rounded-tl-md border border-slate-200 bg-white text-slate-700"
+                  }`}
+                >
+                  <p className="whitespace-pre-wrap">{message.content}</p>
 
-                    {message.role === "assistant" && (
-                      <button
-                        onClick={() => speakText(message.content)}
-                        className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-blue-50 px-4 py-2 text-sm font-black text-blue-600 transition hover:bg-blue-100"
-                      >
-                        <FaVolumeUp />
-                        Listen again
-                      </button>
-                    )}
-                  </div>
+                  {message.role === "assistant" && (
+                    <button
+                      onClick={() => speakText(message.content)}
+                      className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-blue-50 px-4 py-2 text-sm font-black text-blue-600 transition hover:bg-blue-100"
+                    >
+                      <FaVolumeUp />
+                      Listen again
+                    </button>
+                  )}
                 </div>
               </div>
-            ))}
-
-            {loading && (
-              <div className="flex justify-start">
-                <div className="flex max-w-[85%] gap-3">
-                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-white text-blue-600 shadow-sm">
-                    <FaRobot />
-                  </div>
-
-                  <div className="rounded-[26px] rounded-tl-md border border-slate-200 bg-white px-5 py-4 shadow-sm">
-                    <p className="animate-pulse text-sm font-bold text-slate-400">
-                      AI teacher is thinking...
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div ref={messagesEndRef} />
-          </div>
-
-          <div className="border-t border-slate-200 bg-white p-3 sm:p-4">
-            {listening && (
-              <div className="mb-3 rounded-2xl bg-red-50 px-4 py-3 text-sm font-black text-red-500">
-                Listening... speak now
-              </div>
-            )}
-
-            <div className="flex items-end gap-2 sm:gap-3">
-              <button
-                onClick={startListening}
-                className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-base font-bold transition sm:h-14 sm:w-14 ${
-                  listening
-                    ? "bg-red-500 text-white shadow-lg shadow-red-200"
-                    : "bg-blue-50 text-blue-600 hover:bg-blue-100"
-                }`}
-              >
-                <FaMicrophone />
-              </button>
-
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={
-                  listening ? "Listening..." : "Type or speak your message..."
-                }
-                rows={1}
-                className="max-h-32 min-h-12 flex-1 resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-800 outline-none transition focus:border-blue-400 focus:bg-white sm:min-h-14 sm:px-5 sm:py-4"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                  }
-                }}
-              />
-
-              <button
-                onClick={sendMessage}
-                disabled={loading}
-                className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-600 text-base font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700 disabled:opacity-40 sm:h-14 sm:w-14"
-              >
-                <FaPaperPlane />
-              </button>
             </div>
+          ))}
 
-            <p className="mt-3 text-center text-[11px] font-bold text-slate-400">
-              Press Enter to send • Shift + Enter for new line
-            </p>
+          {loading && (
+            <div className="flex justify-start">
+              <div className="rounded-[26px] rounded-tl-md border border-slate-200 bg-white px-5 py-4 shadow-sm">
+                <p className="animate-pulse text-sm font-bold text-slate-400">
+                  {teacher.name} is thinking...
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        <div className="border-t border-slate-200 bg-white p-3 sm:p-4">
+          {listening && (
+            <div className="mb-3 rounded-2xl bg-red-50 px-4 py-3 text-sm font-black text-red-500">
+              Listening... speak now
+            </div>
+          )}
+
+          <div className="flex items-end gap-2 sm:gap-3">
+            <button
+              onClick={startListening}
+              className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-base font-bold transition sm:h-14 sm:w-14 ${
+                listening
+                  ? "bg-red-500 text-white shadow-lg shadow-red-200"
+                  : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+              }`}
+            >
+              <FaMicrophone />
+            </button>
+
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={
+                listening
+                  ? "Listening..."
+                  : `Type or speak to ${teacher.name}...`
+              }
+              rows={1}
+              className="max-h-32 min-h-12 flex-1 resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-800 outline-none transition focus:border-blue-400 focus:bg-white sm:min-h-14 sm:px-5 sm:py-4"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
+            />
+
+            <button
+              onClick={sendMessage}
+              disabled={loading}
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-600 text-base font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700 disabled:opacity-40 sm:h-14 sm:w-14"
+            >
+              <FaPaperPlane />
+            </button>
           </div>
         </div>
       </div>
